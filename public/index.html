@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Python Mastery Mock Test 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #008eab;
+            --text-main: #1d1d1f;
+            --text-muted: #6e6e73;
+            --bg-light: #f6f8fb;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: #ffffff;
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .kvj-logo-img {
+            max-width: 250px;
+            max-height: 80px;
+            margin-bottom: 30px;
+            display: inline-block;
+        }
+        .datacamp-card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+        .datacamp-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 5px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+        .datacamp-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+        .datacamp-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+        .datacamp-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 12px 14px;
+            font-size: 15px;
+            margin-bottom: 20px;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .datacamp-input:focus {
+            border-color: var(--secondary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 142, 171, 0.1);
+        }
+        .btn-login {
+            width: 100%;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn-login:hover {
+            background: #152b47;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="login-wrapper">
+        <div style="text-align: center;">
+            <img src="assets/Kvj logo.jpeg" alt="KVJ Logo" class="kvj-logo-img" onerror="this.src='Kvj logo.jpeg'">
+        </div>
+
+        <div id="login-screen" class="datacamp-card">
+            <h2 class="datacamp-title">Python Mastery</h2>
+            <div class="datacamp-subtitle">Mock Test 3</div>
+            
+            <label class="datacamp-label">User Name</label>
+            <input type="text" id="username" class="datacamp-input" placeholder="Enter your full name" required onkeypress="handleEnter(event)">
+            
+            <button onclick="startQuiz()" class="btn-login">Start / Continue</button>
+        </div>
+    </div>
+
+    <script>
+        function handleEnter(e) {
+            if(e.key === 'Enter') startQuiz();
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('username').value.trim();
+            if(!name) {
+                alert("Please enter your name to continue.");
+                return;
+            }
+            
+            // Save to localStorage so quiz.html can access it
+            localStorage.setItem('strategist_user', name);
+            localStorage.setItem('userName', name);
+            
+            // Redirect to quiz page
+            window.location.href = "quiz.html";
+        }
+
+        // Animated background script (simplified version of liftoff)
+        const canvas = document.getElementById("bg-canvas");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 3 + 1;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) {
+                    this.y = canvas.height + 10;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+            draw() {
+                ctx.fillStyle = `rgba(30, 58, 95, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        for (let i = 0; i < 50; i++) particles.push(new Particle());
+        
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
