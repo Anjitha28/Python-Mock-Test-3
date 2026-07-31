@@ -8,8 +8,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-// STRICTLY PORT 3001
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -21,11 +20,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Use API routes
 app.use('/api', apiRoutes);
 
-// Redirect / to index.html
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// Fallback route to serve static files / index.html
+app.get('*', (req, res) => {
+    const requestedPath = path.join(__dirname, 'public', req.path);
+    res.sendFile(requestedPath, (err) => {
+        if (err) {
+            res.sendFile(path.join(__dirname, 'public', 'index.html'));
+        }
+    });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Python Mastery Mock Test 3 running on http://localhost:${PORT}`);
-});
+export default app;
+
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`🚀 Python Mastery Mock Test 3 running on http://localhost:${PORT}`);
+    });
+}
