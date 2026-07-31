@@ -1152,7 +1152,17 @@
                 else incorrectCountAll++;
 
                 score += marksEarned;
-                results.push({ q: q.q, type: q.type, isCorrect, isUnanswered, user: userDisp, correct: correctDisp });
+                results.push({
+                    qObj: q,
+                    q: q.q,
+                    type: q.type,
+                    isCorrect,
+                    isUnanswered,
+                    userRaw: u,
+                    correctRaw: q.a,
+                    userDisp: userDisp,
+                    correctDisp: correctDisp
+                });
             });
 
             const max = 100;
@@ -1201,6 +1211,76 @@
             renderResults(finalScoreInt, max, results, [], "✓ Results Saved", savedAttemptNum);
         }
 
+        function formatReviewAnswerHTML(q, ansVal, isUser) {
+            if (ansVal === null || ansVal === undefined || ansVal === "" || (Array.isArray(ansVal) && ansVal.length === 0)) {
+                return `<span style="color:#64748b; font-style:italic;">Not Attended</span>`;
+            }
+
+            const optImgs = (Array.isArray(q.option_images) && q.option_images.length > 0)
+                ? q.option_images
+                : ((Array.isArray(q.optionImages) && q.optionImages.length > 0) ? q.optionImages : null);
+
+            if (q.type === "MCQ") {
+                const idx = typeof ansVal === 'number' ? ansVal : parseInt(ansVal);
+                if (isNaN(idx)) return `<span style="font-weight:700;">${ansVal}</span>`;
+                const label = (q.options && q.options[idx]) ? q.options[idx] : `Option ${idx + 1}`;
+                const imgUrl = optImgs && optImgs[idx] ? optImgs[idx] : null;
+
+                if (imgUrl) {
+                    return `
+                        <div style="display:flex; flex-direction:column; gap:6px; margin-top:6px;">
+                            <span style="font-weight:700;">${label}</span>
+                            <div>
+                                <img src="${imgUrl}" alt="${label}" style="max-width:260px; max-height:180px; object-fit:contain; border-radius:8px; border:2px solid ${isUser ? '#cbd5e1' : '#10b981'}; padding:6px; background:white; box-shadow:0 2px 4px rgba(0,0,0,0.04);" onerror="console.warn('Review option image failed to load:', this.src)">
+                            </div>
+                        </div>
+                    `;
+                }
+                return `<span style="font-weight:700;">${label}</span>`;
+            }
+
+            if (q.type === "MCQ2" || q.type === "MCQ3") {
+                const indices = Array.isArray(ansVal) ? ansVal : [ansVal];
+                const itemsHtml = indices.map(idx => {
+                    const numIdx = typeof idx === 'number' ? idx : parseInt(idx);
+                    const label = (q.options && q.options[numIdx]) ? q.options[numIdx] : `Option ${numIdx + 1}`;
+                    const imgUrl = optImgs && optImgs[numIdx] ? optImgs[numIdx] : null;
+
+                    if (imgUrl) {
+                        return `
+                            <div style="display:inline-flex; flex-direction:column; gap:6px; margin-top:6px; margin-right:12px;">
+                                <span style="font-weight:700;">${label}</span>
+                                <img src="${imgUrl}" alt="${label}" style="max-width:240px; max-height:160px; object-fit:contain; border-radius:8px; border:2px solid ${isUser ? '#cbd5e1' : '#10b981'}; padding:6px; background:white; box-shadow:0 2px 4px rgba(0,0,0,0.04);" onerror="console.warn('Review option image failed to load:', this.src)">
+                            </div>
+                        `;
+                    }
+                    return `<span style="font-weight:700;">${label}</span>`;
+                });
+                return itemsHtml.join(" ");
+            }
+
+            if (q.type === "TF") {
+                if (typeof ansVal === 'object' && ansVal !== null) {
+                    return Object.entries(ansVal).map(([k, v]) => {
+                        const label = (q.options && q.options[k]) ? q.options[k] : `Statement ${parseInt(k) + 1}`;
+                        return `<div style="margin-top:4px;"><strong>${label}:</strong> <span style="font-weight:700;">${v.toString().toUpperCase()}</span></div>`;
+                    }).join("");
+                }
+                return `<span style="font-weight:700;">${ansVal}</span>`;
+            }
+
+            if (q.type === "MTF" || q.type === "DROPDOWN" || q.type === "DND") {
+                if (typeof ansVal === 'object' && ansVal !== null) {
+                    return Object.entries(ansVal).map(([k, v]) => {
+                        return `<div style="margin-top:4px;"><strong>${k}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
+                    }).join("");
+                }
+                return `<span style="font-weight:700;">${ansVal}</span>`;
+            }
+
+            return `<span style="font-weight:700;">${ansVal}</span>`;
+        }
+
         function renderResults(score, max, results, radarData, syncStatus, attemptNum = 1) {
             document.getElementById('quiz-ui').style.display = "none";
             document.querySelector('.sidebar').style.display = "none";
@@ -1241,25 +1321,46 @@
                 results.forEach((res, i) => {
                     const card = document.createElement('div');
                     card.className = "review-card";
+                    card.style.background = "#ffffff";
+                    card.style.border = "1px solid #e2e8f0";
+                    card.style.borderRadius = "12px";
+                    card.style.padding = "24px";
+                    card.style.marginBottom = "20px";
+                    card.style.boxShadow = "0 4px 6px -1px rgba(0,0,0,0.03)";
                     
-                    let isUnanswered = res.isUnanswered || res.user === "Unanswered";
+                    const qObj = res.qObj || {};
+                    let isUnanswered = res.isUnanswered || res.userRaw === null || res.userRaw === undefined;
                     let statusText = isUnanswered ? "Not Answered" : (res.isCorrect ? "Correct" : "Incorrect");
-                    let statusClass = isUnanswered ? "status-incorrect" : (res.isCorrect ? "status-correct" : "status-incorrect");
-                    let userStyle = isUnanswered ? "color:#64748b; font-style:italic;" : (res.isCorrect ? "color:#166534" : "color:#ef4444");
+                    let statusBg = isUnanswered ? "#fef2f2" : (res.isCorrect ? "#f0fdf4" : "#fef2f2");
+                    let statusColor = isUnanswered ? "#b91c1c" : (res.isCorrect ? "#15803d" : "#b91c1c");
+                    let statusBorder = isUnanswered ? "#fecaca" : (res.isCorrect ? "#bbf7d0" : "#fecaca");
+
+                    let qImageHTML = "";
+                    if (qObj.img && qObj.img !== 'none') {
+                        qImageHTML = `
+                            <div style="text-align: center; margin: 16px 0;">
+                                <img src="${qObj.img}" alt="Question Diagram" style="max-width: 100%; max-height: 380px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);" onerror="console.warn('Question diagram image failed to load:', this.src)">
+                            </div>
+                        `;
+                    }
+
+                    const userResponseHTML = formatReviewAnswerHTML(qObj, res.userRaw, true);
+                    const correctResponseHTML = formatReviewAnswerHTML(qObj, res.correctRaw, false);
 
                     card.innerHTML = `
-                        <div class="review-q-header">
-                            <span>Question ${i+1}</span>
-                            <span class="${statusClass}">${statusText}</span>
+                        <div class="review-q-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; border-bottom:1px solid #f1f5f9; padding-bottom:10px;">
+                            <span style="font-family:'Montserrat',sans-serif; font-weight:800; font-size:16px; color:var(--primary-blue);">Question ${i+1}</span>
+                            <span style="background:${statusBg}; color:${statusColor}; border:1px solid ${statusBorder}; padding:4px 14px; border-radius:20px; font-weight:800; font-size:12px;">${statusText}</span>
                         </div>
-                        <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">${res.q}</div>
-                        <div style="font-size: 13px; margin-bottom: 8px;">
-                            <span style="font-weight:700; color:#475569;">Your Response:</span>
-                            <span style="${userStyle} font-weight:700; margin-left:8px;">${res.user}</span>
+                        <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px; line-height: 1.5;">${res.q}</div>
+                        ${qImageHTML}
+                        <div style="font-size: 14px; margin: 16px 0 12px 0; padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
+                            <div style="font-weight:700; color:#475569; margin-bottom:4px;">Your Response:</div>
+                            <div style="font-size:14px; color:#1e293b;">${userResponseHTML}</div>
                         </div>
-                        <div style="font-size: 13px; background:#f1f5f9; padding:10px 14px; border-radius:6px; border:1px solid #e2e8f0;">
-                            <span style="font-weight:700; color:#0f172a;">Correct Answer:</span>
-                            <span style="font-weight:700; color:#0f172a; margin-left:8px;">${res.correct}</span>
+                        <div style="font-size: 14px; background:#ecfdf5; padding:12px 16px; border-radius:8px; border:1px solid #a7f3d0;">
+                            <div style="font-weight:700; color:#065f46; margin-bottom:4px;">Correct Answer:</div>
+                            <div style="font-size:14px; color:#064e3b;">${correctResponseHTML}</div>
                         </div>
                     `;
                     list.appendChild(card);
