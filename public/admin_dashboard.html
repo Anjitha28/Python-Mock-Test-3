@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Python Mastery Mock Test 3</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary-blue: #1e3a5f;
@@ -458,23 +459,51 @@
                 </table>
             </div>
 
-            <!-- SECTION 2: Registered System Users (With Delete Option as Last Column) -->
+            <!-- SECTION 2: Registered System Users -->
             <div id="sec-registered-users" class="admin-section-panel">
-                <div class="section-title">Registered System Users</div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Username / ID</th>
-                            <th>Role</th>
-                            <th>First Login Status</th>
-                            <th>Registered Date</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <tr><td colspan="5">Loading registered users...</td></tr>
-                    </tbody>
-                </table>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px;">
+                    <div>
+                        <div class="section-title" style="margin-bottom: 4px;">Registered System Users</div>
+                        <div style="font-size: 13px; color: #64748b;">Manage permitted users allowed to create accounts in Python Mastery Mock Test 3.</div>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn-top-action" onclick="openAddUserModal()" style="background: #1e3a5f; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            + Add User
+                        </button>
+                        <button class="btn-top-action" onclick="downloadExcelTemplate()" style="background: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                            📥 Download Template
+                        </button>
+                        <label class="btn-top-action" style="background: #166534; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                            📤 Upload Excel
+                            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onchange="handleExcelUpload(event)" style="display: none;">
+                        </label>
+                        <button id="btn-bulk-delete" onclick="bulkDeleteSelectedRegUsers()" style="display: none; background: #dc2626; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: 700; cursor: pointer;">
+                            Delete Selected (<span id="selected-users-count">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="select-all-reg-users" onchange="toggleSelectAllRegUsers(this)" style="cursor: pointer; transform: scale(1.2);">
+                                </th>
+                                <th>Name</th>
+                                <th>Phone Number</th>
+                                <th>Email ID</th>
+                                <th>College</th>
+                                <th>Status</th>
+                                <th>Signup Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="registered-users-tbody">
+                            <tr><td colspan="8">Loading registered system users...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- SECTION 3: Exam Mode Control -->
@@ -497,6 +526,84 @@
                 </div>
 
                 <div id="mode-alert" class="alert-status"></div>
+        </div>
+    </div>
+
+    <!-- Add Registered User Modal -->
+    <div class="modal-overlay" id="add-user-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-card" style="background: white; border-radius: 12px; width: 90%; max-width: 500px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="font-size: 18px; font-weight: 800; color: #1e3a5f; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Add Registered User</div>
+            <form id="add-user-form" onsubmit="handleManualAddUser(event)">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Name</label>
+                    <input type="text" id="add-user-name" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" placeholder="Enter full name" required>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Phone Number</label>
+                    <input type="text" id="add-user-phone" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" placeholder="Enter phone number (e.g. 9876543210)" required>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Email ID</label>
+                    <input type="email" id="add-user-email" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" placeholder="Enter email address" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">College Name</label>
+                    <input type="text" id="add-user-college" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" placeholder="Enter college name" required>
+                </div>
+                <div id="add-user-error" style="color: #dc2626; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" onclick="closeAddUserModal()" style="padding: 10px 20px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; font-weight: 700; cursor: pointer; color: #475569;">Cancel</button>
+                    <button type="submit" style="padding: 10px 24px; border-radius: 6px; border: none; background: #1e3a5f; color: white; font-weight: 700; cursor: pointer;">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Registered User Modal -->
+    <div class="modal-overlay" id="edit-user-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-card" style="background: white; border-radius: 12px; width: 90%; max-width: 500px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="font-size: 18px; font-weight: 800; color: #1e3a5f; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Edit Registered User</div>
+            <form id="edit-user-form" onsubmit="handleEditUserSubmit(event)">
+                <input type="hidden" id="edit-user-id">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Name</label>
+                    <input type="text" id="edit-user-name" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" required>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Phone Number</label>
+                    <input type="text" id="edit-user-phone" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" required>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Email ID</label>
+                    <input type="email" id="edit-user-email" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" required>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">College Name</label>
+                    <input type="text" id="edit-user-college" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px;" required>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 700; font-size: 13px; color: #475569; margin-bottom: 6px;">Status</label>
+                    <select id="edit-user-status" style="width: 100%; padding: 10px 14px; border-radius: 6px; border: 1.5px solid #cbd5e1; font-family: inherit; font-size: 14px; font-weight: 700; background: white;">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div id="edit-user-error" style="color: #dc2626; font-size: 13px; font-weight: 600; margin-bottom: 15px; display: none;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" onclick="closeEditUserModal()" style="padding: 10px 20px; border-radius: 6px; border: 1px solid #cbd5e1; background: white; font-weight: 700; cursor: pointer; color: #475569;">Cancel</button>
+                    <button type="submit" style="padding: 10px 24px; border-radius: 6px; border: none; background: #1e3a5f; color: white; font-weight: 700; cursor: pointer;">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Excel Import Result Modal -->
+    <div class="modal-overlay" id="import-result-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-card" style="background: white; border-radius: 12px; width: 90%; max-width: 550px; padding: 30px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+            <div style="font-size: 18px; font-weight: 800; color: #1e3a5f; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Excel Import Result</div>
+            <div id="import-summary-body" style="line-height: 1.6; font-size: 14px; color: #334155;"></div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button onclick="closeImportModal()" style="padding: 10px 24px; border-radius: 6px; border: none; background: #1e3a5f; color: white; font-weight: 700; cursor: pointer;">Close</button>
             </div>
         </div>
     </div>
@@ -505,6 +612,8 @@
         const token = localStorage.getItem('auth_token');
         let currentMode = 'practice';
         let studentDataCache = [];
+        let regUsersCache = [];
+        let selectedRegUserIds = new Set();
         let currentAdminUsername = '';
 
         function navigateToSection(secId) {
@@ -559,7 +668,7 @@
                 currentAdminUsername = data.user.username;
                 document.getElementById('admin-display-name').textContent = currentAdminUsername;
                 await loadStudentSummary();
-                await loadUsers();
+                await loadRegisteredSystemUsers();
                 await loadGlobalMode();
             } catch (e) {
                 console.error(e);
@@ -722,38 +831,415 @@
             }
         }
 
-        async function loadUsers() {
+        async function loadRegisteredSystemUsers() {
             try {
-                const res = await fetch('/api/admin/users', {
+                const res = await fetch('/api/admin/registered-system-users', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    const tbody = document.getElementById('users-table-body');
-                    if (data.users.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5">No registered users found.</td></tr>';
+                    regUsersCache = data.users || [];
+                    renderRegisteredUsersTable(regUsersCache);
+                } else {
+                    document.getElementById('registered-users-tbody').innerHTML = '<tr><td colspan="8" style="color:#ef4444; text-align:center;">Failed to load registered system users.</td></tr>';
+                }
+            } catch (e) {
+                console.error('Error loading registered users:', e);
+                document.getElementById('registered-users-tbody').innerHTML = '<tr><td colspan="8" style="color:#ef4444; text-align:center;">Network error loading registered users.</td></tr>';
+            }
+        }
+
+        function renderRegisteredUsersTable(users) {
+            const tbody = document.getElementById('registered-users-tbody');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 25px; color: #64748b;">No registered system users found. Click <strong>+ Add User</strong> or <strong>Upload Excel</strong> to add users.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            users.forEach(u => {
+                const isChecked = selectedRegUserIds.has(u.id);
+                const statusBadge = u.status === 'Active'
+                    ? `<span style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer;" onclick="toggleRegUserStatus('${u.id}', '${u.status}')">Active</span>`
+                    : `<span style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer;" onclick="toggleRegUserStatus('${u.id}', '${u.status}')">Inactive</span>`;
+
+                const signupBadge = u.signup_status === 'Signed Up'
+                    ? `<span style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 12px;">Signed Up</span>`
+                    : `<span style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 12px;">Not Signed Up</span>`;
+
+                html += `
+                    <tr id="reg-user-row-${u.id}">
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="reg-user-cb" data-id="${u.id}" ${isChecked ? 'checked' : ''} onchange="onRegUserCheckboxChange('${u.id}', this.checked)" style="cursor: pointer; transform: scale(1.1);">
+                        </td>
+                        <td><strong>${u.name}</strong></td>
+                        <td><code>${u.phone}</code></td>
+                        <td>${u.email}</td>
+                        <td>${u.college}</td>
+                        <td>${statusBadge}</td>
+                        <td>${signupBadge}</td>
+                        <td>
+                            <button class="btn-toggle" style="background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; padding: 5px 12px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-right: 6px;" onclick="openEditUserModal('${u.id}')">Edit</button>
+                            <button class="btn-delete" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 5px 12px; border-radius: 6px; font-weight: 700; cursor: pointer;" onclick="confirmDeleteRegUser('${u.id}', '${u.name}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+            updateBulkDeleteButton();
+        }
+
+        // Excel Template Download Function
+        function downloadExcelTemplate() {
+            if (typeof XLSX === 'undefined') {
+                alert("Excel library is loading. Please try again in a moment.");
+                return;
+            }
+            const ws = XLSX.utils.json_to_sheet([], { header: ["Name", "Phone Number", "Email ID", "College Name"] });
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.writeFile(wb, "Registered_Users_Template.xlsx");
+        }
+
+        // Upload & Validate Excel Function
+        async function handleExcelUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    if (jsonRows.length === 0) {
+                        alert("The uploaded Excel file is empty.");
+                        event.target.value = "";
                         return;
                     }
 
-                    tbody.innerHTML = data.users.map(u => {
-                        const isCurrentAdmin = (u.username === currentAdminUsername);
-                        const actionBtn = isCurrentAdmin 
-                            ? `<span style="font-size: 12px; color: #94a3b8; font-weight: 600;">Active Admin</span>`
-                            : `<button class="btn-delete" onclick="confirmDeleteUser('${u.id}', '${u.username}')">Delete</button>`;
+                    // Validate Header Columns
+                    const headers = Object.keys(jsonRows[0]).map(h => h.trim());
+                    const requiredHeaders = ["Name", "Phone Number", "Email ID", "College Name"];
+                    const missingHeaders = requiredHeaders.filter(reqH => !headers.includes(reqH));
 
-                        return `
-                            <tr id="user-row-${u.id}">
-                                <td><strong>${u.username}</strong></td>
-                                <td><span class="badge-mode ${u.role === 'admin' ? 'main' : 'practice'}">${u.role.toUpperCase()}</span></td>
-                                <td>${u.is_first_login ? 'Pending (First Login)' : 'Completed'}</td>
-                                <td>${new Date(u.created_at).toLocaleString()}</td>
-                                <td>${actionBtn}</td>
-                            </tr>
+                    if (missingHeaders.length > 0) {
+                        alert("Invalid Excel file. Please use the provided template with Name, Phone Number, Email ID and College Name columns.");
+                        event.target.value = "";
+                        return;
+                    }
+
+                    // Row by Row Validation
+                    let validRecords = [];
+                    let invalidRows = [];
+                    let duplicateCount = 0;
+
+                    const seenPhoneInFile = new Set();
+                    const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                    jsonRows.forEach((row, idx) => {
+                        const rowNum = idx + 2; // Excel line index (header is row 1)
+                        const name = (row["Name"] || "").toString().trim();
+                        const phone = (row["Phone Number"] || "").toString().trim();
+                        const email = (row["Email ID"] || "").toString().trim().toLowerCase();
+                        const college = (row["College Name"] || "").toString().trim();
+
+                        let rowErrors = [];
+
+                        if (!name) rowErrors.push("Missing Name");
+                        if (!phone) {
+                            rowErrors.push("Missing phone number");
+                        } else if (!phoneRegex.test(phone)) {
+                            rowErrors.push("Invalid phone number");
+                        }
+
+                        if (!email) {
+                            rowErrors.push("Missing email address");
+                        } else if (!emailRegex.test(email)) {
+                            rowErrors.push("Invalid email address");
+                        }
+
+                        if (!college) rowErrors.push("Missing College Name");
+
+                        if (rowErrors.length > 0) {
+                            invalidRows.push(`Row ${rowNum} — ${rowErrors.join(", ")}`);
+                        } else {
+                            if (seenPhoneInFile.has(phone)) {
+                                duplicateCount++;
+                            } else {
+                                seenPhoneInFile.add(phone);
+                                validRecords.push({ name, phone, email, college });
+                            }
+                        }
+                    });
+
+                    // Send valid records to server
+                    let serverImported = 0;
+                    let serverDuplicates = 0;
+
+                    if (validRecords.length > 0) {
+                        const importRes = await fetch('/api/admin/registered-system-users/bulk-import', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ records: validRecords })
+                        });
+                        const importData = await importRes.json();
+                        if (importData.success) {
+                            serverImported = importData.importedCount;
+                            serverDuplicates = importData.duplicateCount;
+                        }
+                    }
+
+                    const totalDuplicates = duplicateCount + serverDuplicates;
+                    const totalProcessed = jsonRows.length;
+
+                    // Display Import Summary Modal
+                    let summaryHTML = `
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px;">
+                            <div><strong>Import completed.</strong></div>
+                            <div style="margin-top: 8px;">• Total records: <strong>${totalProcessed}</strong></div>
+                            <div>• Successfully imported: <strong style="color: #166534;">${serverImported}</strong></div>
+                            <div>• Duplicates skipped: <strong style="color: #b45309;">${totalDuplicates}</strong></div>
+                            <div>• Invalid records: <strong style="color: #dc2626;">${invalidRows.length}</strong></div>
+                        </div>
+                    `;
+
+                    if (invalidRows.length > 0) {
+                        summaryHTML += `
+                            <div style="font-weight: 700; color: #991b1b; margin-bottom: 8px;">Invalid Record Details:</div>
+                            <div style="max-height: 150px; overflow-y: auto; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px; font-size: 13px; color: #991b1b;">
+                                ${invalidRows.map(err => `<div>• ${err}</div>`).join('')}
+                            </div>
                         `;
-                    }).join('');
+                    }
+
+                    document.getElementById('import-summary-body').innerHTML = summaryHTML;
+                    document.getElementById('import-result-modal').style.display = 'flex';
+
+                    // Refresh Registered System Users table
+                    await loadRegisteredSystemUsers();
+
+                } catch (err) {
+                    console.error("Excel import error:", err);
+                    alert("Error reading Excel file: " + err.message);
+                } finally {
+                    event.target.value = "";
                 }
-            } catch (e) {
-                console.error(e);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-result-modal').style.display = 'none';
+        }
+
+        // Add User Modal Functions
+        function openAddUserModal() {
+            document.getElementById('add-user-form').reset();
+            document.getElementById('add-user-error').style.display = 'none';
+            document.getElementById('add-user-modal').style.display = 'flex';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('add-user-modal').style.display = 'none';
+        }
+
+        async function handleManualAddUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('add-user-name').value.trim();
+            const phone = document.getElementById('add-user-phone').value.trim();
+            const email = document.getElementById('add-user-email').value.trim();
+            const college = document.getElementById('add-user-college').value.trim();
+            const errorEl = document.getElementById('add-user-error');
+
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/admin/registered-system-users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, phone, email, college })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeAddUserModal();
+                    await loadRegisteredSystemUsers();
+                } else {
+                    errorEl.textContent = data.message || 'Failed to add user.';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Manual add error:", err);
+                errorEl.textContent = 'Network error while adding user.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        // Edit User Modal Functions
+        function openEditUserModal(id) {
+            const user = regUsersCache.find(u => u.id === id);
+            if (!user) return;
+
+            document.getElementById('edit-user-id').value = user.id;
+            document.getElementById('edit-user-name').value = user.name;
+            document.getElementById('edit-user-phone').value = user.phone;
+            document.getElementById('edit-user-email').value = user.email;
+            document.getElementById('edit-user-college').value = user.college;
+            document.getElementById('edit-user-status').value = user.status;
+            document.getElementById('edit-user-error').style.display = 'none';
+            document.getElementById('edit-user-modal').style.display = 'flex';
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('edit-user-modal').style.display = 'none';
+        }
+
+        async function handleEditUserSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const name = document.getElementById('edit-user-name').value.trim();
+            const phone = document.getElementById('edit-user-phone').value.trim();
+            const email = document.getElementById('edit-user-email').value.trim();
+            const college = document.getElementById('edit-user-college').value.trim();
+            const status = document.getElementById('edit-user-status').value;
+            const errorEl = document.getElementById('edit-user-error');
+
+            errorEl.style.display = 'none';
+
+            try {
+                const res = await fetch(`/api/admin/registered-system-users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, phone, email, college, status })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    closeEditUserModal();
+                    await loadRegisteredSystemUsers();
+                } else {
+                    errorEl.textContent = data.message || 'Failed to update user.';
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Edit error:", err);
+                errorEl.textContent = 'Network error updating user.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        async function toggleRegUserStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+            try {
+                const res = await fetch(`/api/admin/registered-system-users/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    await loadRegisteredSystemUsers();
+                }
+            } catch (err) {
+                console.error("Status toggle error:", err);
+            }
+        }
+
+        async function confirmDeleteRegUser(id, name) {
+            if (!confirm(`Are you sure you want to delete registered user '${name}'?`)) return;
+
+            try {
+                const res = await fetch(`/api/admin/registered-system-users/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    selectedRegUserIds.delete(id);
+                    await loadRegisteredSystemUsers();
+                } else {
+                    alert(data.message || 'Failed to delete user.');
+                }
+            } catch (err) {
+                console.error("Delete error:", err);
+            }
+        }
+
+        function toggleSelectAllRegUsers(allCb) {
+            selectedRegUserIds.clear();
+            const checkboxes = document.querySelectorAll('.reg-user-cb');
+            checkboxes.forEach(cb => {
+                cb.checked = allCb.checked;
+                if (allCb.checked) {
+                    selectedRegUserIds.add(cb.dataset.id);
+                }
+            });
+            updateBulkDeleteButton();
+        }
+
+        function onRegUserCheckboxChange(id, checked) {
+            if (checked) {
+                selectedRegUserIds.add(id);
+            } else {
+                selectedRegUserIds.delete(id);
+            }
+
+            const allCbs = document.querySelectorAll('.reg-user-cb');
+            const selectAllHeader = document.getElementById('select-all-reg-users');
+            if (selectAllHeader) {
+                selectAllHeader.checked = (allCbs.length > 0 && selectedRegUserIds.size === allCbs.length);
+            }
+            updateBulkDeleteButton();
+        }
+
+        function updateBulkDeleteButton() {
+            const btn = document.getElementById('btn-bulk-delete');
+            const countSpan = document.getElementById('selected-users-count');
+            if (btn && countSpan) {
+                countSpan.textContent = selectedRegUserIds.size;
+                btn.style.display = selectedRegUserIds.size > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        async function bulkDeleteSelectedRegUsers() {
+            if (selectedRegUserIds.size === 0) return;
+            if (!confirm(`Are you sure you want to delete ${selectedRegUserIds.size} selected registered users?`)) return;
+
+            try {
+                const res = await fetch('/api/admin/registered-system-users/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ ids: Array.from(selectedRegUserIds) })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    selectedRegUserIds.clear();
+                    await loadRegisteredSystemUsers();
+                } else {
+                    alert(data.message || 'Failed to delete selected users.');
+                }
+            } catch (err) {
+                console.error("Bulk delete error:", err);
             }
         }
 

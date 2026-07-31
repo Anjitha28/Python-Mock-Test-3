@@ -156,6 +156,32 @@ async function initTables(poolInstance) {
       );
     `);
 
+    // Ensure mock_test_3_registered_system_users table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS mock_test_3_registered_system_users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        phone TEXT UNIQUE NOT NULL,
+        email TEXT NOT NULL,
+        college TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'Active',
+        signup_status TEXT NOT NULL DEFAULT 'Not Signed Up',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+    `);
+
+    const regCheck = await client.query('SELECT COUNT(*) FROM mock_test_3_registered_system_users');
+    if (parseInt(regCheck.rows[0].count) === 0) {
+      await client.query(`
+        INSERT INTO mock_test_3_registered_system_users (name, phone, email, college, status, signup_status)
+        VALUES 
+          ('Anitha', '9876543210', 'anitha@gmail.com', 'ABC College', 'Active', 'Signed Up'),
+          ('Rahul', '9876543211', 'rahul@gmail.com', 'XYZ College', 'Active', 'Not Signed Up'),
+          ('Meera', '9876543212', 'meera@gmail.com', 'DEF College', 'Inactive', 'Not Signed Up')
+      `);
+    }
+
     // Seed default Admin if not exists
     const adminCheck = await client.query('SELECT * FROM mock_test_3_users WHERE username = $1', ['admin123']);
     if (adminCheck.rows.length === 0) {

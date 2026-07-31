@@ -93,6 +93,14 @@ router.post('/auth/signup', async (req, res) => {
             [cleanUsername, cleanName, cleanPhone, cleanEmail, passwordHash]
         );
 
+        // Update Registered System Users signup status
+        await pool.query(
+            `UPDATE mock_test_3_registered_system_users
+             SET signup_status = 'Signed Up', updated_at = NOW()
+             WHERE phone = $1 OR LOWER(email) = LOWER($2)`,
+            [cleanPhone, cleanEmail]
+        );
+
         return res.status(201).json({
             success: true,
             message: 'Account created successfully. Please login with your User ID and Password.'
@@ -352,6 +360,207 @@ router.get('/attempts/check', async (req, res) => {
             has_attempted_main: !!mainAttempt,
             last_main_attempt: mainAttempt
         });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// GET /api/admin/registered-system-users
+router.get('/admin/registered-system-users', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const result = await pool.query(
+            'SELECT id, name, phone, email, college, status, signup_status, created_at, updated_at FROM mock_test_3_registered_system_users ORDER BY created_at DESC'
+        );
+        return res.json({ success: true, users: result.rows });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// POST /api/admin/registered-system-users (Manual Add User)
+router.post('/admin/registered-system-users', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { name, phone, email, college } = req.body;
+        const cleanName = (name || '').trim();
+        const cleanPhone = (phone || '').trim();
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const cleanCollege = (college || '').trim();
+
+        if (!cleanName) return res.status(400).json({ success: false, message: 'Name is required.' });
+
+        const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+        if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+        }
+
+        if (!cleanCollege) return res.status(400).json({ success: false, message: 'College Name is required.' });
+
+        // Unique Phone Number Check
+        const checkPhone = await pool.query(
+            'SELECT id FROM mock_test_3_registered_system_users WHERE phone = $1',
+            [cleanPhone]
+        );
+        if (checkPhone.rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'This phone number is already registered.' });
+        }
+
+        const insertRes = await pool.query(
+            `INSERT INTO mock_test_3_registered_system_users (name, phone, email, college, status, signup_status)
+             VALUES ($1, $2, $3, $4, 'Active', 'Not Signed Up')
+             RETURNING *`,
+            [cleanName, cleanPhone, cleanEmail, cleanCollege]
+        );
+
+        return res.status(201).json({ success: true, user: insertRes.rows[0], message: 'Registered user added successfully.' });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// POST /api/admin/registered-system-users/bulk-import
+router.post('/admin/registered-system-users/bulk-import', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { records } = req.body;
+        if (!Array.isArray(records) || records.length === 0) {
+            return res.status(400).json({ success: false, message: 'No valid records provided for import.' });
+        }
+
+        // Get existing phone numbers from DB
+        const existingPhonesRes = await pool.query('SELECT phone FROM mock_test_3_registered_system_users');
+        const existingPhones = new Set(existingPhonesRes.rows.map(r => r.phone.trim()));
+
+        let importedCount = 0;
+        let duplicateCount = 0;
+        const seenInBatch = new Set();
+
+        for (const rec of records) {
+            const cleanPhone = (rec.phone || '').toString().trim();
+            if (existingPhones.has(cleanPhone) || seenInBatch.has(cleanPhone)) {
+                duplicateCount++;
+                continue;
+            }
+            seenInBatch.add(cleanPhone);
+
+            await pool.query(
+                `INSERT INTO mock_test_3_registered_system_users (name, phone, email, college, status, signup_status)
+                 VALUES ($1, $2, $3, $4, 'Active', 'Not Signed Up')`,
+                [rec.name.trim(), cleanPhone, rec.email.trim().toLowerCase(), rec.college.trim()]
+            );
+            importedCount++;
+        }
+
+        return res.json({
+            success: true,
+            importedCount,
+            duplicateCount,
+            message: `Import completed. Total records processed: ${records.length}. Successfully imported: ${importedCount}. Duplicates skipped: ${duplicateCount}.`
+        });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// PUT /api/admin/registered-system-users/:id
+router.put('/admin/registered-system-users/:id', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { id } = req.params;
+        const { name, phone, email, college, status } = req.body;
+
+        if (phone) {
+            const checkPhone = await pool.query(
+                'SELECT id FROM mock_test_3_registered_system_users WHERE phone = $1 AND id != $2',
+                [phone.trim(), id]
+            );
+            if (checkPhone.rows.length > 0) {
+                return res.status(400).json({ success: false, message: 'This phone number is already registered.' });
+            }
+        }
+
+        const updateRes = await pool.query(
+            `UPDATE mock_test_3_registered_system_users
+             SET name = COALESCE($1, name),
+                 phone = COALESCE($2, phone),
+                 email = COALESCE($3, email),
+                 college = COALESCE($4, college),
+                 status = COALESCE($5, status),
+                 updated_at = NOW()
+             WHERE id = $6
+             RETURNING *`,
+            [name?.trim(), phone?.trim(), email?.trim().toLowerCase(), college?.trim(), status, id]
+        );
+
+        if (updateRes.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Registered user not found.' });
+        }
+
+        return res.json({ success: true, user: updateRes.rows[0] });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// DELETE /api/admin/registered-system-users/:id
+router.delete('/admin/registered-system-users/:id', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { id } = req.params;
+        await pool.query('DELETE FROM mock_test_3_registered_system_users WHERE id = $1', [id]);
+        return res.json({ success: true, message: 'Registered user deleted successfully.' });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// POST /api/admin/registered-system-users/bulk-delete
+router.post('/admin/registered-system-users/bulk-delete', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { ids } = req.body;
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ success: false, message: 'No user IDs provided for deletion.' });
+        }
+
+        await pool.query('DELETE FROM mock_test_3_registered_system_users WHERE id = ANY($1::uuid[])', [ids]);
+        return res.json({ success: true, message: `${ids.length} registered users deleted successfully.` });
     } catch (e) {
         return res.status(500).json({ success: false, message: e.message });
     }
