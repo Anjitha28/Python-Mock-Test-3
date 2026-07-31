@@ -22,7 +22,7 @@ app.use(express.static(publicPath));
 app.use('/api', apiRoutes);
 
 // Fallback to serve static files / index.html
-app.get('*', (req, res) => {
+app.get('/{*path}', (req, res) => {
     const requestedPath = path.join(publicPath, req.path);
     res.sendFile(requestedPath, (err) => {
         if (err) {

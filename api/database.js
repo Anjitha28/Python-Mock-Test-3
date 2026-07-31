@@ -21,7 +21,10 @@ const dummyPool = {
         }
         return { rows: [] };
     },
-    connect: async () => dummyPool
+    connect: async () => dummyPool,
+    release: () => {},
+    on: () => {},
+    end: async () => {}
 };
 
 let activePool = dummyPool;
