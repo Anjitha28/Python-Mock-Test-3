@@ -151,7 +151,7 @@ window.dataQuizData = {
             "id": 10,
             "marks": 4,
             "type": "DROPDOWN",
-            "q": "You are analyzing customer satisfaction scores between online purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><br>The most frequent satisfaction score was 5 for online customers and 9 for in-store customers: [b1]<br><br>The average score for online customers was 6.4 and the average score for in-store customers was 7.0: [b2]<br><br>The score at the midpoint between the lowest and the highest scores was 6 for online customers and 7 for in-store customers: [b3]<br><br>The online scores vary from the average by 2.3 and the in-store variance is 1.9: [b4]<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span> (4 Marks)",
+            "q": "You are analyzing customer satisfaction scores between online purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><br>The most frequent satisfaction score was 5 for online customers and 9 for in-store customers: [b1]<br><br>The average score for online customers was 6.4 and the average score for in-store customers was 7.0: [b2]<br><br>The score at the midpoint between the lowest and the highest scores was 6 for online customers and 7 for in-store customers: [b3]<br><br>The online scores vary from the average by 2.3 and the in-store variance is 1.9: [b4](4 Marks)",
             "options": [
                 [
                     "Count",
@@ -262,7 +262,7 @@ window.dataQuizData = {
         {
             "id": 6,
             "type": "MCQ2",
-            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category.<br><br>The data view must meet the following requirements:<br><ul><li>Include all products and their associated categories.</li><li>Include sales subtotals for each category and year.</li><li>Display a grand total of sales for each category.</li><li>Create a summary of each category for every year.</li></ul><br>Which two aggregation methods should you use to create the data view? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category.<br><br>The data view must meet the following requirements:<br><ul><li>Include all products and their associated categories.</li><li>Include sales subtotals for each category and year.</li><li>Display a grand total of sales for each category.</li><li>Create a summary of each category for every year.</li></ul><br>Which two aggregation methods should you use to create the data view? (Choose 2)",
             "options": [
                 "Filtering",
                 "Pivoting",
@@ -317,7 +317,7 @@ window.dataQuizData = {
         {
             "id": 10,
             "type": "MCQ2",
-            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which two resources can you use? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which two resources can you use? (Choose 2)",
             "options": [
                 "Json",
                 "Power Query for Excel (M)",
@@ -396,7 +396,7 @@ window.dataQuizData = {
         {
             "id": 15,
             "type": "TF",
-            "q": "For each statement about data disaggregation, select whether it is True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "For each statement about data disaggregation, select whether it is True or False.",
             "options": [
                 "Data disaggregation provides a summary of the data",
                 "Data disaggregation combines data from different sources",
@@ -425,7 +425,7 @@ window.dataQuizData = {
         {
             "id": 17,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You look at the data in the original CSV file and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash(-) and two letters.<br><br>Which two actions should you complete next? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You look at the data in the original CSV file and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash(-) and two letters.<br><br>Which two actions should you complete next? (Choose 2)",
             "options": [
                 "Verify that the data in the database was imported as a numeric data type",
                 "Trim empty spaces from both of the valid characters",
@@ -534,7 +534,7 @@ window.dataQuizData = {
         {
             "id": 3,
             "type": "MCQ2",
-            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2)",
             "options": [
                 "Python",
                 "Microsoft Word",
@@ -631,7 +631,7 @@ window.dataQuizData = {
         {
             "id": 10,
             "type": "TF",
-            "q": "For each statement about data granularity, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about data granularity, select True or False.",
             "options": [
                 "Aggregating monthly sales into yearly totals increases data granularity.",
                 "Drilling down into data involves moving from a lower granularity (less detailed) to a higher granularity (more detailed).",
@@ -647,7 +647,7 @@ window.dataQuizData = {
         {
             "id": 11,
             "type": "TF",
-            "q": "For each statement about machine learning, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about machine learning, select True or False.",
             "options": [
                 "Machine learning can be used to automatically decline financial purchases based on previous purchase activity.",
                 "Machine learning can predict the probability of rain in a region by examining known weather patterns.",
@@ -718,7 +718,7 @@ window.dataQuizData = {
         {
             "id": 16,
             "type": "TF",
-            "q": "For each statement about data mining, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about data mining, select True or False.",
             "options": [
                 "Data mining is used to review underlying details in a given table.",
                 "Data mining is used to find anomalies.",
@@ -896,7 +896,7 @@ window.dataQuizData = {
             "id": 7,
             "marks": 3,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False.<br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (3 Marks)",
+            "q": "The visualization and data table depict housing price in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False.(3 Marks)",
             "img": "housing_prices_v2_professional.png",
             "options": [
                 "The visualization accurately depict the housing prices shown in the table",
@@ -913,7 +913,7 @@ window.dataQuizData = {
             "id": 8,
             "marks": 6,
             "type": "TF",
-            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers.<br><br>Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect. Select True if the statement is correct or False if the statement is incorrect.<br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection.</span> (6 Marks)",
+            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers.<br><br>Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect. Select True if the statement is correct or False if the statement is incorrect.(6 Marks)",
             "img": "purchase_stats_comparison.png",
             "options": [
                 "Online customers have a larger variance in how much they spend.",
@@ -1010,7 +1010,7 @@ window.dataQuizData = {
             "id": 14,
             "marks": 3,
             "type": "TF",
-            "q": "The professional visualization and data table below depict housing prices in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False<br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (3 Marks)",
+            "q": "The professional visualization and data table below depict housing prices in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False(3 Marks)",
             "img": "housing_prices_professional.png",
             "options": [
                 "The visualization accurately depicts the housing prices shown in the table",
@@ -1078,7 +1078,7 @@ window.dataQuizData = {
             "id": 18,
             "marks": 1,
             "type": "MCQ2",
-            "q": "Which two chart types should you use to rank values in ascending or descending order? (choose 2)<br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (1 Mark)",
+            "q": "Which two chart types should you use to rank values in ascending or descending order? (choose 2)(1 Mark)",
             "options": [
                 "Bar chart",
                 "Column chart",
@@ -1180,7 +1180,7 @@ window.dataQuizData = {
             "id": 4,
             "marks": 3,
             "type": "TF",
-            "q": "For each statement about machine learning, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span> (3 Marks)",
+            "q": "For each statement about machine learning, select True or False.(3 Marks)",
             "options": [
                 "Machine learning can help determine whether a candidate will pass an exam without looking at historical scores.",
                 "Machine learning can be used to automatically decline financial purchases based on previous purchase activity.",
@@ -1225,7 +1225,7 @@ window.dataQuizData = {
             "id": 7,
             "marks": 3,
             "type": "TF",
-            "q": "For each statement about <b>data mining</b>, select True if the statement is correct or False if it is incorrect. <br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection.</span> (3 Marks)",
+            "q": "For each statement about <b>data mining</b>, select True if the statement is correct or False if it is incorrect. (3 Marks)",
             "options": [
                 "Data mining is used to find anomalies",
                 "Data mining is used to review underlying details in a given table",
@@ -1255,7 +1255,7 @@ window.dataQuizData = {
             "id": 9,
             "marks": 1,
             "type": "MCQ2",
-            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use?<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span> (1 Mark)",
+            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use?<br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span> (1 Mark)",
             "options": [
                 "Python",
                 "Microsoft Word",
@@ -1448,7 +1448,7 @@ window.dataQuizData = {
             "id": 22,
             "marks": 1,
             "type": "MCQ3",
-            "q": "Select three ways that machine learning algorithms are used in data analysis.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 3.)</span> (1 Mark)",
+            "q": "Select three ways that machine learning algorithms are used in data analysis.<br><span style='font-size: 15px; font-style: italic;'> (Choose 3.)</span> (1 Mark)",
             "options": [
                 "Time Series Analysis",
                 "Anomaly Detection",
@@ -1468,7 +1468,7 @@ window.dataQuizData = {
         {
             "id": 1,
             "type": "TF",
-            "q": "<strong>Data Disaggregation:</strong> For each statement about data disaggregation, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "<strong>Data Disaggregation:</strong> For each statement about data disaggregation, select True or False.",
             "options": [
                 "Data disaggregation combines data from different sources",
                 "Data disaggregation provides a summary of the data",
@@ -1507,7 +1507,7 @@ window.dataQuizData = {
         {
             "id": 4,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You troubleshoot the problem and find that the <b>RowKey</b> values in TableA and the <b>RowID</b> values in TableB look identical (e.g., three numbers, a dash, and two letters).<br><br>Which <b>two</b> actions should you complete next? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You troubleshoot the problem and find that the <b>RowKey</b> values in TableA and the <b>RowID</b> values in TableB look identical (e.g., three numbers, a dash, and two letters).<br><br>Which <b>two</b> actions should you complete next? (Choose 2)",
             "options": [
                 "Verify that the data in the database was imported as a numeric data type",
                 "Trim empty spaces from both of the valid characters",
@@ -1564,7 +1564,7 @@ window.dataQuizData = {
         {
             "id": 8,
             "type": "MCQ2",
-            "q": "For which two reasons is it risky to make generalizations from limited sample data?<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span>",
+            "q": "For which two reasons is it risky to make generalizations from limited sample data?<br><br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span>",
             "options": [
                 "Limited data Samples are easier to collect",
                 "A limited sample may not represent a larger population",
@@ -1749,7 +1749,7 @@ window.dataQuizData = {
         {
             "id": 20,
             "type": "TF",
-            "q": "For each statement about the machine learning select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about the machine learning select True or False.",
             "options": [
                 "Machine Learning can be used to automatically decline financial purchases based on previous purchase activity",
                 "Machine learning can help determine whether a candidate will pass an exam without looking at historical scores",
@@ -1788,7 +1788,7 @@ window.dataQuizData = {
         {
             "id": 23,
             "type": "MCQ2",
-            "q": "Which two concepts are commonly associated with artificial intelligence (AI) in data analytics?<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span>",
+            "q": "Which two concepts are commonly associated with artificial intelligence (AI) in data analytics?<br><br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span>",
             "options": [
                 "Cost-Benefit Analysis",
                 "Stakeholder Mapping",
@@ -1803,7 +1803,7 @@ window.dataQuizData = {
         {
             "id": 24,
             "type": "TF",
-            "q": "The visualization and the data table depict housing prices in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "The visualization and the data table depict housing prices in a region. For each statement about the visualization, select True or False.",
             "img": "housing_prices_color_final.png",
             "options": [
                 "The visualization accurately depicts the housing prices shown",
@@ -1904,7 +1904,7 @@ window.dataQuizData = {
         {
             "id": 32,
             "type": "MCQ2",
-            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category (for example, milk belongs to the Dairy category). <br><br>The data view must satisfy the following requirements:<br>• Include all products categorized by their respective groups.<br>• Provide sales sub-totals for each category, broken down by year.<br>• Display the overall grand total of sales for each category.<br>• Create a yearly summary for every category.<br><br>Which <b>two</b> aggregation methods should you use to create this data view? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category (for example, milk belongs to the Dairy category). <br><br>The data view must satisfy the following requirements:<br>• Include all products categorized by their respective groups.<br>• Provide sales sub-totals for each category, broken down by year.<br>• Display the overall grand total of sales for each category.<br>• Create a yearly summary for every category.<br><br>Which <b>two</b> aggregation methods should you use to create this data view? (Choose 2)",
             "options": [
                 "Pivoting",
                 "Filtering",
@@ -2012,7 +2012,7 @@ window.dataQuizData = {
         {
             "id": 40,
             "type": "MCQ2",
-            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which <b>two</b> resources can you use? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which <b>two</b> resources can you use? (Choose 2)",
             "options": [
                 "Json",
                 "Power Query for Excel (M)",
@@ -2111,7 +2111,7 @@ window.dataQuizData = {
         {
             "id": 6,
             "type": "DROPDOWN",
-            "q": "You are analyzing customer satisfaction scores between on-line purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
+            "q": "You are analyzing customer satisfaction scores between on-line purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
             "code": "The most frequent satisfaction score was 5 for online customer and 9 for in-store customers: [b1]<br><br>The average score for online customers was 6.4 and the average score for in-store customers was 7.0: [b2]<br><br>The score at the midpoint between the lowest and the highest scores was 6 for online customers and 7 for in-store customers: [b3]<br><br>The online scores vary from the average by 2.3 and the in-store variance is 1.9: [b4]",
             "options": [
                 [
@@ -2197,7 +2197,7 @@ window.dataQuizData = {
         {
             "id": 10,
             "type": "MCQ3",
-            "q": "Select three ways that machine learning algorithms are used in data analysis. (Choose 3)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "Select three ways that machine learning algorithms are used in data analysis. (Choose 3)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Time series Analysis",
                 "Anomaly Detection",
@@ -2215,7 +2215,7 @@ window.dataQuizData = {
         {
             "id": 11,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "img": "housing_prices_color_final.png",
             "options": [
                 "An increase of $25000 occurs Each year",
@@ -2231,7 +2231,7 @@ window.dataQuizData = {
         {
             "id": 12,
             "type": "TF",
-            "q": "For each statement about data disaggregation ,Select True or False<br><span style='font-size: 15px; font-style: italic;'>Note: You will Receive partial credit for each correct selection</span><br><span style='font-size: 13px; color: #64748b;'>3 points</span>",
+            "q": "For each statement about data disaggregation ,Select True or False<br><span style='font-size: 13px; color: #64748b;'>3 points</span>",
             "options": [
                 "Data disaggregation provides a summary of data",
                 "Data disaggregation combines data from multiple sources",
@@ -2299,7 +2299,7 @@ window.dataQuizData = {
         {
             "id": 17,
             "type": "MCQ2",
-            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category<br><br> The data view must meet the following requirements:<br> * Include all products and their associated categories.<br> * Include sales subtotals for each category and year. <br> * Display a grand total of sales for each category.<br> * Create a summary of each category for every year.<br><br>Which <strong>two</strong> aggregation method should you use to create the data view (choose 2)<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category<br><br> The data view must meet the following requirements:<br> * Include all products and their associated categories.<br> * Include sales subtotals for each category and year. <br> * Display a grand total of sales for each category.<br> * Create a summary of each category for every year.<br><br>Which <strong>two</strong> aggregation method should you use to create the data view (choose 2)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Filtering",
                 "Pivoting",
@@ -2431,7 +2431,7 @@ window.dataQuizData = {
         {
             "id": 25,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Visually compare the database values to the CSV values.",
                 "Trim empty spaces from only the right side of the valid characters",
@@ -2471,7 +2471,7 @@ window.dataQuizData = {
         {
             "id": 28,
             "type": "MCQ2",
-            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each Correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Python",
                 "Microsoft Word",
@@ -2517,7 +2517,7 @@ window.dataQuizData = {
         {
             "id": 31,
             "type": "DROPDOWN",
-            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers. Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect.<br><br>For each statement about online and in-store purchases, select True if the statement is correct or False if the statement is incorrect.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
+            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers. Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect.<br><br>For each statement about online and in-store purchases, select True if the statement is correct or False if the statement is incorrect.<br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
             "img": "purchase_stats_chart.png",
             "code": "In-store customers spent more money than online customers: [b1]<br><br>Online customers have a larger variance in how much they spend: [b2]<br><br>The difference between the largest amount spent and the smallest amount spent is higher for in-store customers: [b3]<br><br>The amount spent the most often is the same for online and in-store customers: [b4]",
             "options": [
@@ -2663,7 +2663,7 @@ window.dataQuizData = {
         {
             "id": 1,
             "type": "TF",
-            "q": "For each statement about data mining, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about data mining, select True or False.",
             "options": [
                 "Data mining is used to find anomalies",
                 "Data mining is used to summarize raw data from large data sets",
@@ -2705,7 +2705,7 @@ window.dataQuizData = {
         {
             "id": 4,
             "type": "TF",
-            "q": "For each statement about data organization, select True or False<br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "For each statement about data organization, select True or False",
             "options": [
                 "Slicer can be used to filter the data",
                 "Sorts can be used to display a subset of data",
@@ -2721,7 +2721,7 @@ window.dataQuizData = {
         {
             "id": 5,
             "type": "MCQ2",
-            "q": "Which two chart types should you use to rank values in ascending or descending order ? (choose 2)<br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "Which two chart types should you use to rank values in ascending or descending order ? (choose 2)",
             "options": [
                 "Bar chart",
                 "Column chart",
@@ -2737,7 +2737,7 @@ window.dataQuizData = {
         {
             "id": 6,
             "type": "TF",
-            "q": "You have a data set of 100,000 rows. The data values fall within a standard range. The data has been cleaned to remove outliers. Approximately 100 rows of the data set contain NULL values in a numeric data column. You need to determine a best practice for handling the NULL values.<br><br>For each statement about handling NULL, select <strong>Yes</strong> if it is a best practice or <strong>No</strong> if it is not.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You have a data set of 100,000 rows. The data values fall within a standard range. The data has been cleaned to remove outliers. Approximately 100 rows of the data set contain NULL values in a numeric data column. You need to determine a best practice for handling the NULL values.<br><br>For each statement about handling NULL, select <strong>Yes</strong> if it is a best practice or <strong>No</strong> if it is not.",
             "options": [
                 "Remove the row that contains Null values",
                 "Remove each Null value with a random value",
@@ -2911,7 +2911,7 @@ window.dataQuizData = {
         {
             "id": 14,
             "type": "MCQ2",
-            "q": "In the United state and Europe which two data points are considered non-sensitive PII(personal identifiable information)? (choose 2)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "In the United state and Europe which two data points are considered non-sensitive PII(personal identifiable information)? (choose 2)",
             "options": [
                 "Bank account number",
                 "Medical records",
@@ -2953,7 +2953,7 @@ window.dataQuizData = {
         {
             "id": 17,
             "type": "MCQ3",
-            "q": "You are tasked with completing a data analysis project for a large organization. During the project, you must handle personally identifiable information (PII)<br><br>Throughout the project which three principle should you follow? (Choose 3)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are tasked with completing a data analysis project for a large organization. During the project, you must handle personally identifiable information (PII)<br><br>Throughout the project which three principle should you follow? (Choose 3)",
             "options": [
                 "Limit your handling of the PII to only what is necessary for the current analysis.",
                 "Remove all PII from your computer after the analysis is complete",
@@ -3142,7 +3142,7 @@ window.dataQuizData = {
         {
             "id": 30,
             "type": "MCQ3",
-            "q": "A domestic flight company wants to forecast flight delays and cancellations to provide the best experience to their customers Which three approaches would a data scientist use for this task? (Choose 3) Note. You will receive partial credit for each correct selection",
+            "q": "A domestic flight company wants to forecast flight delays and cancellations to provide the best experience to their customers Which three approaches would a data scientist use for this task? (Choose 3) ",
             "options": [
                 "Using structured data",
                 "Building predictive analysis models using machine learning",
@@ -3260,7 +3260,7 @@ window.dataQuizData = {
         {
             "id": 35,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Visually compare the database values to the CSV values.",
                 "Trim empty spaces from only the right side of the valid characters",

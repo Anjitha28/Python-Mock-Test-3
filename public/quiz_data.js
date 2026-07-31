@@ -57,7 +57,7 @@ const quizData = {
         {
             "id": 4,
             "type": "DROPDOWN",
-            "q": "You are developing a program that manages a list of product prices. The program must: • Add a new price (150) • Sort the list • Reverse the list <br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a program that manages a list of product prices. The program must: • Add a new price (150) • Sort the list • Reverse the list <br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "prices = [300, 200, 400]\n# Add new price\n[b1]\n# Sort prices\n[b2]\n# Reverse prices\n[b3]",
             "options": [
                 "prices.append(150)",
@@ -317,7 +317,7 @@ const quizData = {
         {
             "id": 2,
             "type": "DROPDOWN",
-            "q": "You are writing a program that must: • Accept a number from the user • Convert it to an integer • Multiply it by 2 <br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a program that must: • Accept a number from the user • Convert it to an integer • Multiply it by 2 <br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "num = [b1](\"Enter a number: \")\nresult = num * 2\nprint(result)",
             "options": [
                 "int(input)",
@@ -377,7 +377,7 @@ const quizData = {
         {
             "id": 6,
             "type": "DROPDOWN",
-            "q": "You are developing a program that: • Opens a file in read mode • Reads all contents • Prints the contents <br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a program that: • Opens a file in read mode • Reads all contents • Prints the contents <br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "file = open(\"info.txt\", \"[b1]\")\ndata = file.[b2]()\nprint(data)\nfile.close()",
             "options": [
                 [
@@ -881,7 +881,7 @@ const quizData = {
         {
             "id": 1,
             "type": "DROPDOWN",
-            "q": "You need to test whether an object is an instance of a specific class.<br>How should you set up the unit test?<br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 12px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You need to test whether an object is an instance of a specific class.<br>How should you set up the unit test?<br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "[b1] unittest\nclass TestIsInstance([b2]):\n    def [b3]\n        [b4]\n\nif __name__ == '__main__':\n    unittest.main()",
             "options": [
                 [
@@ -930,7 +930,7 @@ const quizData = {
         {
             "id": 3,
             "type": "DROPDOWN",
-            "q": "You are writing a program to randomly assign rooms (room_number) and team-building groups (group) for a company retreat.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a program to randomly assign rooms (room_number) and team-building groups (group) for a company retreat.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import random\nroomsAssigned=[1]\nroom_number=1\ngroupList=[\"Ropes\",\"Rafting\",\"Obstacle\",\"Wellness\"]\ncount=0\nprint(\"Welcome to CompanyPro's Team-Building Weekend!\")\nname=input(\"Please enter your name (q to quit)? \")\nwhile name.lower() != 'q' and count < 50:\n    while room_number in roomsAssigned:\n        [b1]\n    print(f\"{name}, your room number is {room_number}\")\n    roomsAssigned.append(room_number)\n    [b2]\n    print(f\"You are in the {group} group this afternoon.\")\n    name=input(\"Please enter your name (q to quit)? \")",
             "options": [
                 [
@@ -954,7 +954,7 @@ const quizData = {
         {
             "id": 4,
             "type": "DROPDOWN",
-            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Creates a file using the specified name.<br>• Appends the phrase \"End of listing\" to the file.<br><br>You need to complete the code to meet the requirements.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Creates a file using the specified name.<br>• Appends the phrase \"End of listing\" to the file.<br><br>You need to complete the code to meet the requirements.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import os\nfile = [b1]\n    [b2](\"End of listing\")\nfile.close()",
             "options": [
                 [
@@ -1003,7 +1003,7 @@ const quizData = {
         {
             "id": 6,
             "type": "DROPDOWN",
-            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Checks to see whether a file exists.<br>• If the file exists, displays its contents.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Checks to see whether a file exists.<br>• If the file exists, displays its contents.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import os\nif [b1]\n    file = open('myFile.txt')\n    [b2]\n    file.close()",
             "options": [
                 [
@@ -1027,7 +1027,7 @@ const quizData = {
         {
             "id": 7,
             "type": "DND",
-            "q": "You are developing a program that prints all prime numbers between 2 and 100. The program must:\n• Loop through numbers from 2 to 100.\n• Determine whether each number is prime.\n• Stop checking a number once a divisor is found.\n\nComplete the code by dragging the correct code segments to the correct placement. <br><span style='font-size: 15px; font-style: italic;'>Note: Each code segment may be used once, more than once, or not at all. You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a program that prints all prime numbers between 2 and 100. The program must:\n• Loop through numbers from 2 to 100.\n• Determine whether each number is prime.\n• Stop checking a number once a divisor is found.\n\nComplete the code by dragging the correct code segments to the correct placement. <br><span style='font-size: 15px; font-style: italic;'>Note: Each code segment may be used once, more than once, or not at all.</span>",
             "code": "[target1]\n    for i in range(2, p):\n        if p % i == 0:\n            is_prime = False\n            [target2]\n    if is_prime == True:\n        print(p)\n    [target3]",
             "options": [
                 "break",
@@ -1079,7 +1079,7 @@ const quizData = {
         {
             "id": 10,
             "type": "TF",
-            "q": "For each statement about the following function, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about the following function, select True or False.",
             "code": "def grosspay(hours=40, rate=25, pieces=0, piecerate=0, salary=0):\n    overtime=0\n    if pieces > 0:\n        return pieces * piecerate\n    if salary > 0:\n        pass\n    if hours > 40:\n        overtime = (hours - 40) * (1.5 * rate)\n        return overtime + (40 * rate)\n    else:\n        return hours * rate",
             "options": [
                 "A function call of grosspay() will create a syntax error.",
@@ -1095,7 +1095,7 @@ const quizData = {
         {
             "id": 11,
             "type": "DROPDOWN",
-            "q": "You are writing code to meet the following requirements:<br><br>• Allow users to repeatedly enter words.<br>• Output the number of characters in each word.<br><br>Complete the code by selecting the correct option from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing code to meet the following requirements:<br><br>• Allow users to repeatedly enter words.<br>• Output the number of characters in each word.<br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "x = \"Hello\"\n[b1] x != \"QUIT\":\n    num = 0\n    [b2] char [b3] x:\n        num += 1\n    print(num)\n    x = input(\"Enter a new word or QUIT to exit: \")",
             "options": [
                 [
@@ -1124,7 +1124,7 @@ const quizData = {
         {
             "id": 12,
             "type": "TF",
-            "q": "You are creating a Python program that compares numbers. You need to ensure that the comparisons are accurate.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating a Python program that compares numbers. You need to ensure that the comparisons are accurate.<br><br>For each statement, select True or False.",
             "code": "01 num1 = eval(input(\"Please enter the first number: \"))\n02 num2 = eval(input(\"Please enter the second number: \"))\n03 if num1 == num2:\n04     print(\"The two numbers are equal.\")\n05 if num1 <= num2:\n06     print(\"Number 1 is less than number 2.\")\n07 if num1 > num2:\n08     print(\"Number 1 is greater than number 2.\")\n09 if num2 = num1:\n10     print(\"The two numbers are the same.\")",
             "options": [
                 "The print statement at line 04 will print only if the two numbers are equal in value.",
@@ -1142,7 +1142,7 @@ const quizData = {
         {
             "id": 13,
             "type": "DROPDOWN",
-            "q": "A game development company needs a way to find the number of words in a list that contain a specific letter.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A game development company needs a way to find the number of words in a list that contain a specific letter.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "# Function accepts list of words and letter to search for.\n# Returns count of the number of words that contain that letter.\ndef count_letter(letter, word_list):\n    count = 0\n    \n    for [b1]\n        if [b2]\n            count += 1\n    return count\n\n# word_list is populated by the readWords() function. Code not shown.\nword_list = readWords()\n\nletter = input(\"Which letter would you like to count\")\nletter_count = count_letter(letter, word_list)\nprint(\"There are: \", letter_count, \" words that contain \", letter)",
             "options": [
                 [
@@ -1186,7 +1186,7 @@ const quizData = {
         {
             "id": 15,
             "type": "DROPDOWN",
-            "q": "You are creating a function to calculate admission fees (admission_fee) based on the following rules:<br><br>• Anyone under age 5 = free admission<br>• Anyone age 5 or older who is in school = $10<br>• Anyone age 5 to 17 who is not in school = $20<br>• Anyone older than age 17 who is not in school = $50<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating a function to calculate admission fees (admission_fee) based on the following rules:<br><br>• Anyone under age 5 = free admission<br>• Anyone age 5 or older who is in school = $10<br>• Anyone age 5 to 17 who is not in school = $20<br>• Anyone older than age 17 who is not in school = $50<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "def admission_fee(age, school):\n    rate = 0\n    [b1]\n        rate = 10\n    [b2]\n        [b3]\n            rate = 20\n        else:\n            rate = 50\n    return rate",
             "options": [
                 [
@@ -1226,7 +1226,7 @@ const quizData = {
         {
             "id": 17,
             "type": "DROPDOWN",
-            "q": "A coworker wrote a program that inputs names into a database. Unfortunately, the program reversed the letters in each name.<br><br>You need to write a Python function that outputs the characters in a name in the correct order.<br><br>Complete the code by selecting the code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A coworker wrote a program that inputs names into a database. Unfortunately, the program reversed the letters in each name.<br><br>You need to write a Python function that outputs the characters in a name in the correct order.<br><br>Complete the code by selecting the code segment from each drop-down list.",
             "code": "#Function reverses characters in a string.\n#returns new string in reversed order.\n\ndef reverse_name(backward_name):\n    forward_name = \"\"\n    length = [b1]\n    while length >= 0:\n        forward_name += [b2]\n        length = length-1\n    return forward_name\n\nprint(reverse_name(\"nohtyp\"))",
             "options": [
                 [
@@ -1250,7 +1250,7 @@ const quizData = {
         {
             "id": 18,
             "type": "TF",
-            "q": "You create the following Python function to calculate the power of a number. Line numbers are included for reference only.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You create the following Python function to calculate the power of a number. Line numbers are included for reference only.<br><br>For each statement, select True or False.",
             "code": "01 # The calc_power function calculates exponents\n02 # x is the base\n03 # y is the exponent\n04 # The value of x raised to the y power is returned\n05 def calc_power(x, y):\n06     comment = \"# Return the value\"\n07     return x ** y # raise x to the y power",
             "options": [
                 "Python will not check the syntax of lines 01 through 04.",
@@ -1309,7 +1309,7 @@ const quizData = {
         {
             "id": 22,
             "type": "DROPDOWN",
-            "q": "You are writing a Python program for a weather app to determine if a temperature (temp) is Freezing, Cold, or Warm.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a Python program for a weather app to determine if a temperature (temp) is Freezing, Cold, or Warm.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "temp = int(input(\"Enter the temperature: \"))\nstatus = \"Unknown\"\n[b1]\n    status = \"Freezing\"\n[b2]\n    status = \"Cold\"\n[b3]\n    status = \"Warm\"\nprint(\"It is \" + status + \".\")",
             "options": [
                 [
@@ -1372,7 +1372,7 @@ const quizData = {
         {
             "id": 25,
             "type": "MCQ2",
-            "q": "A fitness company is creating a program that allows runners to log their steps. The program will calculate the distance run based on stride length.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A fitness company is creating a program that allows runners to log their steps. The program will calculate the distance run based on stride length.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)",
             "code": "01\n02     name = input(\"What is your name? \")\n03     return name\n04\n05     distance = steps * stride_length\n06     return distance\n07 step_count = int(input(\"How many steps did you run? \"))\n08 stride = 2.5\n09 runner = get_runner()\n10 total_distance = calc_distance(step_count, stride)\n11 print(runner, \", you ran \", total_distance, \" feet.\")",
             "options": [
                 "01 def get_runner():",
@@ -1420,7 +1420,7 @@ const quizData = {
         {
             "id": 28,
             "type": "TF",
-            "q": "The following function calculates a discounted price. Line numbers are included for reference only.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "The following function calculates a discounted price. Line numbers are included for reference only.<br><br>For each statement, select True or False.",
             "code": "01 def calc_discount(price, pct):\n02     return price - (price * pct)\n03 retail = input(\"Enter the retail price: \")\n04 discount = input(\"Enter the discount decimal: \")\n05 result = calc_discount(retail, discount)\n06 print(\"The final price is \" + str(result))",
             "options": [
                 "The code will generate a TypeError in line 03 and line 04.",
@@ -1451,7 +1451,7 @@ const quizData = {
         {
             "id": 30,
             "type": "MCQ2",
-            "q": "You are creating an HR script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>name = input(\"Enter employee name: \")<br>age = int(input(\"Enter age: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating an HR script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>name = input(\"Enter employee name: \")<br>age = int(input(\"Enter age: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)",
             "options": [
                 "print('\"' + name + '\",' , age)",
                 "print('\"{0}\",{1}'.format(name, age))",
@@ -1656,7 +1656,7 @@ const quizData = {
         {
             "id": 2,
             "type": "DROPDOWN",
-            "q": "You are writing a Python program to determine if a number (num) the user inputs is one, two, or more than two digits (digits).<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a Python program to determine if a number (num) the user inputs is one, two, or more than two digits (digits).<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "num = int(input(\"Enter a number with 1 or 2 digits: \"))\ndigits = \"0\"\n[b1]\n    digits = \"1\"\n[b2]\n    digits = \"2\"\n[b3]\n    digits = \">2\"\nprint(digits + \" digits.\")",
             "options": [
                 [
@@ -1719,7 +1719,7 @@ const quizData = {
         {
             "id": 5,
             "type": "MCQ2",
-            "q": "A bicycle company is creating a program that allows customers to log the number of miles biked. The program will send messages based on how many miles the customer logs.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A bicycle company is creating a program that allows customers to log the number of miles biked. The program will send messages based on how many miles the customer logs.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)",
             "code": "01\n02     name = input(\"What is your name? \")\n03     return name\n04\n05     calories = miles * calories_per_mile\n06     return calories\n07 distance = int(input(\"How many miles did you bike this week? \"))\n08 burn_rate = 50\n09 biker = get_name()\n10 calories_burned = calc_calories(distance, burn_rate)\n11 print(biker, \", you burned about \", calories_burned, \" calories.\")",
             "options": [
                 "01 def get_name():",
@@ -1767,7 +1767,7 @@ const quizData = {
         {
             "id": 8,
             "type": "TF",
-            "q": "The following function calculates the value of an expression that uses an exponent. Line numbers are included for reference only.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "The following function calculates the value of an expression that uses an exponent. Line numbers are included for reference only.<br><br>For each statement, select True or False.",
             "code": "01 def calc_power(a, b):\n02     return a**b\n03 base = input(\"Enter the number for the base: \")\n04 exponent = input(\"Enter the number for the exponent: \")\n05 result = calc_power(base, exponent)\n06 print(\"The result is \" + result)",
             "options": [
                 "The code will generate an error in line 03 and line 04.",
@@ -1798,7 +1798,7 @@ const quizData = {
         {
             "id": 10,
             "type": "MCQ2",
-            "q": "You are creating an eCommerce script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>item = input(\"Enter the item name: \")<br>sales = int(input(\"Enter the quantity: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating an eCommerce script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>item = input(\"Enter the item name: \")<br>sales = int(input(\"Enter the quantity: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)",
             "options": [
                 "print('\"' + item + '\",' , sales)",
                 "print('\"{0}\",{1}'.format(item, sales))",
@@ -1986,7 +1986,7 @@ const quizData = {
         {
             "id": 21,
             "type": "DROPDOWN",
-            "q": "You are developing a Python program that stores log information in a file. The program must:<br>• Open a file named log.txt<br>• Append new messages without deleting existing data<br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 12px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a Python program that stores log information in a file. The program must:<br>• Open a file named log.txt<br>• Append new messages without deleting existing data<br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "file = open(\"log.txt\", \"[b1]\")\nfile.[b2](\"System started\")\nfile.close()",
             "options": [
                 [
@@ -2035,7 +2035,7 @@ const quizData = {
         {
             "id": 24,
             "type": "DROPDOWN",
-            "q": "You are creating a program that stores student marks. The program must:<br>• Add a new mark to the list<br>• Sort the list<br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 12px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating a program that stores student marks. The program must:<br>• Add a new mark to the list<br>• Sort the list<br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "marks = [70, 85, 60]\nmarks.[b1](90)\nmarks.[b2]()\nprint(marks)",
             "options": [
                 [
@@ -2075,7 +2075,7 @@ const quizData = {
         {
             "id": 26,
             "type": "DROPDOWN",
-            "q": "You are developing a Python program that reads data from a file. The program must:<br>• Check if the file records.txt exists.<br>• Read and print its contents if it exists.<br><br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 12px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a Python program that reads data from a file. The program must:<br>• Check if the file records.txt exists.<br>• Read and print its contents if it exists.<br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "import os\nif [b1](\"records.txt\"):\n    file = open(\"records.txt\",\"r\")\n    print(file.[b2]())\n    file.close()",
             "options": [
                 [
@@ -2285,7 +2285,7 @@ const quizData = {
         {
             "id": 1,
             "type": "DROPDOWN",
-            "q": "You need to test whether an object is an instance of a specific class.<br>How should you set up the unit test?<br>Complete the code by selecting the correct option from each drop-down list.<br><span style='font-size: 12px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You need to test whether an object is an instance of a specific class.<br>How should you set up the unit test?<br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "[b1] unittest\nclass TestIsInstance([b2]):\n    def [b3]\n        [b4]\n\nif __name__ == '__main__':\n    unittest.main()",
             "options": [
                 [
@@ -2334,7 +2334,7 @@ const quizData = {
         {
             "id": 3,
             "type": "DROPDOWN",
-            "q": "You are writing a program to randomly assign rooms (room_number) and team-building groups (group) for a company retreat.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a program to randomly assign rooms (room_number) and team-building groups (group) for a company retreat.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import random\nroomsAssigned=[1]\nroom_number=1\ngroupList=[\"Ropes\",\"Rafting\",\"Obstacle\",\"Wellness\"]\ncount=0\nprint(\"Welcome to CompanyPro's Team-Building Weekend!\")\nname=input(\"Please enter your name (q to quit)? \")\nwhile name.lower() != 'q' and count < 50:\n    while room_number in roomsAssigned:\n        [b1]\n    print(f\"{name}, your room number is {room_number}\")\n    roomsAssigned.append(room_number)\n    [b2]\n    print(f\"You are in the {group} group this afternoon.\")\n    name=input(\"Please enter your name (q to quit)? \")",
             "options": [
                 [
@@ -2358,7 +2358,7 @@ const quizData = {
         {
             "id": 4,
             "type": "DROPDOWN",
-            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Creates a file using the specified name.<br>• Appends the phrase \"End of listing\" to the file.<br><br>You need to complete the code to meet the requirements.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Creates a file using the specified name.<br>• Appends the phrase \"End of listing\" to the file.<br><br>You need to complete the code to meet the requirements.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import os\nfile = [b1]\n    [b2](\"End of listing\")\nfile.close()",
             "options": [
                 [
@@ -2407,7 +2407,7 @@ const quizData = {
         {
             "id": 6,
             "type": "DROPDOWN",
-            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Checks to see whether a file exists.<br>• If the file exists, displays its contents.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A company needs help updating their file system. You must create a simple file-manipulation program that performs the following actions:<br><br>• Checks to see whether a file exists.<br>• If the file exists, displays its contents.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "import os\nif [b1]\n    file = open('myFile.txt')\n    [b2]\n    file.close()",
             "options": [
                 [
@@ -2431,7 +2431,7 @@ const quizData = {
         {
             "id": 7,
             "type": "DND",
-            "q": "You are developing a program that prints all prime numbers between 2 and 100. The program must:\n• Loop through numbers from 2 to 100.\n• Determine whether each number is prime.\n• Stop checking a number once a divisor is found.\n\nComplete the code by dragging the correct code segments to the correct placement. <br><span style='font-size: 15px; font-style: italic;'>Note: Each code segment may be used once, more than once, or not at all. You will receive partial credit for each correct selection.</span>",
+            "q": "You are developing a program that prints all prime numbers between 2 and 100. The program must:\n• Loop through numbers from 2 to 100.\n• Determine whether each number is prime.\n• Stop checking a number once a divisor is found.\n\nComplete the code by dragging the correct code segments to the correct placement. <br><span style='font-size: 15px; font-style: italic;'>Note: Each code segment may be used once, more than once, or not at all.</span>",
             "code": "[target1]\n    for i in range(2, p):\n        if p % i == 0:\n            is_prime = False\n            [target2]\n    if is_prime == True:\n        print(p)\n    [target3]",
             "options": [
                 "break",
@@ -2483,7 +2483,7 @@ const quizData = {
         {
             "id": 10,
             "type": "TF",
-            "q": "For each statement about the following function, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about the following function, select True or False.",
             "code": "def grosspay(hours=40, rate=25, pieces=0, piecerate=0, salary=0):\n    overtime=0\n    if pieces > 0:\n        return pieces * piecerate\n    if salary > 0:\n        pass\n    if hours > 40:\n        overtime = (hours - 40) * (1.5 * rate)\n        return overtime + (40 * rate)\n    else:\n        return hours * rate",
             "options": [
                 "A function call of grosspay() will create a syntax error.",
@@ -2499,7 +2499,7 @@ const quizData = {
         {
             "id": 11,
             "type": "DROPDOWN",
-            "q": "You are writing code to meet the following requirements:<br><br>• Allow users to repeatedly enter words.<br>• Output the number of characters in each word.<br><br>Complete the code by selecting the correct option from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing code to meet the following requirements:<br><br>• Allow users to repeatedly enter words.<br>• Output the number of characters in each word.<br><br>Complete the code by selecting the correct option from each drop-down list.",
             "code": "x = \"Hello\"\n[b1] x != \"QUIT\":\n    num = 0\n    [b2] char [b3] x:\n        num += 1\n    print(num)\n    x = input(\"Enter a new word or QUIT to exit: \")",
             "options": [
                 [
@@ -2528,7 +2528,7 @@ const quizData = {
         {
             "id": 12,
             "type": "TF",
-            "q": "You are creating a Python program that compares numbers. You need to ensure that the comparisons are accurate.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating a Python program that compares numbers. You need to ensure that the comparisons are accurate.<br><br>For each statement, select True or False.",
             "code": "01 num1 = eval(input(\"Please enter the first number: \"))\n02 num2 = eval(input(\"Please enter the second number: \"))\n03 if num1 == num2:\n04     print(\"The two numbers are equal.\")\n05 if num1 <= num2:\n06     print(\"Number 1 is less than number 2.\")\n07 if num1 > num2:\n08     print(\"Number 1 is greater than number 2.\")\n09 if num2 = num1:\n10     print(\"The two numbers are the same.\")",
             "options": [
                 "The print statement at line 04 will print only if the two numbers are equal in value.",
@@ -2546,7 +2546,7 @@ const quizData = {
         {
             "id": 13,
             "type": "DROPDOWN",
-            "q": "A game development company needs a way to find the number of words in a list that contain a specific letter.<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A game development company needs a way to find the number of words in a list that contain a specific letter.<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "# Function accepts list of words and letter to search for.\n# Returns count of the number of words that contain that letter.\ndef count_letter(letter, word_list):\n    count = 0\n    \n    for [b1]\n        if [b2]\n            count += 1\n    return count\n\n# word_list is populated by the readWords() function. Code not shown.\nword_list = readWords()\n\nletter = input(\"Which letter would you like to count\")\nletter_count = count_letter(letter, word_list)\nprint(\"There are: \", letter_count, \" words that contain \", letter)",
             "options": [
                 [
@@ -2590,7 +2590,7 @@ const quizData = {
         {
             "id": 15,
             "type": "DROPDOWN",
-            "q": "You are creating a function to calculate admission fees (admission_fee) based on the following rules:<br><br>• Anyone under age 5 = free admission<br>• Anyone age 5 or older who is in school = $10<br>• Anyone age 5 to 17 who is not in school = $20<br>• Anyone older than age 17 who is not in school = $50<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating a function to calculate admission fees (admission_fee) based on the following rules:<br><br>• Anyone under age 5 = free admission<br>• Anyone age 5 or older who is in school = $10<br>• Anyone age 5 to 17 who is not in school = $20<br>• Anyone older than age 17 who is not in school = $50<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "def admission_fee(age, school):\n    rate = 0\n    [b1]\n        rate = 10\n    [b2]\n        [b3]\n            rate = 20\n        else:\n            rate = 50\n    return rate",
             "options": [
                 [
@@ -2630,7 +2630,7 @@ const quizData = {
         {
             "id": 17,
             "type": "DROPDOWN",
-            "q": "A coworker wrote a program that inputs names into a database. Unfortunately, the program reversed the letters in each name.<br><br>You need to write a Python function that outputs the characters in a name in the correct order.<br><br>Complete the code by selecting the code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A coworker wrote a program that inputs names into a database. Unfortunately, the program reversed the letters in each name.<br><br>You need to write a Python function that outputs the characters in a name in the correct order.<br><br>Complete the code by selecting the code segment from each drop-down list.",
             "code": "#Function reverses characters in a string.\n#returns new string in reversed order.\n\ndef reverse_name(backward_name):\n    forward_name = \"\"\n    length = [b1]\n    while length >= 0:\n        forward_name += [b2]\n        length = length-1\n    return forward_name\n\nprint(reverse_name(\"nohtyp\"))",
             "options": [
                 [
@@ -2654,7 +2654,7 @@ const quizData = {
         {
             "id": 18,
             "type": "TF",
-            "q": "You create the following Python function to calculate the power of a number. Line numbers are included for reference only.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You create the following Python function to calculate the power of a number. Line numbers are included for reference only.<br><br>For each statement, select True or False.",
             "code": "01 # The calc_power function calculates exponents\n02 # x is the base\n03 # y is the exponent\n04 # The value of x raised to the y power is returned\n05 def calc_power(x, y):\n06     comment = \"# Return the value\"\n07     return x ** y # raise x to the y power",
             "options": [
                 "Python will not check the syntax of lines 01 through 04.",
@@ -2713,7 +2713,7 @@ const quizData = {
         {
             "id": 22,
             "type": "DROPDOWN",
-            "q": "You are writing a Python program to determine if a number (num) the user inputs is one, two, or more than two digits (digits).<br><br>Complete the code by selecting the correct code segment from each drop-down list.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are writing a Python program to determine if a number (num) the user inputs is one, two, or more than two digits (digits).<br><br>Complete the code by selecting the correct code segment from each drop-down list.",
             "code": "num = int(input(\"Enter a number with 1 or 2 digits: \"))\ndigits = \"0\"\n[b1]\n    digits = \"1\"\n[b2]\n    digits = \"2\"\n[b3]\n    digits = \">2\"\nprint(digits + \" digits.\")",
             "options": [
                 [
@@ -2776,7 +2776,7 @@ const quizData = {
         {
             "id": 25,
             "type": "MCQ2",
-            "q": "A bicycle company is creating a program that allows customers to log the number of miles biked. The program will send messages based on how many miles the customer logs.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A bicycle company is creating a program that allows customers to log the number of miles biked. The program will send messages based on how many miles the customer logs.<br><br>You write the following Python code. Line numbers are included for reference only.<br><br>You need to define the two required functions.<br><br>Which two code segments should you use for line 01 and line 04? Each correct answer presents part of the solution. (Choose 2.)",
             "code": "01\n02     name = input(\"What is your name? \")\n03     return name\n04\n05     calories = miles * calories_per_mile\n06     return calories\n07 distance = int(input(\"How many miles did you bike this week? \"))\n08 burn_rate = 50\n09 biker = get_name()\n10 calories_burned = calc_calories(distance, burn_rate)\n11 print(biker, \", you burned about \", calories_burned, \" calories.\")",
             "options": [
                 "01 def get_name():",
@@ -2824,7 +2824,7 @@ const quizData = {
         {
             "id": 28,
             "type": "TF",
-            "q": "The following function calculates the value of an expression that uses an exponent. Line numbers are included for reference only.<br><br>For each statement, select True or False.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "The following function calculates the value of an expression that uses an exponent. Line numbers are included for reference only.<br><br>For each statement, select True or False.",
             "code": "01 def calc_power(a, b):\n02     return a**b\n03 base = input(\"Enter the number for the base: \")\n04 exponent = input(\"Enter the number for the exponent: \")\n05 result = calc_power(base, exponent)\n06 print(\"The result is \" + result)",
             "options": [
                 "The code will generate an error in line 03 and line 04.",
@@ -2855,7 +2855,7 @@ const quizData = {
         {
             "id": 30,
             "type": "MCQ2",
-            "q": "You are creating an eCommerce script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>item = input(\"Enter the item name: \")<br>sales = int(input(\"Enter the quantity: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are creating an eCommerce script that accepts input from the user and outputs the data in a comma-delimited format.<br><br>You write the following code to accept input:<br><br><code>item = input(\"Enter the item name: \")<br>sales = int(input(\"Enter the quantity: \"))</code><br><br>The output must meet the following requirements:<br>• Enclose strings in double quotes.<br>• Do not enclose numbers in quotes or other characters.<br>• Separate items by commas.<br><br>You need to complete the code to meet the requirements.<br><br>Which two code segments could you use? Each correct answer presents a complete solution. (Choose 2.)",
             "options": [
                 "print('\"' + item + '\",' , sales)",
                 "print('\"{0}\",{1}'.format(item, sales))",
@@ -4475,7 +4475,7 @@ const quizData = {
             "id": 2,
             "marks": 2,
             "type": "MCQ2",
-            "q": "(2 Marks) You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category.<br><br>The data view must meet the following requirements:<br>• Include all products and their associated categories.<br>• Include sales subtotals for each category and year.<br>• Display a grand total of sales for each category.<br>• Create a summary of each category for every year.<br><br>Which two aggregation methods should you use to create the data view? (Choose 2)<br><span style='font-size:15px; font-style:italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "(2 Marks) You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category.<br><br>The data view must meet the following requirements:<br>• Include all products and their associated categories.<br>• Include sales subtotals for each category and year.<br>• Display a grand total of sales for each category.<br>• Create a summary of each category for every year.<br><br>Which two aggregation methods should you use to create the data view? (Choose 2)",
             "options": [
                 "Filtering",
                 "Pivoting",
@@ -4504,7 +4504,7 @@ const quizData = {
             "id": 4,
             "marks": 2,
             "type": "MCQ2",
-            "q": "(2 Marks) Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which two resources can you use? (Choose 2)<br><span style='font-size:15px; font-style:italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "(2 Marks) Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which two resources can you use? (Choose 2)",
             "options": [
                 "Json",
                 "Power Query for Excel (M)",
@@ -4533,7 +4533,7 @@ const quizData = {
             "id": 6,
             "marks": 3,
             "type": "TF",
-            "q": "(3 Marks) For each statement about data disaggregation, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "(3 Marks) For each statement about data disaggregation, select True or False.",
             "options": [
                 "Data disaggregation provides a summary of the data",
                 "Data disaggregation combines data from different sources",
@@ -4549,7 +4549,7 @@ const quizData = {
             "id": 7,
             "marks": 2,
             "type": "MCQ2",
-            "q": "(2 Marks) A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values. You need to troubleshoot the problem. You look at the data in the original CSV file and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash(-) and two letters.<br><br>Which two actions should you complete next? (Choose 2)<br><span style='font-size:15px; font-style:italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "(2 Marks) A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values. You need to troubleshoot the problem. You look at the data in the original CSV file and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash(-) and two letters.<br><br>Which two actions should you complete next? (Choose 2)",
             "options": [
                 "Verify that the data in the database was imported as a numeric data type",
                 "Trim empty spaces from both of the valid characters",
@@ -4589,7 +4589,7 @@ const quizData = {
             "id": 9,
             "marks": 3,
             "type": "DROPDOWN",
-            "q": "(3 Marks) Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br>Complete the sentences about data organization by selecting the correct option from each drop-down list.<br><br><img src='promotional_items_table.png' style='max-width:100%; border:1px solid #e5e7eb; border-radius:6px; margin-bottom:14px;'><br>Can arrange distributed items from highest to lowest: [b1]<br><br>Can limit the display of distributed items to grater than 500: [b2]<br><br>Can limit the display of promotional items to shuffled animals and T-shirt: [b3]<br><br><span style='font-size:15px; font-style:italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "(3 Marks) Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br>Complete the sentences about data organization by selecting the correct option from each drop-down list.<br><br><img src='promotional_items_table.png' style='max-width:100%; border:1px solid #e5e7eb; border-radius:6px; margin-bottom:14px;'><br>Can arrange distributed items from highest to lowest: [b1]<br><br>Can limit the display of distributed items to grater than 500: [b2]<br><br>Can limit the display of promotional items to shuffled animals and T-shirt: [b3]",
             "options": [
                 [
                     "Appending",
@@ -4777,7 +4777,7 @@ const quizData = {
             "id": 1,
             "marks": 3,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False.<br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (3 Marks)",
+            "q": "The visualization and data table depict housing price in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False.(3 Marks)",
             "img": "housing_prices_v2_professional.png",
             "options": [
                 "An increase of $25000 occurs Each year",
@@ -4794,7 +4794,7 @@ const quizData = {
             "id": 2,
             "marks": 3,
             "type": "TF",
-            "q": "The professional visualization and data table below depict housing prices in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False<br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (3 Marks)",
+            "q": "The professional visualization and data table below depict housing prices in a region. Review the visual patterns and the data set carefully.<br><br>For each statement about the visualization, select True or False(3 Marks)",
             "img": "housing_prices_professional.png",
             "options": [
                 "The visualization accurately depicts the housing prices shown in the table",
@@ -4826,7 +4826,7 @@ const quizData = {
             "id": 4,
             "marks": 1,
             "type": "MCQ2",
-            "q": "Which two chart types should you use to rank values in ascending or descending order? (choose 2)<br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection</span> (1 Mark)",
+            "q": "Which two chart types should you use to rank values in ascending or descending order? (choose 2)(1 Mark)",
             "options": [
                 "Bar chart",
                 "Column chart",
@@ -4944,7 +4944,7 @@ const quizData = {
             "id": 12,
             "marks": 4,
             "type": "TF",
-            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers.<br><br>Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect. Select True if the statement is correct or False if the statement is incorrect.<br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection.</span> (4 Marks)",
+            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers.<br><br>Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect. Select True if the statement is correct or False if the statement is incorrect.(4 Marks)",
             "img": "purchase_stats_comparison.png",
             "options": [
                 "In-store customers spent more money than online customers.",
@@ -5327,7 +5327,7 @@ const quizData = {
             "id": 16,
             "marks": 3,
             "type": "TF",
-            "q": "For each statement about machine learning, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span> (3 Marks)",
+            "q": "For each statement about machine learning, select True or False.(3 Marks)",
             "options": [
                 "Machine learning can help determine whether a candidate will pass an exam without looking at historical scores.",
                 "Machine learning can be used to automatically decline financial purchases based on previous purchase activity.",
@@ -5343,7 +5343,7 @@ const quizData = {
             "id": 17,
             "marks": 1,
             "type": "MCQ3",
-            "q": "Select three ways that machine learning algorithms are used in data analysis.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 3.)</span> (1 Mark)",
+            "q": "Select three ways that machine learning algorithms are used in data analysis.<br><span style='font-size: 15px; font-style: italic;'> (Choose 3.)</span> (1 Mark)",
             "options": [
                 "Time Series Analysis",
                 "Anomaly Detection",
@@ -5378,7 +5378,7 @@ const quizData = {
             "id": 19,
             "marks": 2,
             "type": "TF",
-            "q": "For each statement about <b>data mining</b>, select True if the statement is correct or False if it is incorrect. <br><br><span style='font-size:12px;font-style:italic;'>Note: You will receive partial credit for each correct selection.</span> (2 Marks)",
+            "q": "For each statement about <b>data mining</b>, select True if the statement is correct or False if it is incorrect. (2 Marks)",
             "options": [
                 "Data mining is used to summarize raw data from large data sets",
                 "Data mining is used to review underlying details in a given table"
@@ -5392,7 +5392,7 @@ const quizData = {
             "id": 20,
             "marks": 1,
             "type": "MCQ2",
-            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use?<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span> (1 Mark)",
+            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use?<br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span> (1 Mark)",
             "options": [
                 "Python",
                 "Microsoft Word",
@@ -5598,7 +5598,7 @@ const quizData = {
         {
             "id": 1,
             "type": "MCQ2",
-            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company’s stores. Each product belongs to one category. For example milk belongs to dairy category. <br><br>The data view must meet the following requirements:<br>• Include all products and their associated categories<br>• Include sales sub-total for each category and year<br>• Display grand total of sales for each category<br>• Create a summary of each category for every year<br><br>Which <b>two</b> aggregation methods should you use to create the data view? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company’s stores. Each product belongs to one category. For example milk belongs to dairy category. <br><br>The data view must meet the following requirements:<br>• Include all products and their associated categories<br>• Include sales sub-total for each category and year<br>• Display grand total of sales for each category<br>• Create a summary of each category for every year<br><br>Which <b>two</b> aggregation methods should you use to create the data view? (Choose 2)",
             "options": [
                 "Pivoting",
                 "Filtering",
@@ -5808,7 +5808,7 @@ const quizData = {
         {
             "id": 15,
             "type": "TF",
-            "q": "The visualization and the data table depict housing prices in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "The visualization and the data table depict housing prices in a region. For each statement about the visualization, select True or False.",
             "img": "housing_prices_color_final.png",
             "options": [
                 "An annual increase of $25,000 occurs between 2016 and 2025",
@@ -5859,7 +5859,7 @@ const quizData = {
         {
             "id": 18,
             "type": "MCQ2",
-            "q": "Which two concepts are commonly associated with artificial intelligence (AI) in data analytics?<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span>",
+            "q": "Which two concepts are commonly associated with artificial intelligence (AI) in data analytics?<br><br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span>",
             "options": [
                 "Cost-Benefit Analysis",
                 "Stakeholder Mapping",
@@ -5886,7 +5886,7 @@ const quizData = {
         {
             "id": 20,
             "type": "MCQ2",
-            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which <b>two</b> resources can you use? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "Each month you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationship between the two XML documents.<br><br>Which <b>two</b> resources can you use? (Choose 2)",
             "options": [
                 "Json",
                 "Power Query for Excel (M)",
@@ -5914,7 +5914,7 @@ const quizData = {
         {
             "id": 22,
             "type": "TF",
-            "q": "For each statement about the machine learning select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about the machine learning select True or False.",
             "options": [
                 "Machine learning can predict the probability of Rain in a region by examining known weather patterns",
                 "Machine Learning can be used to automatically decline financial purchases based on previous purchase activity",
@@ -5991,7 +5991,7 @@ const quizData = {
         {
             "id": 28,
             "type": "TF",
-            "q": "<strong>Data Disaggregation:</strong> For each statement about data disaggregation, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "<strong>Data Disaggregation:</strong> For each statement about data disaggregation, select True or False.",
             "options": [
                 "Data disaggregation combines data from different sources",
                 "Data disaggregation provides a summary of the data",
@@ -6006,7 +6006,7 @@ const quizData = {
         {
             "id": 29,
             "type": "MCQ2",
-            "q": "For which two reasons is it risky to make generalizations from limited sample data?<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection. (Choose 2.)</span>",
+            "q": "For which two reasons is it risky to make generalizations from limited sample data?<br><br><span style='font-size: 15px; font-style: italic;'> (Choose 2.)</span>",
             "options": [
                 "Limited data Samples are easier to collect",
                 "A limited sample may not represent a larger population",
@@ -6118,7 +6118,7 @@ const quizData = {
         {
             "id": 38,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You troubleshoot the problem and find that the <b>RowKey</b> values in TableA and the <b>RowID</b> values in TableB look identical (e.g., three numbers, a dash, and two letters).<br><br>Which <b>two</b> actions should you complete next? (Choose 2)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "A coworker is having trouble joining two database tables, Table A and Table B, that were imported from CSV files. They say the tables have no common values.<br><br>You troubleshoot the problem and find that the <b>RowKey</b> values in TableA and the <b>RowID</b> values in TableB look identical (e.g., three numbers, a dash, and two letters).<br><br>Which <b>two</b> actions should you complete next? (Choose 2)",
             "options": [
                 "Verify that the data in the database was imported as a numeric data type",
                 "Trim empty spaces from both of the valid characters",
@@ -6159,7 +6159,7 @@ const quizData = {
         {
             "id": 2,
             "type": "DROPDOWN",
-            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers. Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect.<br><br>For each statement about online and in-store purchases, select True if the statement is correct or False if the statement is incorrect.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
+            "q": "You are analyzing statistics for online and in-store purchases with data collected over the past year. Data collected includes surveys from 300 instore customers and 300 online customers. Based on the data visualization below, identify which statements about customer purchases over the last year are correct and which statements are incorrect.<br><br>For each statement about online and in-store purchases, select True if the statement is correct or False if the statement is incorrect.<br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
             "img": "purchase_stats_chart.png",
             "code": "In-store customers spent more money than online customers: [b1]<br><br>Online customers have a larger variance in how much they spend: [b2]<br><br>The difference between the largest amount spent and the smallest amount spent is higher for in-store customers: [b3]<br><br>The amount spent the most often is the same for online and in-store customers: [b4]",
             "options": [
@@ -6227,7 +6227,7 @@ const quizData = {
         {
             "id": 6,
             "type": "TF",
-            "q": "For each statement about data disaggregation ,Select True or False<br><span style='font-size: 15px; font-style: italic;'>Note: You will Receive partial credit for each correct selection</span><br><span style='font-size: 13px; color: #64748b;'>3 points</span>",
+            "q": "For each statement about data disaggregation ,Select True or False<br><span style='font-size: 13px; color: #64748b;'>3 points</span>",
             "options": [
                 "Data disaggregation provides a summary of data",
                 "Data disaggregation combines data from multiple sources",
@@ -6254,7 +6254,7 @@ const quizData = {
         {
             "id": 8,
             "type": "MCQ3",
-            "q": "Select three ways that machine learning algorithms are used in data analysis. (Choose 3)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "Select three ways that machine learning algorithms are used in data analysis. (Choose 3)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Time series Analysis",
                 "Anomaly Detection",
@@ -6300,7 +6300,7 @@ const quizData = {
         {
             "id": 11,
             "type": "DROPDOWN",
-            "q": "You are analyzing customer satisfaction scores between on-line purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
+            "q": "You are analyzing customer satisfaction scores between on-line purchases and in-store purchases. Satisfaction scores are entered on a scale from 1 (extremely unsatisfied) to 10 (extremely satisfied).<br><br>Select the correct metric from the drop-down list for each statement.<br><span style='font-size: 13px; color: #64748b;'>4 points</span>",
             "code": "The most frequent satisfaction score was 5 for online customer and 9 for in-store customers: [b1]<br><br>The average score for online customers was 6.4 and the average score for in-store customers was 7.0: [b2]<br><br>The score at the midpoint between the lowest and the highest scores was 6 for online customers and 7 for in-store customers: [b3]<br><br>The online scores vary from the average by 2.3 and the in-store variance is 1.9: [b4]",
             "options": [
                 [
@@ -6412,7 +6412,7 @@ const quizData = {
         {
             "id": 17,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "img": "housing_prices_color_final.png",
             "options": [
                 "The scaling of the graph is misleading",
@@ -6453,7 +6453,7 @@ const quizData = {
         {
             "id": 20,
             "type": "MCQ2",
-            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category<br><br> The data view must meet the following requirements:<br> * Include all products and their associated categories.<br> * Include sales subtotals for each category and year. <br> * Display a grand total of sales for each category.<br> * Create a summary of each category for every year.<br><br>Which <strong>two</strong> aggregation method should you use to create the data view (choose 2)<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "You need to create a data view based on aggregations for further visual analysis. Your data includes sales information for the past five years for food products at your company's stores. Each product belongs to one category. For example, milk belongs to the Dairy category<br><br> The data view must meet the following requirements:<br> * Include all products and their associated categories.<br> * Include sales subtotals for each category and year. <br> * Display a grand total of sales for each category.<br> * Create a summary of each category for every year.<br><br>Which <strong>two</strong> aggregation method should you use to create the data view (choose 2)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Filtering",
                 "Pivoting",
@@ -6493,7 +6493,7 @@ const quizData = {
         {
             "id": 23,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Visually compare the database values to the CSV values.",
                 "Trim empty spaces from only the right side of the valid characters",
@@ -6689,7 +6689,7 @@ const quizData = {
         {
             "id": 36,
             "type": "MCQ2",
-            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each Correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "Each month, you need to automatically transform the data from two XML documents into a single flat file with columns and rows that Excel can open and interpret. The document names and structure remain constant. You know the relationships between the two XML documents.<br><br>Which two resources can you use? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Python",
                 "Microsoft Word",
@@ -6704,7 +6704,7 @@ const quizData = {
         {
             "id": 37,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Visually compare the database values to the CSV values.",
                 "Trim empty spaces from only the right side of the valid characters",
@@ -6760,7 +6760,7 @@ const quizData = {
         {
             "id": 1,
             "type": "TF",
-            "q": "For each statement about data mining, select True or False.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "For each statement about data mining, select True or False.",
             "options": [
                 "Data mining is used to find anomalies",
                 "Data mining is used to summarize raw data from large data sets",
@@ -6802,7 +6802,7 @@ const quizData = {
         {
             "id": 4,
             "type": "TF",
-            "q": "For each statement about data organization, select True or False<br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "For each statement about data organization, select True or False",
             "options": [
                 "Slicer can be used to filter the data",
                 "Sorts can be used to display a subset of data",
@@ -6818,7 +6818,7 @@ const quizData = {
         {
             "id": 5,
             "type": "MCQ2",
-            "q": "Which two chart types should you use to rank values in ascending or descending order ? (choose 2)<br><br><span style='font-size: 15px; font-style: italic;'>Note : You will receive partial credit for each correct selection</span>",
+            "q": "Which two chart types should you use to rank values in ascending or descending order ? (choose 2)",
             "options": [
                 "Bar chart",
                 "Column chart",
@@ -6834,7 +6834,7 @@ const quizData = {
         {
             "id": 6,
             "type": "TF",
-            "q": "You have a data set of 100,000 rows. The data values fall within a standard range. The data has been cleaned to remove outliers. Approximately 100 rows of the data set contain NULL values in a numeric data column. You need to determine a best practice for handling the NULL values.<br><br>For each statement about handling NULL, select <strong>Yes</strong> if it is a best practice or <strong>No</strong> if it is not.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You have a data set of 100,000 rows. The data values fall within a standard range. The data has been cleaned to remove outliers. Approximately 100 rows of the data set contain NULL values in a numeric data column. You need to determine a best practice for handling the NULL values.<br><br>For each statement about handling NULL, select <strong>Yes</strong> if it is a best practice or <strong>No</strong> if it is not.",
             "options": [
                 "Remove the row that contains Null values",
                 "Remove each Null value with a random value",
@@ -6850,7 +6850,7 @@ const quizData = {
         {
             "id": 7,
             "type": "MTF",
-            "q": "Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br><table style='width:100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center;'><thead><tr style='background: #f1f5f9;'><th style='padding: 8px; border: 1px solid #cbd5e1;'>Promotional item</th><th style='padding: 8px; border: 1px solid #cbd5e1;'>Quantity Distributed</th></tr></thead><tbody><tr><td style='padding:6px; border:1px solid #cbd5e1;'>T-shirt</td><td style='padding:6px; border:1px solid #cbd5e1;'>600</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Shuffled Animal</td><td style='padding:6px; border:1px solid #cbd5e1;'>425</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Drinkware</td><td style='padding:6px; border:1px solid #cbd5e1;'>550</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Backpacks</td><td style='padding:6px; border:1px solid #cbd5e1;'>100</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Blankets</td><td style='padding:6px; border:1px solid #cbd5e1;'>55</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Magnets</td><td style='padding:6px; border:1px solid #cbd5e1;'>250</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Gift cards</td><td style='padding:6px; border:1px solid #cbd5e1;'>50</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Candy</td><td style='padding:6px; border:1px solid #cbd5e1;'>500</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Notebooks</td><td style='padding:6px; border:1px solid #cbd5e1;'>450</td></tr></tbody></table><br>You are performing analysis on the data. Complete the sentence about the data organization by selecting the correct option from each drop-down list.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br><table style='width:100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center;'><thead><tr style='background: #f1f5f9;'><th style='padding: 8px; border: 1px solid #cbd5e1;'>Promotional item</th><th style='padding: 8px; border: 1px solid #cbd5e1;'>Quantity Distributed</th></tr></thead><tbody><tr><td style='padding:6px; border:1px solid #cbd5e1;'>T-shirt</td><td style='padding:6px; border:1px solid #cbd5e1;'>600</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Shuffled Animal</td><td style='padding:6px; border:1px solid #cbd5e1;'>425</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Drinkware</td><td style='padding:6px; border:1px solid #cbd5e1;'>550</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Backpacks</td><td style='padding:6px; border:1px solid #cbd5e1;'>100</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Blankets</td><td style='padding:6px; border:1px solid #cbd5e1;'>55</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Magnets</td><td style='padding:6px; border:1px solid #cbd5e1;'>250</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Gift cards</td><td style='padding:6px; border:1px solid #cbd5e1;'>50</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Candy</td><td style='padding:6px; border:1px solid #cbd5e1;'>500</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Notebooks</td><td style='padding:6px; border:1px solid #cbd5e1;'>450</td></tr></tbody></table><br>You are performing analysis on the data. Complete the sentence about the data organization by selecting the correct option from each drop-down list.",
             "options": [
                 "Can arrange distributed items from highest to lowest",
                 "Can limit the display of distributed items to greater than 500",
@@ -6971,7 +6971,7 @@ const quizData = {
         {
             "id": 14,
             "type": "MCQ2",
-            "q": "In the United state and Europe which two data points are considered non-sensitive PII(personal identifiable information)? (choose 2)<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "In the United state and Europe which two data points are considered non-sensitive PII(personal identifiable information)? (choose 2)",
             "options": [
                 "Bank account number",
                 "Medical records",
@@ -7013,7 +7013,7 @@ const quizData = {
         {
             "id": 17,
             "type": "MCQ3",
-            "q": "You are tasked with completing a data analysis project for a large organization. During the project, you must handle personally identifiable information (PII)<br><br>Throughout the project which three principle should you follow? (Choose 3)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "q": "You are tasked with completing a data analysis project for a large organization. During the project, you must handle personally identifiable information (PII)<br><br>Throughout the project which three principle should you follow? (Choose 3)",
             "options": [
                 "Limit your handling of the PII to only what is necessary for the current analysis.",
                 "Remove all PII from your computer after the analysis is complete",
@@ -7192,7 +7192,7 @@ const quizData = {
         {
             "id": 30,
             "type": "MCQ3",
-            "q": "A domestic flight company wants to forecast flight delays and cancellations to provide the best experience to their customers Which three approaches would a data scientist use for this task? (Choose 3) Note. You will receive partial credit for each correct selection",
+            "q": "A domestic flight company wants to forecast flight delays and cancellations to provide the best experience to their customers Which three approaches would a data scientist use for this task? (Choose 3) ",
             "options": [
                 "Using structured data",
                 "Building predictive analysis models using machine learning",
@@ -7282,7 +7282,7 @@ const quizData = {
         {
             "id": 35,
             "type": "MCQ2",
-            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span><br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
+            "q": "A coworker is having trouble joining two database tables, TableA and TableB, that were imported from CSV files. They say the tables have no common values.<br><br>You need to troubleshoot the problem. You look at the data in the original CSV files and find that the RowKey values in the TableA file and the RowID values in the TableB file look identical. Both have three numbers followed by a dash (-) and two letters.<br><br>Which two actions should you complete next? (Choose 2.)<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "options": [
                 "Visually compare the database values to the CSV values.",
                 "Trim empty spaces from only the right side of the valid characters",
@@ -7311,7 +7311,7 @@ const quizData = {
         {
             "id": 37,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span>",
             "img": "housing_prices_color_final.png",
             "options": [
                 "The visualization accurately depict the housing prices shown in the table",
