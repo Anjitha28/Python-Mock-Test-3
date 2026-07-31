@@ -191,7 +191,8 @@ router.post('/settings/exam-mode', async (req, res) => {
     try {
         const token = getTokenFromReq(req);
         const sessionUser = await getSessionUser(token);
-        if (!sessionUser || sessionUser.role !== 'admin') {
+        const role = (sessionUser?.role || '').toLowerCase().trim();
+        if (!sessionUser || role !== 'admin') {
             return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
         }
 

@@ -485,13 +485,15 @@
     <div class="modal-overlay" id="review-modal">
         <div class="modal-card">
             <div class="modal-title">Review Questions</div>
-            <p style="font-size: 13px; color: #64748b;">Click any question number to jump back to it before submitting.</p>
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Click any question number to jump back to it to inspect or edit your answer before final submission.</p>
             
+            <div id="review-summary-badges" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:15px;"></div>
+
             <div class="grid-q-btns" id="modal-grid"></div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <button class="btn-footer btn-back" onclick="closeReviewModal()">Back to Test</button>
-                <button class="btn-footer btn-next" onclick="finalSubmit('manual')">Final Submit</button>
+                <button class="btn-footer btn-next" onclick="finalSubmit('manual')" style="background:#166534;">Final Submit</button>
             </div>
         </div>
     </div>
@@ -501,6 +503,14 @@
         let currentUserName = localStorage.getItem('strategist_user') || 'Student';
         let selectedDNDItem = null;
         let draggedDNDItem = null;
+
+        window.addEventListener('beforeunload', (e) => {
+            const quizUI = document.getElementById('quiz-ui');
+            if (quizUI && quizUI.style.display === 'block') {
+                e.preventDefault();
+                e.returnValue = 'You have an active quiz attempt. Are you sure you want to exit?';
+            }
+        });
 
         async function verifySession() {
             if (!token) {
@@ -878,7 +888,7 @@
             }
 
             document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? "hidden" : "visible";
-            document.getElementById('btn-next').textContent = currentIndex === questions.length - 1 ? "Review All" : "Next Question";
+            document.getElementById('btn-next').textContent = currentIndex === questions.length - 1 ? "Submit Quiz" : "Next Question";
 
             updateTileBar();
         }
@@ -992,12 +1002,11 @@
             const grid = document.getElementById('modal-grid');
             grid.innerHTML = "";
 
-            questions.forEach((_, i) => {
-                const btn = document.createElement('div');
-                btn.className = "grid-q-btn";
-                btn.textContent = i + 1;
-                btn.onclick = () => { closeReviewModal(); currentIndex = i; loadQuestion(); };
+            let answeredCount = 0;
+            let reviewCount = 0;
+            let unattemptedCount = 0;
 
+            questions.forEach((_, i) => {
                 const uAns = userAnswers[i];
                 let isAns = false;
                 if (uAns !== null && uAns !== undefined && uAns !== '') {
@@ -1008,11 +1017,31 @@
                     }
                 }
 
+                if (reviewMarks[i]) reviewCount++;
+                if (isAns) answeredCount++;
+                else unattemptedCount++;
+
+                const btn = document.createElement('div');
+                btn.className = "grid-q-btn";
+                btn.textContent = i + 1;
+                btn.title = isAns ? `Question ${i+1}: Answered` : `Question ${i+1}: Unanswered`;
+                btn.onclick = () => { closeReviewModal(); currentIndex = i; loadQuestion(); };
+
                 if (reviewMarks[i]) btn.classList.add('review');
                 else if (isAns) btn.classList.add('answered');
                 
                 grid.appendChild(btn);
             });
+
+            // Update modal header summary statistics if element exists
+            const summaryContainer = document.getElementById('review-summary-badges');
+            if (summaryContainer) {
+                summaryContainer.innerHTML = `
+                    <span style="background:#dcfce7; color:#15803d; border:1px solid #bbf7d0; padding:4px 12px; border-radius:14px; font-weight:700; font-size:12px;">Answered: ${answeredCount} / ${questions.length}</span>
+                    <span style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; padding:4px 12px; border-radius:14px; font-weight:700; font-size:12px;">For Review: ${reviewCount}</span>
+                    <span style="background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; padding:4px 12px; border-radius:14px; font-weight:700; font-size:12px;">Unanswered: ${unattemptedCount}</span>
+                `;
+            }
         }
 
         function closeReviewModal() {

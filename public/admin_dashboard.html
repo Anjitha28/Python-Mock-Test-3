@@ -812,16 +812,21 @@
         }
 
         async function updateGlobalMode(newMode) {
-            if (newMode === currentMode) return;
+            const activeToken = localStorage.getItem('auth_token') || token;
+            if (!activeToken) {
+                alert("Session expired. Please log in as admin.");
+                window.location.href = 'index.html';
+                return;
+            }
 
             try {
                 const res = await fetch('/api/settings/exam-mode', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
+                        'Authorization': `Bearer ${activeToken}`
                     },
-                    body: JSON.stringify({ exam_mode: newMode })
+                    body: JSON.stringify({ exam_mode: newMode, token: activeToken })
                 });
 
                 const data = await res.json();
@@ -835,6 +840,10 @@
                     alertBox.style.display = 'block';
 
                     setTimeout(() => { alertBox.style.display = 'none'; }, 4000);
+                } else if (res.status === 401 || res.status === 403) {
+                    alert("Admin authorization expired. Please log in again.");
+                    localStorage.clear();
+                    window.location.href = 'index.html';
                 } else {
                     alert(data.message || 'Failed to update global mode.');
                 }

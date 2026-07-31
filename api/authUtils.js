@@ -53,7 +53,7 @@ export async function createSession(userId, username, role) {
 export async function getSessionUser(token) {
   if (!token) return null;
   const res = await pool.query(
-    `SELECT s.token, s.user_id, s.username, s.role, u.is_first_login
+    `SELECT s.token, s.user_id, s.username, COALESCE(u.role, s.role) as role, u.is_first_login
      FROM mock_test_3_sessions s
      JOIN mock_test_3_users u ON s.user_id = u.id
      WHERE s.token = $1`,
