@@ -3045,10 +3045,16 @@ window.dataQuizData = {
                 "Option 4"
             ],
             "option_images": [
-                "q57_opt1.png",
-                "q57_opt2.png",
-                "q57_opt3.png",
-                "q57_opt4.png"
+                "v3_q21_opt1.png",
+                "v3_q21_opt2.png",
+                "v3_q21_opt3.png",
+                "v3_q21_opt4.png"
+            ],
+            "optionImages": [
+                "v3_q21_opt1.png",
+                "v3_q21_opt2.png",
+                "v3_q21_opt3.png",
+                "v3_q21_opt4.png"
             ],
             "a": 0,
             "marks": 2

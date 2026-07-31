@@ -4812,7 +4812,8 @@ const quizData = {
             "marks": 1,
             "type": "MCQ",
             "q": "Which visualization type is commonly used to display the distribution of a continuous variable, with variable values on the x-axis and corresponding frequencies on the y-axis? Select the correct visualization type in the answer area. (1 Mark)",
-            "option_images": ["q57_opt1.png", "q57_opt2.png", "q57_opt3.png", "q57_opt4.png"],
+            "option_images": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
+            "optionImages": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
             "options": [
                 "Option 3",
                 "Option 2",
@@ -6356,7 +6357,8 @@ const quizData = {
                 "Option 4",
                 "Option 1"
             ],
-            "option_images": ["q57_opt1.png", "q57_opt2.png", "q57_opt3.png", "q57_opt4.png"],
+            "option_images": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
+            "optionImages": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
             "a": 0
         },
         {
@@ -6538,7 +6540,8 @@ const quizData = {
                 "Option A",
                 "Option D"
             ],
-            "option_images": ["q57_opt1.png", "q57_opt2.png", "q57_opt3.png", "q57_opt4.png"],
+            "option_images": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
+            "optionImages": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
             "a": 2
         },
         {
@@ -7101,7 +7104,8 @@ const quizData = {
                 "Option 3",
                 "Option 4"
             ],
-            "option_images": ["q57_opt1.png", "q57_opt2.png", "q57_opt3.png", "q57_opt4.png"],
+            "option_images": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
+            "optionImages": ["v3_q21_opt1.png", "v3_q21_opt2.png", "v3_q21_opt3.png", "v3_q21_opt4.png"],
             "a": 0,
             "marks": 2
         },
