@@ -241,12 +241,31 @@ async function getGlobalExamMode() {
     return 'practice';
 }
 
-// Helper to check if user has attempted main mode
+// Helper to get active main session ID
+async function getActiveMainSessionId() {
+    try {
+        const res = await pool.query("SELECT id FROM mock_test_3_main_sessions WHERE status = 'active' ORDER BY created_at DESC LIMIT 1");
+        if (res.rows.length > 0) {
+            return res.rows[0].id;
+        }
+        return null;
+    } catch (e) {
+        console.error('Error fetching active main session ID:', e);
+        return null;
+    }
+}
+
+// Helper to check if user has attempted the CURRENT main mode session
 async function hasCompletedMainAttempt(userName, mockTest) {
     try {
+        const activeSessionId = await getActiveMainSessionId();
+        if (!activeSessionId) {
+            return null; // No active main session
+        }
+
         const res = await pool.query(
-            "SELECT * FROM mock_test_3_results WHERE user_name = $1 AND (mock_test = $2 OR mock_test = 'da_mock3' OR mock_test = 'mock_test_3') AND exam_mode = 'main' LIMIT 1",
-            [userName, mockTest || 'da_mock3']
+            "SELECT * FROM mock_test_3_results WHERE user_name = $1 AND exam_mode = 'main' AND main_session_id = $2 LIMIT 1",
+            [userName, activeSessionId]
         );
         return res.rows.length > 0 ? res.rows[0] : null;
     } catch (e) {
@@ -278,6 +297,29 @@ router.post('/settings/exam-mode', async (req, res) => {
         const { exam_mode } = req.body;
         if (exam_mode !== 'practice' && exam_mode !== 'main') {
             return res.status(400).json({ success: false, message: 'Invalid exam_mode. Must be practice or main.' });
+        }
+
+        const currentMode = await getGlobalExamMode();
+
+        if (exam_mode === 'main') {
+            let activeSessionId = await getActiveMainSessionId();
+            if (!activeSessionId || currentMode !== 'main') {
+                // Close previous active sessions
+                await pool.query("UPDATE mock_test_3_main_sessions SET status = 'closed', closed_at = NOW() WHERE status = 'active'");
+
+                // Create a NEW Main Exam session
+                const newSessionRes = await pool.query("INSERT INTO mock_test_3_main_sessions (status) VALUES ('active') RETURNING id");
+                activeSessionId = newSessionRes.rows[0].id;
+
+                await pool.query(
+                    "INSERT INTO mock_test_3_settings (key, value, updated_at) VALUES ('active_main_session_id', $1, NOW()) ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()",
+                    [activeSessionId]
+                );
+            }
+        } else if (exam_mode === 'practice') {
+            // Close active main exam session and clear setting
+            await pool.query("UPDATE mock_test_3_main_sessions SET status = 'closed', closed_at = NOW() WHERE status = 'active'");
+            await pool.query("DELETE FROM mock_test_3_settings WHERE key = 'active_main_session_id'");
         }
 
         await pool.query(
@@ -466,13 +508,15 @@ router.post('/quiz/submit', async (req, res) => {
         const mockTest = mock_test || 'da_mock3';
         const globalMode = await getGlobalExamMode();
 
+        let activeMainSessionId = null;
         // Enforce 1-attempt limit if global mode is Main Mode
         if (globalMode === 'main') {
+            activeMainSessionId = await getActiveMainSessionId();
             const existingAttempt = await hasCompletedMainAttempt(userName, mockTest);
             if (existingAttempt) {
                 return res.status(403).json({
                     success: false,
-                    message: 'Main Mode allows only ONE attempt per student. You have already completed this exam.'
+                    message: 'Main Mode allows only ONE attempt per student for this session. You have already completed this exam session.'
                 });
             }
         }
@@ -494,16 +538,17 @@ router.post('/quiz/submit', async (req, res) => {
 
         const insertRes = await pool.query(
             `INSERT INTO mock_test_3_results 
-            (user_name, exam_name, mock_test, exam_mode, attempt_number, score, percentage, result, 
+            (user_name, exam_name, mock_test, exam_mode, main_session_id, attempt_number, score, percentage, result, 
              total_marks, total_questions, correct_answers, incorrect_answers, not_attended,
              time_taken, time_allowed, time_remaining, submission_type, answers, completion_status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
             RETURNING *`,
             [
                 userName,
                 exam_name || 'Python Mastery',
                 mockTest,
                 globalMode,
+                activeMainSessionId,
                 attemptNum,
                 calcScoreInt,
                 calcPercInt,

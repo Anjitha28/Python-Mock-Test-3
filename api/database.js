@@ -90,11 +90,22 @@ async function initTables(poolInstance) {
 
     await client.query(`
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS exam_mode TEXT DEFAULT 'practice';
+      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS main_session_id UUID;
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS incorrect_answers INTEGER DEFAULT 0;
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS not_attended INTEGER DEFAULT 0;
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS time_allowed INTEGER DEFAULT 600;
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS answers JSONB DEFAULT '{}'::jsonb;
       ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS completion_status TEXT DEFAULT 'completed';
+    `);
+
+    // Ensure mock_test_3_main_sessions table exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS mock_test_3_main_sessions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        status TEXT NOT NULL DEFAULT 'active',
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        closed_at TIMESTAMPTZ
+      );
     `);
 
     // Ensure mock_test_3_settings table exists
