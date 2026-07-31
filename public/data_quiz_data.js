@@ -1,4 +1,4 @@
-var dataQuizData = {
+window.dataQuizData = {
     "data1": [
         {
             "id": 1,
@@ -1988,11 +1988,11 @@ var dataQuizData = {
                 "Option A",
                 "Option C"
             ],
-            "optionImages": [
-                "recreational_pie_chart.png",
-                "recreational_combo_chart.png",
-                "recreational_scatter_plot.png",
-                "recreational_bar_chart.png"
+            "option_images": [
+                "q57_opt1.png",
+                "q57_opt2.png",
+                "q57_opt3.png",
+                "q57_opt4.png"
             ],
             "a": 0
         },
@@ -2493,11 +2493,11 @@ var dataQuizData = {
                 "Option 2",
                 "Option 4"
             ],
-            "optionImages": [
-                "dist_column_chart.png",
-                "dist_line_chart.png",
-                "dist_histogram.png",
-                "dist_bar_chart.png"
+            "option_images": [
+                "q57_opt1.png",
+                "q57_opt2.png",
+                "q57_opt3.png",
+                "q57_opt4.png"
             ],
             "a": 1
         },
@@ -2752,8 +2752,8 @@ var dataQuizData = {
         },
         {
             "id": 7,
-            "type": "MTF",
-            "q": "Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br><table style='width:100%; border-collapse: collapse; margin: 15px 0; font-size: 13px; text-align: center;'><thead><tr style='background: #f1f5f9;'><th style='padding: 8px; border: 1px solid #cbd5e1;'>Promotional item</th><th style='padding: 8px; border: 1px solid #cbd5e1;'>Quantity Distributed</th></tr></thead><tbody><tr><td style='padding:6px; border:1px solid #cbd5e1;'>T-shirt</td><td style='padding:6px; border:1px solid #cbd5e1;'>600</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Shuffled Animal</td><td style='padding:6px; border:1px solid #cbd5e1;'>425</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Drinkware</td><td style='padding:6px; border:1px solid #cbd5e1;'>550</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Backpacks</td><td style='padding:6px; border:1px solid #cbd5e1;'>100</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Blankets</td><td style='padding:6px; border:1px solid #cbd5e1;'>55</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Magnets</td><td style='padding:6px; border:1px solid #cbd5e1;'>250</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Gift cards</td><td style='padding:6px; border:1px solid #cbd5e1;'>50</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Candy</td><td style='padding:6px; border:1px solid #cbd5e1;'>500</td></tr><tr><td style='padding:6px; border:1px solid #cbd5e1;'>Notebooks</td><td style='padding:6px; border:1px solid #cbd5e1;'>450</td></tr></tbody></table><br>You are performing analysis on the data. Complete the sentence about the data organization by selecting the correct option from each drop-down list.<br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection.</span>",
+            "type": "DND",
+            "q": "Your marketing department attends a variety of events each year and distributes promotional items to event participants. The table below shows the quantity distributed of each promotional item.<br><br>You are performing analysis on the data. Complete the sentence about the data organization by dragging the correct option into each blank.",
             "options": [
                 "Can arrange distributed items from highest to lowest",
                 "Can limit the display of distributed items to greater than 500",
@@ -2772,12 +2772,27 @@ var dataQuizData = {
                 "Can limit the display of distributed items to greater than 500": "Filtering",
                 "Can limit the display of promotional items to shuffled animals and T-shirt": "Slicing"
             },
-            "marks": 2
+            "marks": 2,
+            "categories": [
+                "Sorting",
+                "Filtering",
+                "Slicing",
+                "Grouping",
+                "Pivoting"
+            ],
+            "img": "promotional_items_table.png",
+            "dnd_items": [
+                "Sorting",
+                "Filtering",
+                "Slicing",
+                "Grouping",
+                "Pivoting"
+            ]
         },
         {
             "id": 8,
             "type": "MCQ",
-            "q": "You are given a data set displaying the time of day and number of minutes customers waited in line for service. You need to remove bias from the results eliminating outliers.<br><br>Which visualization illustrates outliers in your dataset?<br>Select the correct Visualization in the answer area.",
+            "q": "You are given a data set displaying the time of day and number of minutes customers waited in line for service. You need to remove bias from the results by eliminating outliers.<br><br>Which visualization illustrates outliers in your dataset?<br>Select the correct visualization in the answer area.",
             "options": [
                 "Option 1",
                 "Option 2",
@@ -2791,7 +2806,13 @@ var dataQuizData = {
                 "v3_q11_opt4.png"
             ],
             "a": 3,
-            "marks": 1
+            "marks": 1,
+            "option_images": [
+                "v3_q11_opt1.png",
+                "v3_q11_opt2.png",
+                "v3_q11_opt3.png",
+                "v3_q11_opt4.png"
+            ]
         },
         {
             "id": 9,
@@ -2809,8 +2830,8 @@ var dataQuizData = {
         },
         {
             "id": 10,
-            "type": "MTF",
-            "q": "Match the type of data analysis on the left to the analysis question it answers on the right. You may use each item once or not at all.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct response.</span>",
+            "type": "DND",
+            "q": "Match the type of data analysis on the left to the analysis question it answers on the right. Drag each analysis type to its matching question. You may use each item once or not at all.<br><br><span style='font-size: 13px; font-style: italic; color: #64748b;'>Note: You will receive partial credit for each correct match.</span>",
             "options": [
                 "What happened?",
                 "Why did it happen?",
@@ -2830,7 +2851,23 @@ var dataQuizData = {
                 "What should we do next?": "Prescriptive analysis",
                 "Is there enough evidence to draw conclusin?": "Hypothesis Testing"
             },
-            "marks": 2
+            "marks": 2,
+            "categories": [
+                "Descriptive analysis",
+                "Diagnostic analysis",
+                "Prescriptive analysis",
+                "Predictive analysis",
+                "Hypothesis Testing",
+                "Inferential Analysis"
+            ],
+            "dnd_items": [
+                "Descriptive analysis",
+                "Diagnostic analysis",
+                "Prescriptive analysis",
+                "Predictive analysis",
+                "Hypothesis Testing",
+                "Inferential Analysis"
+            ]
         },
         {
             "id": 11,
@@ -3007,11 +3044,11 @@ var dataQuizData = {
                 "Option 3",
                 "Option 4"
             ],
-            "optionImages": [
-                "v3_q21_opt1.png",
-                "v3_q21_opt2.png",
-                "v3_q21_opt3.png",
-                "v3_q21_opt4.png"
+            "option_images": [
+                "q57_opt1.png",
+                "q57_opt2.png",
+                "q57_opt3.png",
+                "q57_opt4.png"
             ],
             "a": 0,
             "marks": 2
@@ -3116,8 +3153,8 @@ var dataQuizData = {
         },
         {
             "id": 31,
-            "type": "MTF",
-            "q": "You are a data analytics auditor for a large public company. You need to categorize the four data descriptions to the category of data it represents. You will receive partial credit for each correct match.",
+            "type": "DND",
+            "q": "You are a data analytics auditor for a large public company. You need to categorize the four data descriptions to the category of data it represents. Drag each data category into the drop zone next to its corresponding description.",
             "options": [
                 "An archive called 'Spring Sales Campaign' that contains svg documents, retouched images and the company style guide as pdf file",
                 "SQL database with calendar-year sales data",
@@ -3136,7 +3173,23 @@ var dataQuizData = {
                 "Results of a company-wide survey measuring feelings about the company's direction and future outlook": "Qualitative Data",
                 "Information about the writer of each knowledge-base article and when it was last revised": "Metadata"
             },
-            "marks": 4
+            "marks": 4,
+            "categories": [
+                "Unstructured Data",
+                "Structured Data",
+                "Qualitative Data",
+                "Metadata",
+                "Semi-Structured Data",
+                "Quantitative Data"
+            ],
+            "dnd_items": [
+                "Unstructured Data",
+                "Structured Data",
+                "Qualitative Data",
+                "Metadata",
+                "Semi-Structured Data",
+                "Quantitative Data"
+            ]
         },
         {
             "id": 32,
@@ -3153,8 +3206,8 @@ var dataQuizData = {
         },
         {
             "id": 33,
-            "type": "MTF",
-            "q": "You are a data analyst for a healthcare provider. You are designing a solution that must meet these requirements<br><br>* Medical records must not be readable by unauthorized staff.<br>* Patient names must be converted to cartoon character names.<br>* However, doctors must be able to associate the cartoon names to the actual patient when providing health care<br>* Statisticians must be able to access healthcare visits but only be able to refer to patients as their cartoon character nam<br><br>Choose the correct option from each drop down list<br>Note: You will receive partial credit for each correct answeres",
+            "type": "DND",
+            "q": "You are a data analyst for a healthcare provider. You are designing a solution that must meet these requirements:<br><br>* Medical records must not be readable by unauthorized staff.<br>* Patient names must be converted to cartoon character names.<br>* However, doctors must be able to associate the cartoon names to the actual patient when providing health care<br>* Statisticians must be able to access healthcare visits but only be able to refer to patients as their cartoon character names.<br><br>Drag the correct data privacy option into each requirement drop zone.",
             "options": [
                 "Medical records must not be readable by unauthorized staff.",
                 "Patient names converted to cartoon character names (reversible for doctors)",
@@ -3170,7 +3223,19 @@ var dataQuizData = {
                 "Patient names converted to cartoon character names (reversible for doctors)": "Pseudonymization",
                 "Statisticians only refer to patients as cartoon character names": "Pseudonymization"
             },
-            "marks": 3
+            "marks": 3,
+            "categories": [
+                "Encryption",
+                "Pseudonymization",
+                "Anonymization",
+                "Tokenization"
+            ],
+            "dnd_items": [
+                "Encryption",
+                "Pseudonymization",
+                "Anonymization",
+                "Tokenization"
+            ]
         },
         {
             "id": 34,
@@ -3218,7 +3283,7 @@ var dataQuizData = {
         {
             "id": 37,
             "type": "TF",
-            "q": "The visualization and data table depict housing price in a region. For each statement about the visualization, select True or False.<br><span style='font-size: 13px; color: #64748b;'>1 point</span><br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct selection</span>",
+            "q": "The visualization and data table depict housing prices in a region. For each statement about the visualization, select True or False.",
             "img": "housing_prices_color_final.png",
             "options": [
                 "The visualization accurately depict the housing prices shown in the table",

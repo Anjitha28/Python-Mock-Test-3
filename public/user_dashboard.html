@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Python Mastery Mock Test 3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #008eab;
+            --text-main: #1d1d1f;
+            --text-muted: #6e6e73;
+            --bg-light: #f6f8fb;
+            --card-shadow: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -2px rgba(0,0,0,0.03);
+            --practice-green: #10b981;
+            --main-amber: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--bg-light);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header */
+        header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 14px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            z-index: 100;
+        }
+        .logo-container img {
+            max-height: 42px;
+        }
+        .user-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-light);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--primary-blue);
+        }
+        .role-pill {
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .btn-logout:hover {
+            background: #dc2626;
+        }
+
+        /* Layout with Sidebar */
+        .app-layout {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            width: 260px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex-shrink: 0;
+        }
+        .nav-group-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 6px;
+            border: 1px solid transparent;
+        }
+        .nav-item:hover {
+            background: #f1f5f9;
+            color: var(--primary-blue);
+        }
+        .nav-item.active {
+            background: #eff6ff;
+            color: var(--primary-blue);
+            font-weight: 700;
+            border-color: #bfdbfe;
+        }
+        .mode-indicator-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-top: auto;
+        }
+        .mode-indicator-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        .mode-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .mode-badge.practice {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+        .mode-badge.main {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        /* Main Content Single View Panels */
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            max-width: 1100px;
+        }
+        .welcome-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+        .welcome-card h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-blue);
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+        .welcome-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Single Section Panels */
+        .user-section-panel {
+            display: none; /* Controlled by showSection */
+        }
+        .user-section-panel.active-panel {
+            display: block;
+        }
+
+        /* Section Header */
+        .section-header {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        /* Exam Mode Tiles Grid */
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+        .mode-tile {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            transition: all 0.2s;
+        }
+        .mode-tile.active-practice {
+            border-color: var(--practice-green);
+            background: #f0fdf4;
+        }
+        .mode-tile.active-main {
+            border-color: var(--main-amber);
+            background: #fffbeb;
+        }
+        .tile-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        .tile-tag.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+        .tile-tag.inactive {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        .tile-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            margin-bottom: 12px;
+        }
+        .tile-features {
+            list-style: none;
+            margin-top: 15px;
+        }
+        .tile-features li {
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tile-features li::before {
+            content: "✓";
+            font-weight: 800;
+            color: var(--secondary-blue);
+        }
+
+        /* Mock Test List Card */
+        .test-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .test-info h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            color: var(--primary-blue);
+            margin-bottom: 6px;
+        }
+        .test-info p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .test-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+        }
+        .btn-start {
+            background: var(--secondary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 26px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: 'Montserrat', sans-serif;
+            transition: background 0.2s;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-start:hover {
+            background: #007790;
+        }
+        .btn-disabled {
+            background: #cbd5e1 !important;
+            color: #64748b !important;
+            cursor: not-allowed !important;
+            pointer-events: none;
+        }
+        .alert-completed {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="assets/Kvj logo.jpeg" alt="KVJ Logo" onerror="this.src='Kvj logo.jpeg'">
+        </div>
+        <div class="user-nav">
+            <div class="user-badge">
+                <span id="user-display-name">Student</span>
+                <span class="role-pill">User</span>
+            </div>
+            <button onclick="handleLogout()" class="btn-logout">Logout</button>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <!-- Side Navigation -->
+        <div class="sidebar">
+            <div>
+                <div class="nav-group-title">Navigation</div>
+                <div id="nav-user-dashboard" class="nav-item active" onclick="showSection('dashboard')">
+                    <span>Dashboard</span>
+                </div>
+                <div id="nav-user-exam-mode" class="nav-item" onclick="showSection('exam-mode')">
+                    <span>Exam Mode</span>
+                </div>
+            </div>
+
+            <div class="mode-indicator-box">
+                <div class="mode-indicator-title">Current System Mode</div>
+                <div id="sidebar-mode-badge" class="mode-badge practice">Practice Mode</div>
+            </div>
+        </div>
+
+        <!-- Centre Content Area -->
+        <div class="content-area">
+            <div class="welcome-card">
+                <h1 id="user-welcome-title">Student Portal</h1>
+                <p id="user-welcome-subtitle">Welcome to Python Mastery Mock Test 3. Select an available assessment test to begin.</p>
+            </div>
+
+            <!-- SECTION 1: Dashboard Panel (Visible when Dashboard Selected) -->
+            <div id="panel-dashboard" class="user-section-panel active-panel">
+                <div class="section-header">Available Assessments</div>
+                <div class="test-card">
+                    <div class="test-info">
+                        <h3>Python Mastery - Mock Test 3</h3>
+                        <p>40 Questions • 50 Minutes Duration • Passing Grade 84%</p>
+                        <div class="test-meta">
+                            <span>Mode: <strong id="card-mode-text">Practice Mode</strong></span>
+                            <span id="attempt-count-text">Attempts Allowed: Unlimited</span>
+                        </div>
+                        <div id="completed-alert" class="alert-completed">
+                            ⚠️ <strong>Main Mode Attempt Completed!</strong> You have already submitted your single allowed attempt for Mock Test 3 in Main Mode.
+                        </div>
+                    </div>
+                    <div>
+                        <a id="btn-launch-quiz" href="quiz.html" class="btn-start">Start / Continue</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Exam Mode Panel (Visible when Exam Mode Selected) -->
+            <div id="panel-exam-mode" class="user-section-panel">
+                <div class="section-header">Exam Modes</div>
+                <div class="tiles-grid">
+                    <!-- Practice Mode Tile -->
+                    <div id="tile-practice" class="mode-tile">
+                        <span id="tag-practice" class="tile-tag inactive">Inactive</span>
+                        <h3 class="tile-title">Practice Mode</h3>
+                        <p style="font-size: 13px; color: #64748b;">Designed for unlimited learning and skill building.</p>
+                        <ul class="tile-features">
+                            <li>Unlimited test attempts</li>
+                            <li>Retake quizzes as many times as desired</li>
+                            <li>Practice questions repeatedly</li>
+                            <li>Every attempt saved in history</li>
+                        </ul>
+                    </div>
+
+                    <!-- Main Mode Tile -->
+                    <div id="tile-main" class="mode-tile">
+                        <span id="tag-main" class="tile-tag inactive">Inactive</span>
+                        <h3 class="tile-title">Main Mode</h3>
+                        <p style="font-size: 13px; color: #64748b;">Simulates strict real-world examination rules.</p>
+                        <ul class="tile-features">
+                            <li>Real examination environment</li>
+                            <li><strong>ONE attempt ONLY per mock test</strong></li>
+                            <li>Final submission permanently locked</li>
+                            <li>No retakes after completion</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('auth_token');
+        let currentGlobalMode = 'practice';
+        let currentUserName = '';
+
+        function showSection(section) {
+            // Highlight active navigation tab
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            if (section === 'dashboard') {
+                document.getElementById('nav-user-dashboard').classList.add('active');
+            } else {
+                document.getElementById('nav-user-exam-mode').classList.add('active');
+            }
+
+            // Hide all section panels
+            document.querySelectorAll('.user-section-panel').forEach(panel => {
+                panel.classList.remove('active-panel');
+            });
+
+            // Show ONLY the selected section panel
+            const targetPanel = section === 'dashboard' ? document.getElementById('panel-dashboard') : document.getElementById('panel-exam-mode');
+            if (targetPanel) {
+                targetPanel.classList.add('active-panel');
+            }
+
+            // Dynamically update welcome card text
+            const titleEl = document.getElementById('user-welcome-title');
+            const subEl = document.getElementById('user-welcome-subtitle');
+            if (section === 'dashboard') {
+                titleEl.textContent = 'Student Portal';
+                subEl.textContent = 'Welcome to Python Mastery Mock Test 3. Select an available assessment test to begin.';
+            } else {
+                titleEl.textContent = 'Exam Mode Overview';
+                subEl.textContent = 'View the current system operating mode configured by the Administrator.';
+            }
+        }
+
+        async function verifySessionAndLoad() {
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                if (data.user.is_first_login) {
+                    window.location.href = 'change_password.html';
+                    return;
+                }
+
+                currentUserName = data.user.username;
+                document.getElementById('user-display-name').textContent = currentUserName;
+
+                await loadExamModeAndStatus();
+            } catch (e) {
+                console.error(e);
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function loadExamModeAndStatus() {
+            try {
+                const modeRes = await fetch('/api/settings/exam-mode');
+                const modeData = await modeRes.json();
+                currentGlobalMode = (modeData.success && modeData.exam_mode) ? modeData.exam_mode : 'practice';
+
+                const checkRes = await fetch(`/api/attempts/check?username=${encodeURIComponent(currentUserName)}&mock_test=da_mock3`);
+                const checkData = await checkRes.json();
+                const hasAttemptedMain = checkData.has_attempted_main;
+
+                const badge = document.getElementById('sidebar-mode-badge');
+                const tilePractice = document.getElementById('tile-practice');
+                const tileMain = document.getElementById('tile-main');
+                const tagPractice = document.getElementById('tag-practice');
+                const tagMain = document.getElementById('tag-main');
+                const cardModeText = document.getElementById('card-mode-text');
+                const attemptCountText = document.getElementById('attempt-count-text');
+                const launchBtn = document.getElementById('btn-launch-quiz');
+                const alertCompleted = document.getElementById('completed-alert');
+
+                if (currentGlobalMode === 'main') {
+                    badge.textContent = 'Main Mode';
+                    badge.className = 'mode-badge main';
+
+                    tileMain.className = 'mode-tile active-main';
+                    tilePractice.className = 'mode-tile';
+                    tagMain.textContent = 'Active Mode';
+                    tagMain.className = 'tile-tag active';
+                    tagPractice.textContent = 'Inactive';
+                    tagPractice.className = 'tile-tag inactive';
+
+                    cardModeText.textContent = 'Main Mode (Real Exam)';
+                    attemptCountText.textContent = 'Attempts Allowed: 1 Attempt Only';
+
+                    if (hasAttemptedMain) {
+                        launchBtn.textContent = 'Exam Completed';
+                        launchBtn.classList.add('btn-disabled');
+                        launchBtn.removeAttribute('href');
+                        alertCompleted.style.display = 'block';
+                    } else {
+                        launchBtn.textContent = 'Start Main Exam';
+                        launchBtn.classList.remove('btn-disabled');
+                        launchBtn.setAttribute('href', 'quiz.html');
+                        alertCompleted.style.display = 'none';
+                    }
+                } else {
+                    badge.textContent = 'Practice Mode';
+                    badge.className = 'mode-badge practice';
+
+                    tilePractice.className = 'mode-tile active-practice';
+                    tileMain.className = 'mode-tile';
+                    tagPractice.textContent = 'Active Mode';
+                    tagPractice.className = 'tile-tag active';
+                    tagMain.textContent = 'Inactive';
+                    tagMain.className = 'tile-tag inactive';
+
+                    cardModeText.textContent = 'Practice Mode';
+                    attemptCountText.textContent = 'Attempts Allowed: Unlimited Retakes';
+
+                    launchBtn.textContent = 'Start / Retake Practice Test';
+                    launchBtn.classList.remove('btn-disabled');
+                    launchBtn.setAttribute('href', 'quiz.html');
+                    alertCompleted.style.display = 'none';
+                }
+            } catch (e) {
+                console.error('Failed to load exam mode status:', e);
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+            } catch (e) {
+                console.error(e);
+            } finally {
+                localStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        verifySessionAndLoad();
+    </script>
+</body>
+</html>
