@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Python Mastery Mock Test 3</title>
+    <title>Authentication | Python Mastery Mock Test 3</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         html { scroll-behavior: smooth; }
@@ -26,6 +26,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px 0;
         }
         #bg-canvas {
             position: fixed;
@@ -38,15 +39,15 @@
         }
         .login-wrapper {
             width: 100%;
-            max-width: 440px;
+            max-width: 460px;
             padding: 0 20px;
             position: relative;
             z-index: 10;
         }
         .kvj-logo-img {
-            max-width: 250px;
-            max-height: 80px;
-            margin-bottom: 25px;
+            max-width: 240px;
+            max-height: 75px;
+            margin-bottom: 20px;
             display: inline-block;
         }
         .datacamp-card {
@@ -55,6 +56,7 @@
             border-radius: 14px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
         }
         .datacamp-title {
             font-family: 'Montserrat', sans-serif;
@@ -103,7 +105,7 @@
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
         .datacamp-label {
             display: block;
@@ -117,7 +119,7 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             padding: 12px 14px;
-            font-size: 15px;
+            font-size: 14px;
             transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
@@ -125,7 +127,7 @@
             border-color: var(--secondary-blue);
             box-shadow: 0 0 0 3px rgba(0, 142, 171, 0.1);
         }
-        .btn-login {
+        .btn-action {
             width: 100%;
             background: var(--primary-blue);
             color: white;
@@ -139,16 +141,21 @@
             font-family: 'Montserrat', sans-serif;
             margin-top: 10px;
         }
-        .btn-login:hover {
+        .btn-action:hover {
             background: #152b47;
         }
+        .btn-action:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
         .alert-box {
-            padding: 12px;
+            padding: 12px 14px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 600;
             margin-bottom: 18px;
             display: none;
+            line-height: 1.5;
         }
         .alert-box.error {
             background: #fef2f2;
@@ -165,6 +172,23 @@
             color: #64748b;
             margin-top: 4px;
         }
+        .toggle-link-box {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .toggle-link {
+            color: var(--primary-blue);
+            font-weight: 700;
+            text-decoration: none;
+            margin-left: 4px;
+            cursor: pointer;
+        }
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -175,6 +199,7 @@
             <img src="assets/Kvj logo.jpeg" alt="KVJ Logo" class="kvj-logo-img" onerror="this.src='Kvj logo.jpeg'">
         </div>
 
+        <!-- 1. LOGIN SCREEN -->
         <div id="login-screen" class="datacamp-card">
             <h2 class="datacamp-title">Python Mastery</h2>
             <div class="datacamp-subtitle">Mock Test 3</div>
@@ -185,14 +210,14 @@
                 <button type="button" class="tab-btn" id="tab-admin" onclick="switchLoginType('admin')">Admin Login</button>
             </div>
 
-            <!-- Error / Alert Message -->
+            <!-- Alert Message -->
             <div id="alert-box" class="alert-box"></div>
 
             <form id="login-form" onsubmit="handleLogin(event)">
                 <div class="form-group">
-                    <label class="datacamp-label" id="label-username">User ID / Name</label>
-                    <input type="text" id="username" class="datacamp-input" placeholder="Enter your User ID or Name" required>
-                    <div class="hint-text" id="hint-username">New user default password is <b>password</b></div>
+                    <label class="datacamp-label" id="label-username">User ID / Username</label>
+                    <input type="text" id="username" class="datacamp-input" placeholder="Enter your User ID or Username" required>
+                    <div class="hint-text" id="hint-username">New default student password is <b>password</b></div>
                 </div>
 
                 <div class="form-group">
@@ -200,13 +225,82 @@
                     <input type="password" id="password" class="datacamp-input" placeholder="Enter your password" required>
                 </div>
 
-                <button type="submit" id="btn-submit" class="btn-login">Login</button>
+                <button type="submit" id="btn-submit" class="btn-action">Login</button>
             </form>
+
+            <div class="toggle-link-box" id="user-signup-toggle">
+                Don't have an account? <span class="toggle-link" onclick="showScreen('signup')">Sign Up</span>
+            </div>
+        </div>
+
+        <!-- 2. SIGN UP SCREEN -->
+        <div id="signup-screen" class="datacamp-card" style="display: none;">
+            <h2 class="datacamp-title">Create Account</h2>
+            <div class="datacamp-subtitle">Python Mastery Mock Test 3</div>
+
+            <!-- Alert Message -->
+            <div id="signup-alert-box" class="alert-box"></div>
+
+            <form id="signup-form" onsubmit="handleSignup(event)">
+                <div class="form-group">
+                    <label class="datacamp-label">Full Name</label>
+                    <input type="text" id="signup-name" class="datacamp-input" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="datacamp-label">Phone Number</label>
+                    <input type="tel" id="signup-phone" class="datacamp-input" placeholder="Enter your phone number" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="datacamp-label">Email ID</label>
+                    <input type="email" id="signup-email" class="datacamp-input" placeholder="Enter your email address" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="datacamp-label">ID / Username</label>
+                    <input type="text" id="signup-username" class="datacamp-input" placeholder="Create your User ID" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="datacamp-label">Password</label>
+                    <input type="password" id="signup-password" class="datacamp-input" placeholder="Enter your password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="datacamp-label">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" class="datacamp-input" placeholder="Re-enter your password" required>
+                </div>
+
+                <button type="submit" id="btn-signup-submit" class="btn-action">Create Account</button>
+            </form>
+
+            <div class="toggle-link-box">
+                Already have an account? <span class="toggle-link" onclick="showScreen('login')">Login</span>
+            </div>
         </div>
     </div>
 
     <script>
         let currentLoginType = 'user';
+
+        function showScreen(screenName) {
+            hideAlert('alert-box');
+            hideAlert('signup-alert-box');
+
+            const loginCard = document.getElementById('login-screen');
+            const signupCard = document.getElementById('signup-screen');
+
+            if (screenName === 'signup') {
+                loginCard.style.display = 'none';
+                signupCard.style.display = 'block';
+                document.getElementById('signup-name').focus();
+            } else {
+                signupCard.style.display = 'none';
+                loginCard.style.display = 'block';
+                document.getElementById('username').focus();
+            }
+        }
 
         function switchLoginType(type) {
             currentLoginType = type;
@@ -215,8 +309,9 @@
             const labelUsername = document.getElementById('label-username');
             const hintUsername = document.getElementById('hint-username');
             const usernameInput = document.getElementById('username');
+            const signupToggle = document.getElementById('user-signup-toggle');
             
-            hideAlert();
+            hideAlert('alert-box');
 
             if (type === 'admin') {
                 tabAdmin.classList.add('active');
@@ -224,42 +319,48 @@
                 labelUsername.textContent = 'Admin ID';
                 usernameInput.placeholder = 'Enter Admin ID (e.g. admin123)';
                 hintUsername.style.display = 'none';
+                if (signupToggle) signupToggle.style.display = 'none';
             } else {
                 tabUser.classList.add('active');
                 tabAdmin.classList.remove('active');
-                labelUsername.textContent = 'User ID / Name';
-                usernameInput.placeholder = 'Enter your User ID or Name';
+                labelUsername.textContent = 'User ID / Username';
+                usernameInput.placeholder = 'Enter your User ID or Username';
                 hintUsername.style.display = 'block';
+                if (signupToggle) signupToggle.style.display = 'block';
             }
         }
 
-        function showAlert(msg, type = 'error') {
-            const box = document.getElementById('alert-box');
-            box.textContent = msg;
-            box.className = `alert-box ${type}`;
-            box.style.display = 'block';
+        function showAlert(msg, type = 'error', targetId = 'alert-box') {
+            const box = document.getElementById(targetId);
+            if (box) {
+                box.textContent = msg;
+                box.className = `alert-box ${type}`;
+                box.style.display = 'block';
+            }
         }
 
-        function hideAlert() {
-            const box = document.getElementById('alert-box');
-            box.style.display = 'none';
+        function hideAlert(targetId = 'alert-box') {
+            const box = document.getElementById(targetId);
+            if (box) {
+                box.style.display = 'none';
+            }
         }
 
         async function handleLogin(e) {
             e.preventDefault();
-            hideAlert();
+            hideAlert('alert-box');
 
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const btnSubmit = document.getElementById('btn-submit');
 
             if (!username || !password) {
-                showAlert('Please fill in all required fields.');
+                showAlert('Please enter your User ID and Password.', 'error', 'alert-box');
                 return;
             }
 
             btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Authenticating...';
+            btnSubmit.textContent = 'Logging In...';
 
             try {
                 const res = await fetch('/api/auth/login', {
@@ -275,7 +376,7 @@
                 const data = await res.json();
 
                 if (!res.ok || !data.success) {
-                    showAlert(data.message || 'Login failed. Please check your credentials.');
+                    showAlert(data.message || 'Invalid User ID or Password.', 'error', 'alert-box');
                     btnSubmit.disabled = false;
                     btnSubmit.textContent = 'Login';
                     return;
@@ -300,9 +401,91 @@
                 }
             } catch (err) {
                 console.error(err);
-                showAlert('Network or server error. Please try again.');
+                showAlert('Network or server error. Please try again.', 'error', 'alert-box');
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = 'Login';
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            hideAlert('signup-alert-box');
+
+            const name = document.getElementById('signup-name').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const username = document.getElementById('signup-username').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const btnSubmit = document.getElementById('btn-signup-submit');
+
+            // Frontend Validation
+            if (!name) {
+                showAlert('Please enter your full name.', 'error', 'signup-alert-box');
+                return;
+            }
+
+            const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+            if (!phone || !phoneRegex.test(phone)) {
+                showAlert('Please enter a valid phone number.', 'error', 'signup-alert-box');
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                showAlert('Please enter a valid email address.', 'error', 'signup-alert-box');
+                return;
+            }
+
+            if (!username) {
+                showAlert('Please create your User ID / Username.', 'error', 'signup-alert-box');
+                return;
+            }
+
+            if (!password || password.length < 4) {
+                showAlert('Please enter a password (minimum 4 characters).', 'error', 'signup-alert-box');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match.', 'error', 'signup-alert-box');
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Creating Account...';
+
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, phone, email, username, password, confirmPassword })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    showAlert(data.message || 'Registration failed.', 'error', 'signup-alert-box');
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'Create Account';
+                    return;
+                }
+
+                // SUCCESS: Reset signup form
+                document.getElementById('signup-form').reset();
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Create Account';
+
+                // Immediately switch to Login Screen & show success banner
+                showScreen('login');
+                document.getElementById('username').value = username;
+                showAlert('Account created successfully. Please login with your User ID and Password.', 'success', 'alert-box');
+                document.getElementById('password').focus();
+            } catch (err) {
+                console.error(err);
+                showAlert('Network error creating account. Please try again.', 'error', 'signup-alert-box');
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Create Account';
             }
         }
 

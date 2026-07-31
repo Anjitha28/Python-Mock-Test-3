@@ -38,7 +38,7 @@ if (!process.env.DATABASE_URL) {
       ssl: {
         rejectUnauthorized: false
       },
-      connectionTimeoutMillis: 5000,
+      connectionTimeoutMillis: 15000,
       idleTimeoutMillis: 30000,
       max: 10
     });
@@ -47,7 +47,7 @@ if (!process.env.DATABASE_URL) {
       console.error('⚠️ PostgreSQL pool idle client error:', err.message);
     });
 
-    // Run table initializations asynchronously without blocking invocation
+    // Run table initializations asynchronously
     initTables(activePool).catch(err => {
       console.error('⚠️ Non-blocking DB init notice:', err.message);
     });
@@ -58,8 +58,9 @@ if (!process.env.DATABASE_URL) {
 }
 
 async function initTables(poolInstance) {
-  const client = await poolInstance.connect();
+  let client;
   try {
+    client = await poolInstance.connect();
     // Ensure mock_test_3_results table exists
     await client.query(`
       CREATE TABLE IF NOT EXISTS mock_test_3_results (
@@ -115,12 +116,22 @@ async function initTables(poolInstance) {
       CREATE TABLE IF NOT EXISTS mock_test_3_users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         username TEXT UNIQUE NOT NULL,
+        name TEXT,
+        phone TEXT,
+        email TEXT UNIQUE,
         password_hash TEXT NOT NULL,
         role TEXT NOT NULL DEFAULT 'user',
         is_first_login BOOLEAN NOT NULL DEFAULT true,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
+    `);
+
+    await client.query(`
+      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS name TEXT;
+      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS phone TEXT;
+      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS email TEXT;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_mock_test_3_users_email ON mock_test_3_users (LOWER(email)) WHERE email IS NOT NULL;
     `);
 
     // Ensure mock_test_3_sessions table exists
@@ -147,8 +158,10 @@ async function initTables(poolInstance) {
         ['admin123', adminPasswordHash, 'admin', false]
       );
     }
+  } catch (err) {
+    console.error('⚠️ DB Init Error:', err.message);
   } finally {
-    client.release();
+    if (client) client.release();
   }
 }
 

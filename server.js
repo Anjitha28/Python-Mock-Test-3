@@ -21,8 +21,9 @@ app.use(express.static(publicPath));
 // API routes
 app.use('/api', apiRoutes);
 
-// Fallback to serve static files / index.html
-app.get('/{*path}', (req, res) => {
+// Fallback to serve static files / index.html for GET requests
+app.use((req, res, next) => {
+    if (req.method !== 'GET') return next();
     const requestedPath = path.join(publicPath, req.path);
     res.sendFile(requestedPath, (err) => {
         if (err) {

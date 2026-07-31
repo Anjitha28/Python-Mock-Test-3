@@ -27,6 +27,82 @@ const sendJSONP = (res, callback, data) => {
 // AUTHENTICATION ROUTES
 // =========================================================================
 
+// POST /api/auth/signup
+router.post('/auth/signup', async (req, res) => {
+    try {
+        const { name, phone, email, username, password, confirmPassword } = req.body;
+        const cleanName = (name || '').trim();
+        const cleanPhone = (phone || '').trim();
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const cleanUsername = (username || '').trim();
+        const cleanPassword = password || '';
+        const cleanConfirm = confirmPassword || '';
+
+        // Validation
+        if (!cleanName) {
+            return res.status(400).json({ success: false, message: 'Please enter your full name.' });
+        }
+
+        const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+        if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid email address.' });
+        }
+
+        if (!cleanUsername) {
+            return res.status(400).json({ success: false, message: 'Please enter a User ID / Username.' });
+        }
+
+        if (!cleanPassword || cleanPassword.length < 4) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid password.' });
+        }
+
+        if (cleanPassword !== cleanConfirm) {
+            return res.status(400).json({ success: false, message: 'Passwords do not match.' });
+        }
+
+        // Duplicate Username Check (case-insensitive)
+        const checkUserRes = await pool.query(
+            'SELECT id FROM mock_test_3_users WHERE LOWER(username) = LOWER($1)',
+            [cleanUsername]
+        );
+        if (checkUserRes.rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'User ID is already taken.' });
+        }
+
+        // Duplicate Email Check (case-insensitive)
+        const checkEmailRes = await pool.query(
+            'SELECT id FROM mock_test_3_users WHERE LOWER(email) = LOWER($1)',
+            [cleanEmail]
+        );
+        if (checkEmailRes.rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'Email address is already registered.' });
+        }
+
+        // Hash password securely using existing PBKDF2 salt:hash mechanism
+        const passwordHash = hashPassword(cleanPassword);
+
+        // Insert new user record with role 'user' and is_first_login = false
+        await pool.query(
+            `INSERT INTO mock_test_3_users (username, name, phone, email, password_hash, role, is_first_login)
+             VALUES ($1, $2, $3, $4, $5, 'user', false)`,
+            [cleanUsername, cleanName, cleanPhone, cleanEmail, passwordHash]
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: 'Account created successfully. Please login with your User ID and Password.'
+        });
+    } catch (e) {
+        console.error('Error in /api/auth/signup:', e);
+        return res.status(500).json({ success: false, message: 'Server error during sign up: ' + e.message });
+    }
+});
+
 // POST /api/auth/login
 router.post('/auth/login', async (req, res) => {
     try {
@@ -56,8 +132,11 @@ router.post('/auth/login', async (req, res) => {
                 user: { id: admin.id, username: admin.username, role: 'admin', is_first_login: false }
             });
         } else {
-            // User Login
-            let userRes = await pool.query('SELECT * FROM mock_test_3_users WHERE username = $1 AND role = $2', [cleanName, 'user']);
+            // User Login (matches username or email)
+            let userRes = await pool.query(
+                'SELECT * FROM mock_test_3_users WHERE (LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)) AND role = $2',
+                [cleanName, 'user']
+            );
             let user = userRes.rows[0];
 
             if (!user) {
