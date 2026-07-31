@@ -381,18 +381,19 @@
             <img src="assets/Kvj logo.jpeg" alt="KVJ Logo" style="height: 38px;" onerror="this.src='Kvj logo.jpeg'">
             <span id="mock-title-badge" style="font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; color:#1e3a5f; background:#eff6ff; border:1px solid #bfdbfe; padding:5px 14px; border-radius:20px;">Python Mastery Mock Test 3</span>
         </div>
-        <div class="timer-pill" id="timer-display">50:00</div>
+        <!-- Timer pill hidden visually per requirement, background timer calculations preserved -->
+        <div class="timer-pill" id="timer-display" style="display: none !important;">50:00</div>
     </nav>
 
-    <div class="layout">
-        <!-- Sidebar Progress -->
-        <aside class="sidebar">
+    <div class="layout" style="max-width: 1000px; margin: 0 auto; justify-content: center;">
+        <!-- Sidebar Progress hidden visually per requirement, question navigation preserved -->
+        <aside class="sidebar" style="display: none !important;">
             <h4 class="sidebar-sec-title">Question Progress</h4>
             <div id="tile-bar"></div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content">
+        <main class="main-content" style="width: 100%; max-width: 1000px;">
             <!-- Quiz Intro (Stage 1) -->
             <div id="quiz-intro" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; background:white; border-radius:14px; box-shadow:var(--shadow); padding:40px; text-align:center; border: 1px solid var(--border-color);">
                 <h1 style="font-size:28px; font-weight:800; color:var(--primary-blue); margin-bottom:10px;">Python Mastery Mock Test 3</h1>
@@ -437,18 +438,12 @@
 
             <!-- Results Screen -->
             <div id="results-screen">
-                <!-- Top Actions (Requirement 1) -->
-                <div class="result-top-actions">
-                    <button class="btn-top-action retake" onclick="location.reload()">Retake Assessment</button>
-                    <a class="btn-top-action dashboard" href="user_dashboard.html">End & Return to Dashboard</a>
-                </div>
-
                 <div class="report-header">
                     <h1>Assessment Report</h1>
                     <p>Performance Output Statistics</p>
                 </div>
 
-                <!-- Result Summary Cards (Requirement 2 & 3: Score, Evaluation, Attempt Number) -->
+                <!-- Result Summary Cards (Score, Evaluation, Attempt Number) -->
                 <div class="big-stats-grid">
                     <!-- Card 1: Marks / Score -->
                     <div class="big-stat-card" id="res-card" style="border-top: 5px solid var(--primary-blue);">
@@ -467,6 +462,12 @@
                         <span class="big-stat-val" id="res-attempt-num" style="color: #008eab;">Attempt 1</span>
                         <span class="big-stat-lbl">Attempt Number</span>
                     </div>
+                </div>
+
+                <!-- Action Buttons Positioned Centered Underneath Score/Evaluation Cards Section -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin: 30px 0 35px 0; flex-wrap: wrap; width: 100%;">
+                    <button class="btn-top-action retake" onclick="location.reload()" style="min-width: 240px; height: 50px;">Retake Assessment</button>
+                    <a class="btn-top-action dashboard" href="user_dashboard.html" style="min-width: 240px; height: 50px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">End & Return to Dashboard</a>
                 </div>
 
                 <div class="charts-container">
