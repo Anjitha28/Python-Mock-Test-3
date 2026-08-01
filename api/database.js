@@ -80,7 +80,8 @@ const db = {
   connect: async () => {
     if (pgPool) {
       try {
-        return await pgPool.connect();
+        const client = await pgPool.connect();
+        return client;
       } catch (e) {
         console.warn('⚠️ pgPool.connect() failed. Disabling pgPool & using Supabase client adapter.');
         pgPool = null;
@@ -146,12 +147,10 @@ async function executeSupabaseQuery(sqlText, params = []) {
     return { rows };
   }
 
-  // E. SELECT FROM mock_test_3_users (Login & check duplicate)
+  // E. SELECT FROM mock_test_3_users
   if (lower.includes('from mock_test_3_users')) {
-    // 1. Check duplicate username or email
     if (lower.includes('lower(username) = lower($1)')) {
       if (lower.includes('and role = $2') || lower.includes('role = $2')) {
-        // Login query: (LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)) AND role = $2
         const target = (params[0] || '').toLowerCase();
         const role = params[1];
         const { data, error } = await supabase.from('mock_test_3_users').select('*').eq('role', role);
@@ -162,7 +161,6 @@ async function executeSupabaseQuery(sqlText, params = []) {
         );
         return { rows: filtered };
       } else {
-        // Signup check duplicate username
         const target = (params[0] || '').toLowerCase();
         const { data, error } = await supabase.from('mock_test_3_users').select('id, username');
         if (error) throw new Error(error.message);
@@ -185,7 +183,12 @@ async function executeSupabaseQuery(sqlText, params = []) {
       return { rows: data || [] };
     }
 
-    // Default fetch users
+    if (lower.includes('where id = $1')) {
+      const { data, error } = await supabase.from('mock_test_3_users').select('*').eq('id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: data || [] };
+    }
+
     const { data, error } = await supabase.from('mock_test_3_users').select('*').order('created_at', { ascending: false });
     if (error) throw new Error(error.message);
     return { rows: data || [] };
@@ -228,7 +231,20 @@ async function executeSupabaseQuery(sqlText, params = []) {
     return { rows: data || [] };
   }
 
-  // H. SESSIONS
+  // H. DELETE FROM mock_test_3_users
+  if (lower.startsWith('delete from mock_test_3_users')) {
+    if (lower.includes('any(')) {
+      const { error } = await supabase.from('mock_test_3_users').delete().in('id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else {
+      const { error } = await supabase.from('mock_test_3_users').delete().eq('id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    }
+  }
+
+  // I. SESSIONS
   if (lower.startsWith('insert into mock_test_3_sessions')) {
     const payload = { token: params[0], user_id: params[1], username: params[2], role: params[3] };
     const { data, error } = await supabase.from('mock_test_3_sessions').insert([payload]).select('*');
@@ -257,12 +273,22 @@ async function executeSupabaseQuery(sqlText, params = []) {
   }
 
   if (lower.startsWith('delete from mock_test_3_sessions')) {
-    const { error } = await supabase.from('mock_test_3_sessions').delete().eq('token', params[0]);
-    if (error) throw new Error(error.message);
-    return { rows: [] };
+    if (lower.includes('any(')) {
+      const { error } = await supabase.from('mock_test_3_sessions').delete().in('user_id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else if (lower.includes('user_id = $1 or username = $2')) {
+      const { error } = await supabase.from('mock_test_3_sessions').delete().or(`user_id.eq.${params[0]},username.eq.${params[1]}`);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else {
+      const { error } = await supabase.from('mock_test_3_sessions').delete().eq('token', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    }
   }
 
-  // I. SETTINGS
+  // J. SETTINGS
   if (lower.includes('from mock_test_3_settings')) {
     const { data, error } = await supabase.from('mock_test_3_settings').select('*').eq('key', 'exam_mode');
     if (error) throw new Error(error.message);
@@ -282,7 +308,7 @@ async function executeSupabaseQuery(sqlText, params = []) {
     return { rows: [] };
   }
 
-  // J. MAIN SESSIONS
+  // K. MAIN SESSIONS
   if (lower.includes('from mock_test_3_main_sessions')) {
     const { data, error } = await supabase.from('mock_test_3_main_sessions').select('*').eq('status', 'active').order('created_at', { ascending: false }).limit(1);
     if (error) throw new Error(error.message);
@@ -301,35 +327,85 @@ async function executeSupabaseQuery(sqlText, params = []) {
     return { rows: data || [] };
   }
 
-  // K. EXAM RESULTS (mock_test_3_results)
+  // L. EXAM RESULTS (mock_test_3_results)
+
+  // 1. SELECT MAX(attempt_number)
+  if (lower.includes('max(attempt_number)')) {
+    const userName = params[0];
+    const { data, error } = await supabase.from('mock_test_3_results').select('attempt_number').eq('user_name', userName);
+    if (error) throw new Error(error.message);
+    const maxVal = (data || []).reduce((max, r) => Math.max(max, parseInt(r.attempt_number) || 0), 0);
+    return { rows: [{ max_attempt: maxVal }] };
+  }
+
+  // 2. INSERT INTO mock_test_3_results
   if (lower.startsWith('insert into mock_test_3_results')) {
-    const payload = {
-      user_name: params[0],
-      exam_name: params[1],
-      mock_test: params[2],
-      exam_mode: params[3] || 'practice',
-      attempt_number: params[4],
-      score: params[5],
-      percentage: params[6],
-      result: params[7],
-      total_marks: params[8],
-      total_questions: params[9],
-      correct_answers: params[10],
-      incorrect_answers: params[11],
-      not_attended: params[12],
-      time_taken: params[13],
-      time_allowed: params[14],
-      time_remaining: params[15],
-      submission_type: params[16],
-      answers: typeof params[17] === 'object' && params[17] !== null ? params[17] : (typeof params[17] === 'string' && (params[17].startsWith('{') || params[17].startsWith('[')) ? JSON.parse(params[17]) : {}),
-      completion_status: params[18] || 'completed',
-      main_session_id: params[19] || null
-    };
+    let payload = {};
+
+    if (params.length === 20) {
+      // 20 params format from /api/quiz/submit
+      payload = {
+        user_name: params[0],
+        exam_name: params[1] || 'Python Mastery',
+        mock_test: params[2] || 'da_mock3',
+        exam_mode: params[3] || 'practice',
+        main_session_id: params[4] || null,
+        attempt_number: parseInt(params[5]) || 1,
+        score: parseFloat(params[6]) || 0,
+        percentage: parseFloat(params[7]) || 0,
+        result: params[8] || 'FAIL',
+        total_marks: parseFloat(params[9]) || 100,
+        total_questions: parseInt(params[10]) || 40,
+        correct_answers: parseInt(params[11]) || 0,
+        incorrect_answers: parseInt(params[12]) || 0,
+        not_attended: parseInt(params[13]) || 0,
+        time_taken: parseInt(params[14]) || 0,
+        time_allowed: parseInt(params[15]) || 600,
+        time_remaining: parseInt(params[16]) || 0,
+        submission_type: params[17] || 'manual',
+        answers: typeof params[18] === 'object' && params[18] !== null ? params[18] : (typeof params[18] === 'string' && (params[18].startsWith('{') || params[18].startsWith('[')) ? JSON.parse(params[18]) : {}),
+        completion_status: params[19] || 'completed'
+      };
+    } else if (params.length === 18) {
+      // 18 params format from JSONP / route
+      payload = {
+        user_name: params[0],
+        exam_name: params[1] || 'Python Mastery',
+        mock_test: params[2] || 'da_mock3',
+        exam_mode: params[3] || 'practice',
+        attempt_number: parseInt(params[4]) || 1,
+        score: parseFloat(params[5]) || 0,
+        percentage: parseFloat(params[6]) || 0,
+        result: params[7] || 'FAIL',
+        total_marks: parseFloat(params[8]) || 100,
+        total_questions: parseInt(params[9]) || 40,
+        correct_answers: parseInt(params[10]) || 0,
+        incorrect_answers: parseInt(params[11]) || 0,
+        not_attended: parseInt(params[12]) || 0,
+        time_taken: parseInt(params[13]) || 0,
+        time_allowed: parseInt(params[14]) || 600,
+        time_remaining: parseInt(params[15]) || 0,
+        submission_type: params[16] || 'manual',
+        completion_status: params[17] || 'completed'
+      };
+    } else {
+      payload = {
+        user_name: params[0],
+        exam_name: params[1] || 'Python Mastery',
+        mock_test: params[2] || 'da_mock3',
+        exam_mode: params[3] || 'practice',
+        score: parseFloat(params[4]) || 0,
+        percentage: parseFloat(params[5]) || 0,
+        result: params[6] || 'PASS'
+      };
+    }
+
     const { data, error } = await supabase.from('mock_test_3_results').insert([payload]).select('*');
     if (error) throw new Error(error.message);
     return { rows: data || [] };
   }
 
+  // 3. SELECT FROM mock_test_3_results
   if (lower.includes('from mock_test_3_results') && lower.includes('exam_mode = \'main\'')) {
     const { data, error } = await supabase.from('mock_test_3_results')
       .select('*')
@@ -353,7 +429,20 @@ async function executeSupabaseQuery(sqlText, params = []) {
     }
   }
 
-  // L. REGISTERED SYSTEM USERS INSERT / UPDATE / DELETE
+  // 4. DELETE FROM mock_test_3_results
+  if (lower.startsWith('delete from mock_test_3_results')) {
+    if (lower.includes('any(')) {
+      const { error } = await supabase.from('mock_test_3_results').delete().in('user_name', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else {
+      const { error } = await supabase.from('mock_test_3_results').delete().eq('user_name', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    }
+  }
+
+  // M. REGISTERED SYSTEM USERS INSERT / UPDATE / DELETE
   if (lower.startsWith('insert into mock_test_3_registered_system_users')) {
     const payload = {
       name: params[0],
@@ -389,9 +478,15 @@ async function executeSupabaseQuery(sqlText, params = []) {
   }
 
   if (lower.startsWith('delete from mock_test_3_registered_system_users')) {
-    const { error } = await supabase.from('mock_test_3_registered_system_users').delete().eq('id', params[0]);
-    if (error) throw new Error(error.message);
-    return { rows: [] };
+    if (lower.includes('any(')) {
+      const { error } = await supabase.from('mock_test_3_registered_system_users').delete().in('id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else {
+      const { error } = await supabase.from('mock_test_3_registered_system_users').delete().eq('id', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    }
   }
 
   // Fallback default empty result

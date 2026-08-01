@@ -975,8 +975,8 @@ router.post('/quiz/submit', async (req, res) => {
             time_taken, time_allowed, time_remaining, submission_type, answers
         } = req.body;
 
-        const userName = (user_name || 'Unknown').trim();
-        const mockTest = mock_test || 'da_mock3';
+        const userName = (user_name || req.body.userName || req.body.name || req.body.username || 'Unknown').trim();
+        const mockTest = mock_test || req.body.mockTest || 'da_mock3';
         const globalMode = await getGlobalExamMode();
 
         let activeMainSessionId = null;
