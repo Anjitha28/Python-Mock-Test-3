@@ -623,9 +623,58 @@ router.delete('/admin/registered-system-users/:id', async (req, res) => {
         }
 
         const { id } = req.params;
+
+        // 1. Fetch Registered System User details
+        const regUserRes = await pool.query('SELECT id, name, phone, email FROM mock_test_3_registered_system_users WHERE id = $1', [id]);
+        if (regUserRes.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Registered system user not found.' });
+        }
+        const regUser = regUserRes.rows[0];
+
+        // 2. Fetch associated application user accounts
+        const appUsersRes = await pool.query(
+            `SELECT id, username FROM mock_test_3_users 
+             WHERE registered_system_user_id = $1 
+                OR (phone = $2 AND phone IS NOT NULL AND phone != '') 
+                OR (LOWER(email) = LOWER($3) AND email IS NOT NULL AND email != '')`,
+            [id, regUser.phone, regUser.email]
+        );
+
+        const appUserIds = appUsersRes.rows.map(u => u.id);
+        const appUsernames = appUsersRes.rows.map(u => u.username);
+
+        // Build list of all identifiers associated with this user
+        const targetUsernames = Array.from(new Set([
+            ...appUsernames,
+            regUser.name,
+            regUser.phone,
+            regUser.email
+        ])).filter(Boolean);
+
+        // 3. Delete associated student exam results
+        if (targetUsernames.length > 0) {
+            await pool.query(
+                `DELETE FROM mock_test_3_results 
+                 WHERE user_name = ANY($1::text[])`,
+                [targetUsernames]
+            );
+        }
+
+        // 4. Delete associated user sessions & application user accounts
+        if (appUserIds.length > 0) {
+            await pool.query('DELETE FROM mock_test_3_sessions WHERE user_id = ANY($1::uuid[])', [appUserIds]);
+            await pool.query('DELETE FROM mock_test_3_users WHERE id = ANY($1::uuid[])', [appUserIds]);
+        }
+
+        // 5. Delete Registered System User record
         await pool.query('DELETE FROM mock_test_3_registered_system_users WHERE id = $1', [id]);
-        return res.json({ success: true, message: 'Registered user deleted successfully.' });
+
+        return res.json({
+            success: true,
+            message: `Registered user '${regUser.name}' and all associated exam records deleted successfully.`
+        });
     } catch (e) {
+        console.error('Error deleting registered user:', e);
         return res.status(500).json({ success: false, message: e.message });
     }
 });
@@ -644,9 +693,60 @@ router.post('/admin/registered-system-users/bulk-delete', async (req, res) => {
             return res.status(400).json({ success: false, message: 'No user IDs provided for deletion.' });
         }
 
+        // 1. Fetch all target Registered System Users
+        const regUsersRes = await pool.query(
+            'SELECT id, name, phone, email FROM mock_test_3_registered_system_users WHERE id = ANY($1::uuid[])',
+            [ids]
+        );
+        const regUsers = regUsersRes.rows;
+
+        const phones = regUsers.map(u => u.phone).filter(Boolean);
+        const emails = regUsers.map(u => u.email.toLowerCase()).filter(Boolean);
+        const names = regUsers.map(u => u.name).filter(Boolean);
+
+        // 2. Fetch associated application user accounts
+        const appUsersRes = await pool.query(
+            `SELECT id, username FROM mock_test_3_users 
+             WHERE registered_system_user_id = ANY($1::uuid[]) 
+                OR phone = ANY($2::text[]) 
+                OR LOWER(email) = ANY($3::text[])`,
+            [ids, phones, emails]
+        );
+
+        const appUserIds = appUsersRes.rows.map(u => u.id);
+        const appUsernames = appUsersRes.rows.map(u => u.username);
+
+        const targetUsernames = Array.from(new Set([
+            ...appUsernames,
+            ...names,
+            ...phones,
+            ...emails
+        ])).filter(Boolean);
+
+        // 3. Delete associated student exam results
+        if (targetUsernames.length > 0) {
+            await pool.query(
+                `DELETE FROM mock_test_3_results 
+                 WHERE user_name = ANY($1::text[])`,
+                [targetUsernames]
+            );
+        }
+
+        // 4. Delete associated user sessions & application user accounts
+        if (appUserIds.length > 0) {
+            await pool.query('DELETE FROM mock_test_3_sessions WHERE user_id = ANY($1::uuid[])', [appUserIds]);
+            await pool.query('DELETE FROM mock_test_3_users WHERE id = ANY($1::uuid[])', [appUserIds]);
+        }
+
+        // 5. Delete Registered System Users records
         await pool.query('DELETE FROM mock_test_3_registered_system_users WHERE id = ANY($1::uuid[])', [ids]);
-        return res.json({ success: true, message: `${ids.length} registered users deleted successfully.` });
+
+        return res.json({
+            success: true,
+            message: `${ids.length} registered system user(s) and all associated exam records deleted successfully.`
+        });
     } catch (e) {
+        console.error('Error in bulk delete registered users:', e);
         return res.status(500).json({ success: false, message: e.message });
     }
 });
