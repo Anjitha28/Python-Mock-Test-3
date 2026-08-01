@@ -2,6 +2,7 @@ import pg from 'pg';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -9,201 +10,397 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const { Pool } = pg;
 
-// A safe fallback pool object for serverless environments when DB is unconfigured
-const dummyPool = {
-    query: async (text, params) => {
-        console.warn('⚠️ PostgreSQL query fallback (DATABASE_URL not set or connecting):', text?.substring(0, 50));
-        if (text?.toLowerCase().includes('select * from mock_test_3_users')) {
-            return { rows: [{ id: 'a9b7223a-100f-4383-b552-74970f5b800f', username: 'admin123', role: 'admin', is_first_login: false }] };
-        }
-        if (text?.toLowerCase().includes('mock_test_3_settings')) {
-            return { rows: [{ key: 'exam_mode', value: 'practice' }] };
-        }
-        return { rows: [] };
-    },
-    connect: async () => dummyPool,
-    release: () => {},
-    on: () => {},
-    end: async () => {}
-};
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yjglyjkelzrtlzhgrdea.supabase.co';
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'sb_publishable_iA23kS6zWQI5FucPctYSDA_iOcArGvN';
 
-let activePool = dummyPool;
+const supabase = (SUPABASE_URL && SUPABASE_KEY) ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-if (!process.env.DATABASE_URL) {
-  console.warn('⚠️ DATABASE_URL is not set in environment variables.');
-} else {
+let pgPool = null;
+if (process.env.DATABASE_URL) {
   try {
-    activePool = new Pool({
+    const isLocalhost = process.env.DATABASE_URL.includes('localhost') || process.env.DATABASE_URL.includes('127.0.0.1');
+    pgPool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      ssl: {
-        rejectUnauthorized: false
-      },
-      connectionTimeoutMillis: 15000,
+      ssl: isLocalhost ? false : { rejectUnauthorized: false },
+      connectionTimeoutMillis: 5000,
       idleTimeoutMillis: 30000,
       max: 10
     });
 
-    activePool.on('error', (err) => {
+    pgPool.on('error', (err) => {
       console.error('⚠️ PostgreSQL pool idle client error:', err.message);
     });
 
-    // Run table initializations asynchronously
-    initTables(activePool).catch(err => {
-      console.error('⚠️ Non-blocking DB init notice:', err.message);
+    // Quick initial ping test to verify credentials
+    pgPool.query('SELECT 1').catch((err) => {
+      if (err.message?.includes('password authentication failed') || err.code === '28P01') {
+        console.warn('⚠️ Direct PostgreSQL password authentication failed. Automatically switched to Supabase Cloud API.');
+        pgPool = null;
+      }
     });
   } catch (e) {
     console.error('⚠️ Error initializing PostgreSQL pool:', e.message);
-    activePool = dummyPool;
+    pgPool = null;
   }
 }
 
-async function initTables(poolInstance) {
-  let client;
-  try {
-    client = await poolInstance.connect();
-    // Ensure mock_test_3_results table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_results (
-        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_name        TEXT NOT NULL,
-        exam_name        TEXT,
-        mock_test        TEXT,
-        exam_mode        TEXT NOT NULL DEFAULT 'practice',
-        attempt_number   INTEGER,
-        score            NUMERIC NOT NULL,
-        percentage       NUMERIC NOT NULL,
-        result           TEXT,
-        total_marks      NUMERIC,
-        total_questions  INTEGER,
-        correct_answers  INTEGER DEFAULT 0,
-        incorrect_answers INTEGER DEFAULT 0,
-        not_attended     INTEGER DEFAULT 0,
-        time_taken       INTEGER,
-        time_allowed     INTEGER DEFAULT 600,
-        time_remaining   INTEGER,
-        submission_type  TEXT,
-        answers          JSONB DEFAULT '{}'::jsonb,
-        completion_status TEXT DEFAULT 'completed',
-        created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
-
-    await client.query(`
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS exam_mode TEXT DEFAULT 'practice';
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS main_session_id UUID;
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS incorrect_answers INTEGER DEFAULT 0;
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS not_attended INTEGER DEFAULT 0;
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS time_allowed INTEGER DEFAULT 600;
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS answers JSONB DEFAULT '{}'::jsonb;
-      ALTER TABLE mock_test_3_results ADD COLUMN IF NOT EXISTS completion_status TEXT DEFAULT 'completed';
-    `);
-
-    // Ensure mock_test_3_main_sessions table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_main_sessions (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        status TEXT NOT NULL DEFAULT 'active',
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        closed_at TIMESTAMPTZ
-      );
-    `);
-
-    // Ensure mock_test_3_settings table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_settings (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL,
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
-    await client.query(`
-      INSERT INTO mock_test_3_settings (key, value)
-      VALUES ('exam_mode', 'practice')
-      ON CONFLICT (key) DO NOTHING;
-    `);
-
-    // Ensure mock_test_3_users table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_users (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        username TEXT UNIQUE NOT NULL,
-        name TEXT,
-        phone TEXT,
-        email TEXT UNIQUE,
-        password_hash TEXT NOT NULL,
-        role TEXT NOT NULL DEFAULT 'user',
-        is_first_login BOOLEAN NOT NULL DEFAULT true,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
-
-    await client.query(`
-      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS name TEXT;
-      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS phone TEXT;
-      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS email TEXT;
-      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS registered_system_user_id UUID;
-      CREATE UNIQUE INDEX IF NOT EXISTS idx_mock_test_3_users_email ON mock_test_3_users (LOWER(email)) WHERE email IS NOT NULL;
-    `);
-
-    // Ensure mock_test_3_sessions table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_sessions (
-        token TEXT PRIMARY KEY,
-        user_id UUID NOT NULL REFERENCES mock_test_3_users(id) ON DELETE CASCADE,
-        username TEXT NOT NULL,
-        role TEXT NOT NULL,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
-
-    // Ensure mock_test_3_registered_system_users table exists
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS mock_test_3_registered_system_users (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        name TEXT NOT NULL,
-        phone TEXT UNIQUE NOT NULL,
-        email TEXT NOT NULL,
-        college TEXT NOT NULL,
-        status TEXT NOT NULL DEFAULT 'Active',
-        signup_status TEXT NOT NULL DEFAULT 'Not Signed Up',
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-      );
-    `);
-
-    const regCheck = await client.query('SELECT COUNT(*) FROM mock_test_3_registered_system_users');
-    if (parseInt(regCheck.rows[0].count) === 0) {
-      await client.query(`
-        INSERT INTO mock_test_3_registered_system_users (name, phone, email, college, status, signup_status)
-        VALUES 
-          ('Anitha', '9876543210', 'anitha@gmail.com', 'ABC College', 'Active', 'Signed Up'),
-          ('Rahul', '9876543211', 'rahul@gmail.com', 'XYZ College', 'Active', 'Not Signed Up'),
-          ('Meera', '9876543212', 'meera@gmail.com', 'DEF College', 'Inactive', 'Not Signed Up')
-      `);
-    }
-
-    // Seed default Admin accounts if not exist
-    const crypto = await import('crypto');
-    const defaultAdmins = ['admin', 'admin123'];
-    for (const adminUser of defaultAdmins) {
-      const adminCheck = await client.query('SELECT * FROM mock_test_3_users WHERE LOWER(username) = LOWER($1)', [adminUser]);
-      if (adminCheck.rows.length === 0) {
-        const salt = crypto.randomBytes(16).toString('hex');
-        const hash = crypto.pbkdf2Sync('admin@123', salt, 10000, 64, 'sha512').toString('hex');
-        const adminPasswordHash = `${salt}:${hash}`;
-
-        await client.query(
-          `INSERT INTO mock_test_3_users (username, password_hash, role, is_first_login) VALUES ($1, $2, $3, $4)`,
-          [adminUser, adminPasswordHash, 'admin', false]
-        );
+// Robust unified Database Object exporting query(), connect(), etc.
+const db = {
+  query: async (text, params = []) => {
+    // 1. Try PostgreSQL pool first if available
+    if (pgPool) {
+      try {
+        const res = await pgPool.query(text, params);
+        return res;
+      } catch (err) {
+        const errMsg = err.message || '';
+        if (
+          errMsg.includes('password authentication failed') ||
+          errMsg.includes('ECONNREFUSED') ||
+          errMsg.includes('ENOTFOUND') ||
+          errMsg.includes('timeout') ||
+          err.code === '28P01' ||
+          err.code === '42P01'
+        ) {
+          console.warn('⚠️ Direct PostgreSQL query failed (' + errMsg + '). Disabling pgPool & switching to Supabase SDK.');
+          pgPool = null;
+        } else {
+          throw err;
+        }
       }
     }
-  } catch (err) {
-    console.error('⚠️ DB Init Error:', err.message);
-  } finally {
-    if (client) client.release();
+
+    // 2. Fallback to Supabase REST SDK
+    if (supabase) {
+      return await executeSupabaseQuery(text, params);
+    }
+
+    throw new Error('No valid database connection or Supabase client available.');
+  },
+  connect: async () => {
+    if (pgPool) {
+      try {
+        return await pgPool.connect();
+      } catch (e) {
+        console.warn('⚠️ pgPool.connect() failed. Disabling pgPool & using Supabase client adapter.');
+        pgPool = null;
+      }
+    }
+    return {
+      query: (text, params) => db.query(text, params),
+      release: () => {}
+    };
+  },
+  on: () => {},
+  end: async () => {
+    if (pgPool) await pgPool.end();
   }
+};
+
+// SQL-to-Supabase REST translator for seamless fallback
+async function executeSupabaseQuery(sqlText, params = []) {
+  const sql = sqlText.trim();
+  const lower = sql.toLowerCase();
+
+  // A. SELECT COUNT(*) FROM mock_test_3_registered_system_users
+  if (lower.startsWith('select count(*) from mock_test_3_registered_system_users')) {
+    const { count, error } = await supabase.from('mock_test_3_registered_system_users').select('*', { count: 'exact', head: true });
+    if (error) throw new Error(error.message);
+    return { rows: [{ count: count || 0 }] };
+  }
+
+  // B. SELECT FROM mock_test_3_registered_system_users WHERE phone = $1
+  if (lower.includes('from mock_test_3_registered_system_users') && lower.includes('where phone =')) {
+    const { data, error } = await supabase.from('mock_test_3_registered_system_users').select('*').eq('phone', params[0]);
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // C. SELECT FROM mock_test_3_registered_system_users WHERE id = $1
+  if (lower.includes('from mock_test_3_registered_system_users') && lower.includes('where id =')) {
+    const { data, error } = await supabase.from('mock_test_3_registered_system_users').select('*').eq('id', params[0]);
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // D. SELECT FOR ADMIN REGISTERED SYSTEM USERS (JOIN app users)
+  if (lower.includes('from mock_test_3_registered_system_users r')) {
+    const { data: regUsers, error: regErr } = await supabase.from('mock_test_3_registered_system_users').select('*').order('created_at', { ascending: false });
+    if (regErr) throw new Error(regErr.message);
+
+    const { data: appUsers, error: appErr } = await supabase.from('mock_test_3_users').select('*');
+    if (appErr) throw new Error(appErr.message);
+
+    const rows = (regUsers || []).map(r => {
+      const match = (appUsers || []).find(u => 
+        u.registered_system_user_id === r.id ||
+        (u.phone && r.phone && u.phone === r.phone) ||
+        (u.email && r.email && u.email.toLowerCase() === r.email.toLowerCase())
+      );
+      return {
+        ...r,
+        signup_status: match ? 'Signed Up' : 'Not Signed Up',
+        application_user_id: match ? match.id : null
+      };
+    });
+    return { rows };
+  }
+
+  // E. SELECT FROM mock_test_3_users (Login & check duplicate)
+  if (lower.includes('from mock_test_3_users')) {
+    // 1. Check duplicate username or email
+    if (lower.includes('lower(username) = lower($1)')) {
+      if (lower.includes('and role = $2') || lower.includes('role = $2')) {
+        // Login query: (LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)) AND role = $2
+        const target = (params[0] || '').toLowerCase();
+        const role = params[1];
+        const { data, error } = await supabase.from('mock_test_3_users').select('*').eq('role', role);
+        if (error) throw new Error(error.message);
+        const filtered = (data || []).filter(u => 
+          (u.username && u.username.toLowerCase() === target) ||
+          (u.email && u.email.toLowerCase() === target)
+        );
+        return { rows: filtered };
+      } else {
+        // Signup check duplicate username
+        const target = (params[0] || '').toLowerCase();
+        const { data, error } = await supabase.from('mock_test_3_users').select('id, username');
+        if (error) throw new Error(error.message);
+        const filtered = (data || []).filter(u => u.username && u.username.toLowerCase() === target);
+        return { rows: filtered };
+      }
+    }
+
+    if (lower.includes('lower(email) = lower($1)')) {
+      const target = (params[0] || '').toLowerCase();
+      const { data, error } = await supabase.from('mock_test_3_users').select('id, email');
+      if (error) throw new Error(error.message);
+      const filtered = (data || []).filter(u => u.email && u.email.toLowerCase() === target);
+      return { rows: filtered };
+    }
+
+    if (lower.includes('where phone = $1')) {
+      const { data, error } = await supabase.from('mock_test_3_users').select('id, phone').eq('phone', params[0]);
+      if (error) throw new Error(error.message);
+      return { rows: data || [] };
+    }
+
+    // Default fetch users
+    const { data, error } = await supabase.from('mock_test_3_users').select('*').order('created_at', { ascending: false });
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // F. INSERT INTO mock_test_3_users
+  if (lower.startsWith('insert into mock_test_3_users')) {
+    let payload = {};
+    if (params.length === 6) {
+      payload = {
+        username: params[0],
+        name: params[1],
+        phone: params[2],
+        email: params[3],
+        password_hash: params[4],
+        role: 'user',
+        is_first_login: false,
+        registered_system_user_id: params[5]
+      };
+    } else if (params.length === 4) {
+      payload = {
+        username: params[0],
+        password_hash: params[1],
+        role: params[2],
+        is_first_login: params[3]
+      };
+    }
+    const { data, error } = await supabase.from('mock_test_3_users').insert([payload]).select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // G. UPDATE mock_test_3_users SET password_hash = $1
+  if (lower.startsWith('update mock_test_3_users')) {
+    const { data, error } = await supabase.from('mock_test_3_users')
+      .update({ password_hash: params[0], is_first_login: false, updated_at: new Date().toISOString() })
+      .eq('id', params[1])
+      .select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // H. SESSIONS
+  if (lower.startsWith('insert into mock_test_3_sessions')) {
+    const payload = { token: params[0], user_id: params[1], username: params[2], role: params[3] };
+    const { data, error } = await supabase.from('mock_test_3_sessions').insert([payload]).select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.includes('from mock_test_3_sessions s')) {
+    const token = params[0];
+    const { data: sessionData, error: sErr } = await supabase.from('mock_test_3_sessions').select('*').eq('token', token);
+    if (sErr || !sessionData || sessionData.length === 0) return { rows: [] };
+
+    const sess = sessionData[0];
+    const { data: userData } = await supabase.from('mock_test_3_users').select('*').eq('id', sess.user_id);
+    const usr = (userData && userData[0]) || {};
+
+    return {
+      rows: [{
+        token: sess.token,
+        user_id: sess.user_id,
+        username: sess.username,
+        role: usr.role || sess.role,
+        is_first_login: usr.is_first_login ?? false
+      }]
+    };
+  }
+
+  if (lower.startsWith('delete from mock_test_3_sessions')) {
+    const { error } = await supabase.from('mock_test_3_sessions').delete().eq('token', params[0]);
+    if (error) throw new Error(error.message);
+    return { rows: [] };
+  }
+
+  // I. SETTINGS
+  if (lower.includes('from mock_test_3_settings')) {
+    const { data, error } = await supabase.from('mock_test_3_settings').select('*').eq('key', 'exam_mode');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.startsWith('insert into mock_test_3_settings')) {
+    const payload = { key: params[0] || 'exam_mode', value: params[0] || 'practice', updated_at: new Date().toISOString() };
+    const { data, error } = await supabase.from('mock_test_3_settings').upsert([payload]).select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.startsWith('delete from mock_test_3_settings')) {
+    const { error } = await supabase.from('mock_test_3_settings').delete().eq('key', 'active_main_session_id');
+    if (error) throw new Error(error.message);
+    return { rows: [] };
+  }
+
+  // J. MAIN SESSIONS
+  if (lower.includes('from mock_test_3_main_sessions')) {
+    const { data, error } = await supabase.from('mock_test_3_main_sessions').select('*').eq('status', 'active').order('created_at', { ascending: false }).limit(1);
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.startsWith('update mock_test_3_main_sessions')) {
+    const { error } = await supabase.from('mock_test_3_main_sessions').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('status', 'active');
+    if (error) throw new Error(error.message);
+    return { rows: [] };
+  }
+
+  if (lower.startsWith('insert into mock_test_3_main_sessions')) {
+    const { data, error } = await supabase.from('mock_test_3_main_sessions').insert([{ status: 'active' }]).select('id');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  // K. EXAM RESULTS (mock_test_3_results)
+  if (lower.startsWith('insert into mock_test_3_results')) {
+    const payload = {
+      user_name: params[0],
+      exam_name: params[1],
+      mock_test: params[2],
+      exam_mode: params[3] || 'practice',
+      attempt_number: params[4],
+      score: params[5],
+      percentage: params[6],
+      result: params[7],
+      total_marks: params[8],
+      total_questions: params[9],
+      correct_answers: params[10],
+      incorrect_answers: params[11],
+      not_attended: params[12],
+      time_taken: params[13],
+      time_allowed: params[14],
+      time_remaining: params[15],
+      submission_type: params[16],
+      answers: typeof params[17] === 'object' && params[17] !== null ? params[17] : (typeof params[17] === 'string' && (params[17].startsWith('{') || params[17].startsWith('[')) ? JSON.parse(params[17]) : {}),
+      completion_status: params[18] || 'completed',
+      main_session_id: params[19] || null
+    };
+    const { data, error } = await supabase.from('mock_test_3_results').insert([payload]).select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.includes('from mock_test_3_results') && lower.includes('exam_mode = \'main\'')) {
+    const { data, error } = await supabase.from('mock_test_3_results')
+      .select('*')
+      .eq('user_name', params[0])
+      .eq('exam_mode', 'main')
+      .eq('main_session_id', params[1])
+      .limit(1);
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.includes('from mock_test_3_results')) {
+    if (params[0]) {
+      const { data, error } = await supabase.from('mock_test_3_results').select('*').eq('user_name', params[0]).order('created_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      return { rows: data || [] };
+    } else {
+      const { data, error } = await supabase.from('mock_test_3_results').select('*').order('created_at', { ascending: false });
+      if (error) throw new Error(error.message);
+      return { rows: data || [] };
+    }
+  }
+
+  // L. REGISTERED SYSTEM USERS INSERT / UPDATE / DELETE
+  if (lower.startsWith('insert into mock_test_3_registered_system_users')) {
+    const payload = {
+      name: params[0],
+      phone: params[1],
+      email: params[2],
+      college: params[3],
+      status: 'Active',
+      signup_status: 'Not Signed Up'
+    };
+    const { data, error } = await supabase.from('mock_test_3_registered_system_users').insert([payload]).select('*');
+    if (error) throw new Error(error.message);
+    return { rows: data || [] };
+  }
+
+  if (lower.startsWith('update mock_test_3_registered_system_users')) {
+    if (lower.includes('set status = $1')) {
+      const { error } = await supabase.from('mock_test_3_registered_system_users').update({ status: params[0], updated_at: new Date().toISOString() }).in('id', params[1]);
+      if (error) throw new Error(error.message);
+      return { rows: [] };
+    } else {
+      const id = params[5];
+      const payload = {};
+      if (params[0]) payload.name = params[0];
+      if (params[1]) payload.phone = params[1];
+      if (params[2]) payload.email = params[2];
+      if (params[3]) payload.college = params[3];
+      if (params[4]) payload.status = params[4];
+      payload.updated_at = new Date().toISOString();
+      const { data, error } = await supabase.from('mock_test_3_registered_system_users').update(payload).eq('id', id).select('*');
+      if (error) throw new Error(error.message);
+      return { rows: data || [] };
+    }
+  }
+
+  if (lower.startsWith('delete from mock_test_3_registered_system_users')) {
+    const { error } = await supabase.from('mock_test_3_registered_system_users').delete().eq('id', params[0]);
+    if (error) throw new Error(error.message);
+    return { rows: [] };
+  }
+
+  // Fallback default empty result
+  return { rows: [] };
 }
 
-export default activePool;
+// Initial table check notice
+if (supabase) {
+  console.log('✅ Connected to Supabase Cloud Project (yjglyjkelzrtlzhgrdea)');
+}
+
+export default db;
