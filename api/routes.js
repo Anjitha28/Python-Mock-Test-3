@@ -566,6 +566,37 @@ router.post('/admin/registered-system-users/bulk-delete', async (req, res) => {
     }
 });
 
+// POST /api/admin/registered-system-users/bulk-status
+router.post('/admin/registered-system-users/bulk-status', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { ids, status } = req.body;
+        if (!Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ success: false, message: 'No user IDs provided for status update.' });
+        }
+
+        if (status !== 'Active' && status !== 'Inactive') {
+            return res.status(400).json({ success: false, message: 'Invalid status value. Must be Active or Inactive.' });
+        }
+
+        await pool.query(
+            `UPDATE mock_test_3_registered_system_users
+             SET status = $1, updated_at = NOW()
+             WHERE id = ANY($2::uuid[])`,
+            [status, ids]
+        );
+
+        return res.json({ success: true, message: `Status updated to ${status} for ${ids.length} users.` });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
 // GET /api/admin/users
 router.get('/admin/users', async (req, res) => {
     try {
