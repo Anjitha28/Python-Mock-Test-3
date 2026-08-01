@@ -381,8 +381,6 @@
             <img src="assets/Kvj logo.jpeg" alt="KVJ Logo" style="height: 38px;" onerror="this.src='Kvj logo.jpeg'">
             <span id="mock-title-badge" style="font-family:'Montserrat',sans-serif; font-size:13px; font-weight:700; color:#1e3a5f; background:#eff6ff; border:1px solid #bfdbfe; padding:5px 14px; border-radius:20px;">Python Mastery Mock Test 3</span>
         </div>
-        <!-- Quiz Countdown Timer Pill -->
-        <div class="timer-pill" id="timer-display" style="display: flex !important;">⏱️ <span id="timer-text">50:00</span></div>
     </nav>
 
     <div class="layout" style="max-width: 1000px; margin: 0 auto; justify-content: center;">
@@ -619,16 +617,8 @@
             const s = timeLeft % 60;
             const formatted = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 
-            const navTimerText = document.getElementById('timer-text');
-            if (navTimerText) navTimerText.textContent = formatted;
-
             const qTimerText = document.getElementById('q-timer-text');
             if (qTimerText) qTimerText.textContent = formatted;
-
-            const timerEl = document.getElementById('timer-display');
-            if (timerEl && !navTimerText) {
-                timerEl.textContent = `⏱️ ${formatted}`;
-            }
         }
 
         function updateTileBar() {
