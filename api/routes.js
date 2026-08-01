@@ -820,6 +820,44 @@ router.get('/admin/student-summary', async (req, res) => {
     }
 });
 
+// DELETE /api/admin/student-results/:studentId
+router.delete('/admin/student-results/:studentId', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { studentId } = req.params;
+        await pool.query('DELETE FROM mock_test_3_results WHERE user_name = $1', [studentId]);
+        return res.json({ success: true, message: 'Student exam records deleted successfully.' });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
+// POST /api/admin/student-results/bulk-delete
+router.post('/admin/student-results/bulk-delete', async (req, res) => {
+    try {
+        const token = getTokenFromReq(req);
+        const sessionUser = await getSessionUser(token);
+        if (!sessionUser || sessionUser.role !== 'admin') {
+            return res.status(403).json({ success: false, message: 'Forbidden: Admin access required.' });
+        }
+
+        const { studentIds } = req.body;
+        if (!Array.isArray(studentIds) || studentIds.length === 0) {
+            return res.status(400).json({ success: false, message: 'No student IDs provided for deletion.' });
+        }
+
+        await pool.query('DELETE FROM mock_test_3_results WHERE user_name = ANY($1::text[])', [studentIds]);
+        return res.json({ success: true, message: `${studentIds.length} student exam records deleted successfully.` });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
 // POST /api/quiz/submit
 router.post('/quiz/submit', async (req, res) => {
     try {

@@ -437,26 +437,42 @@
 
             <!-- SECTION 1: Student Exam Attempts & Results -->
             <div id="sec-student-results" class="admin-section-panel active-panel">
-                <div class="section-title">
+                <div class="section-title" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <span>Student Exam Attempts & Results</span>
                     <span style="font-size: 12px; font-weight: 600; color: #64748b;">Sorted by Most Recent Activity</span>
                 </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Student ID</th>
-                            <th>Most Recent Exam</th>
-                            <th>Last Attempt Date/Time</th>
-                            <th>Main Attempts</th>
-                            <th>Practice Attempts</th>
-                            <th>Details</th>
-                        </tr>
-                    </thead>
-                    <tbody id="student-summary-tbody">
-                        <tr><td colspan="7">Loading student exam records...</td></tr>
-                    </tbody>
-                </table>
+
+                <!-- Bulk Selection Toolbar for Student Exam Results -->
+                <div id="student-results-bulk-actions-bar" style="display: none; align-items: center; justify-content: space-between; background: #eff6ff; border: 1px solid #bfdbfe; padding: 10px 16px; border-radius: 8px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <div style="font-weight: 700; font-size: 14px; color: #1e40af;">
+                        <span id="selected-student-results-count">0</span> student exam record(s) selected
+                    </div>
+                    <button onclick="bulkDeleteSelectedStudentResults()" style="background: #dc2626; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
+                        🗑 Delete Selected
+                    </button>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px; text-align: center;">
+                                    <input type="checkbox" id="select-all-student-results" onchange="toggleSelectAllStudentResults(this)" style="cursor: pointer; transform: scale(1.2);">
+                                </th>
+                                <th>Student Name</th>
+                                <th>Student ID</th>
+                                <th>Most Recent Exam</th>
+                                <th>Last Attempt Date/Time</th>
+                                <th>Main Attempts</th>
+                                <th>Practice Attempts</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-summary-tbody">
+                            <tr><td colspan="8">Loading student exam records...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- SECTION 2: Registered System Users -->
@@ -744,10 +760,13 @@
             return rawName;
         }
 
+        let selectedStudentResultIds = new Set();
+
         function renderStudentTable(students) {
             const tbody = document.getElementById('student-summary-tbody');
             if (!students || students.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7">No student exam attempts found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 20px; color: #64748b;">No student exam attempts found.</td></tr>';
+                updateStudentResultsBulkBar();
                 return;
             }
 
@@ -756,10 +775,14 @@
                 const safeId = `student-${idx}`;
                 const lastDate = new Date(s.last_attempt_date).toLocaleString();
                 const examDisplayName = formatExamName(s.most_recent_exam);
+                const isChecked = selectedStudentResultIds.has(s.student_id);
 
                 // Top-level student row
                 html += `
                     <tr class="student-row" id="row-${safeId}">
+                        <td style="text-align: center;">
+                            <input type="checkbox" class="student-result-cb" data-id="${s.student_id}" ${isChecked ? 'checked' : ''} onchange="onStudentResultCbChange('${s.student_id}', this.checked)" style="cursor: pointer; transform: scale(1.1);">
+                        </td>
                         <td><strong>${s.student_name}</strong></td>
                         <td><code>${s.student_id}</code></td>
                         <td>${examDisplayName}</td>
@@ -767,13 +790,14 @@
                         <td><span class="metric-pill main">${s.main_attempts_count} Main</span></td>
                         <td><span class="metric-pill practice">${s.practice_attempts_count} Practice</span></td>
                         <td>
-                            <button id="btn-toggle-${safeId}" class="btn-toggle" onclick="toggleStudentDetails('${safeId}', ${idx})">Show</button>
+                            <button id="btn-toggle-${safeId}" class="btn-toggle" onclick="toggleStudentDetails('${safeId}', ${idx})" style="margin-right: 6px;">Show</button>
+                            <button class="btn-delete" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 5px 12px; border-radius: 6px; font-weight: 700; cursor: pointer;" onclick="confirmDeleteStudentResults('${s.student_id}', '${s.student_name}')">🗑 Delete</button>
                         </td>
                     </tr>
                     
                     <!-- Inline Expanded Details Row (Directly below student row) -->
                     <tr class="details-row" id="details-row-${safeId}" style="display: none;">
-                        <td colspan="7">
+                        <td colspan="8">
                             <div class="details-container">
                                 <div class="student-info-header">
                                     <div>
@@ -795,6 +819,100 @@
             });
 
             tbody.innerHTML = html;
+
+            // Check select-all header state
+            const selectAllHeader = document.getElementById('select-all-student-results');
+            if (selectAllHeader) {
+                const allSelected = students.length > 0 && students.every(s => selectedStudentResultIds.has(s.student_id));
+                selectAllHeader.checked = allSelected;
+            }
+            updateStudentResultsBulkBar();
+        }
+
+        function toggleSelectAllStudentResults(allCb) {
+            if (!studentDataCache || studentDataCache.length === 0) return;
+            studentDataCache.forEach(s => {
+                if (allCb.checked) {
+                    selectedStudentResultIds.add(s.student_id);
+                } else {
+                    selectedStudentResultIds.delete(s.student_id);
+                }
+            });
+            renderStudentTable(studentDataCache);
+        }
+
+        function onStudentResultCbChange(studentId, checked) {
+            if (checked) {
+                selectedStudentResultIds.add(studentId);
+            } else {
+                selectedStudentResultIds.delete(studentId);
+            }
+            const selectAllHeader = document.getElementById('select-all-student-results');
+            if (selectAllHeader) {
+                const allSelected = studentDataCache.length > 0 && studentDataCache.every(s => selectedStudentResultIds.has(s.student_id));
+                selectAllHeader.checked = allSelected;
+            }
+            updateStudentResultsBulkBar();
+        }
+
+        function updateStudentResultsBulkBar() {
+            const bar = document.getElementById('student-results-bulk-actions-bar');
+            const countSpan = document.getElementById('selected-student-results-count');
+            if (bar && countSpan) {
+                countSpan.textContent = selectedStudentResultIds.size;
+                bar.style.display = selectedStudentResultIds.size > 0 ? 'flex' : 'none';
+            }
+        }
+
+        async function confirmDeleteStudentResults(studentId, studentName) {
+            if (!confirm(`Are you sure you want to delete all exam records for student "${studentName}" (${studentId})? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/admin/student-results/${encodeURIComponent(studentId)}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    selectedStudentResultIds.delete(studentId);
+                    await loadStudentSummary();
+                } else {
+                    alert(data.message || 'Failed to delete student exam records.');
+                }
+            } catch (err) {
+                console.error("Delete student results error:", err);
+                alert("Network error deleting student exam records.");
+            }
+        }
+
+        async function bulkDeleteSelectedStudentResults() {
+            if (selectedStudentResultIds.size === 0) return;
+            if (!confirm(`Are you sure you want to delete exam records for ${selectedStudentResultIds.size} selected student(s)? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/admin/student-results/bulk-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ studentIds: Array.from(selectedStudentResultIds) })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    selectedStudentResultIds.clear();
+                    await loadStudentSummary();
+                } else {
+                    alert(data.message || 'Failed to delete selected student exam records.');
+                }
+            } catch (err) {
+                console.error("Bulk delete student results error:", err);
+                alert("Network error deleting selected student exam records.");
+            }
         }
 
         function renderStudentAttemptsTable(attempts) {
