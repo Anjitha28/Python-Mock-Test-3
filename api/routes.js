@@ -189,7 +189,10 @@ router.post('/auth/login', async (req, res) => {
         }
 
         if (loginType === 'admin') {
-            const adminRes = await pool.query('SELECT * FROM mock_test_3_users WHERE username = $1 AND role = $2', [cleanName, 'admin']);
+            const adminRes = await pool.query(
+                'SELECT * FROM mock_test_3_users WHERE (LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($1)) AND role = $2',
+                [cleanName, 'admin']
+            );
             if (adminRes.rows.length === 0) {
                 return res.status(401).json({ success: false, message: 'Invalid Admin ID or Password.' });
             }

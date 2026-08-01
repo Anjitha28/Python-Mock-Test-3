@@ -183,18 +183,21 @@ async function initTables(poolInstance) {
       `);
     }
 
-    // Seed default Admin if not exists
-    const adminCheck = await client.query('SELECT * FROM mock_test_3_users WHERE username = $1', ['admin123']);
-    if (adminCheck.rows.length === 0) {
-      const crypto = await import('crypto');
-      const salt = crypto.randomBytes(16).toString('hex');
-      const hash = crypto.pbkdf2Sync('admin@123', salt, 10000, 64, 'sha512').toString('hex');
-      const adminPasswordHash = `${salt}:${hash}`;
+    // Seed default Admin accounts if not exist
+    const crypto = await import('crypto');
+    const defaultAdmins = ['admin', 'admin123'];
+    for (const adminUser of defaultAdmins) {
+      const adminCheck = await client.query('SELECT * FROM mock_test_3_users WHERE LOWER(username) = LOWER($1)', [adminUser]);
+      if (adminCheck.rows.length === 0) {
+        const salt = crypto.randomBytes(16).toString('hex');
+        const hash = crypto.pbkdf2Sync('admin@123', salt, 10000, 64, 'sha512').toString('hex');
+        const adminPasswordHash = `${salt}:${hash}`;
 
-      await client.query(
-        `INSERT INTO mock_test_3_users (username, password_hash, role, is_first_login) VALUES ($1, $2, $3, $4)`,
-        ['admin123', adminPasswordHash, 'admin', false]
-      );
+        await client.query(
+          `INSERT INTO mock_test_3_users (username, password_hash, role, is_first_login) VALUES ($1, $2, $3, $4)`,
+          [adminUser, adminPasswordHash, 'admin', false]
+        );
+      }
     }
   } catch (err) {
     console.error('⚠️ DB Init Error:', err.message);
