@@ -27,6 +27,47 @@ const sendJSONP = (res, callback, data) => {
 // AUTHENTICATION ROUTES
 // =========================================================================
 
+// POST /api/auth/verify-phone
+router.post('/auth/verify-phone', async (req, res) => {
+    try {
+        const { phone } = req.body;
+        const cleanPhone = (phone || '').trim();
+
+        const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
+        if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
+        }
+
+        const regRes = await pool.query(
+            'SELECT id, status FROM mock_test_3_registered_system_users WHERE phone = $1',
+            [cleanPhone]
+        );
+
+        if (regRes.rows.length === 0) {
+            return res.status(400).json({
+                success: false,
+                code: 'UNREGISTERED_PHONE',
+                message: 'This phone number is not registered in the system. Please contact the administrator.'
+            });
+        }
+
+        if (regRes.rows[0].status === 'Inactive') {
+            return res.status(400).json({
+                success: false,
+                code: 'INACTIVE_PHONE',
+                message: 'This phone number is currently inactive. Please contact the administrator.'
+            });
+        }
+
+        return res.json({
+            success: true,
+            message: 'Phone number verified successfully.'
+        });
+    } catch (e) {
+        return res.status(500).json({ success: false, message: e.message });
+    }
+});
+
 // POST /api/auth/signup
 router.post('/auth/signup', async (req, res) => {
     try {
@@ -38,14 +79,38 @@ router.post('/auth/signup', async (req, res) => {
         const cleanPassword = password || '';
         const cleanConfirm = confirmPassword || '';
 
-        // Validation
-        if (!cleanName) {
-            return res.status(400).json({ success: false, message: 'Please enter your full name.' });
-        }
-
+        // 1. FIRST check Phone Number eligibility against Registered System Users
         const phoneRegex = /^\+?[0-9\s\-()]{7,15}$/;
         if (!cleanPhone || !phoneRegex.test(cleanPhone)) {
             return res.status(400).json({ success: false, message: 'Please enter a valid phone number.' });
+        }
+
+        const regRes = await pool.query(
+            'SELECT id, status FROM mock_test_3_registered_system_users WHERE phone = $1',
+            [cleanPhone]
+        );
+
+        if (regRes.rows.length === 0) {
+            return res.status(400).json({
+                success: false,
+                code: 'UNREGISTERED_PHONE',
+                message: 'This phone number is not registered in the system. Please contact the administrator.'
+            });
+        }
+
+        if (regRes.rows[0].status === 'Inactive') {
+            return res.status(400).json({
+                success: false,
+                code: 'INACTIVE_PHONE',
+                message: 'This phone number is currently inactive. Please contact the administrator.'
+            });
+        }
+
+        const registeredSystemUserId = regRes.rows[0].id;
+
+        // 2. Validate remaining fields
+        if (!cleanName) {
+            return res.status(400).json({ success: false, message: 'Please enter your full name.' });
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,17 +148,13 @@ router.post('/auth/signup', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Email address is already registered.' });
         }
 
-        // Check Registered System Users status and ID
-        const regRes = await pool.query(
-            'SELECT id, status FROM mock_test_3_registered_system_users WHERE phone = $1 OR LOWER(email) = LOWER($2)',
-            [cleanPhone, cleanEmail]
+        // Duplicate Phone Check in mock_test_3_users
+        const checkPhoneRes = await pool.query(
+            'SELECT id FROM mock_test_3_users WHERE phone = $1',
+            [cleanPhone]
         );
-        let registeredSystemUserId = null;
-        if (regRes.rows.length > 0) {
-            if (regRes.rows[0].status === 'Inactive') {
-                return res.status(400).json({ success: false, message: 'Your account status is currently Inactive. Please contact Admin.' });
-            }
-            registeredSystemUserId = regRes.rows[0].id;
+        if (checkPhoneRes.rows.length > 0) {
+            return res.status(400).json({ success: false, message: 'This phone number has already been used to create an account.' });
         }
 
         // Hash password securely using existing PBKDF2 salt:hash mechanism

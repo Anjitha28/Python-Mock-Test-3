@@ -249,7 +249,8 @@
 
                 <div class="form-group">
                     <label class="datacamp-label">Phone Number</label>
-                    <input type="tel" id="signup-phone" class="datacamp-input" placeholder="Enter your phone number" required>
+                    <input type="tel" id="signup-phone" class="datacamp-input" placeholder="Enter your phone number" onblur="verifyPhoneOnBlur()" required>
+                    <div id="phone-verify-status" class="hint-text" style="display: none; margin-top: 4px; font-weight: 600;"></div>
                 </div>
 
                 <div class="form-group">
@@ -404,6 +405,40 @@
                 showAlert('Network or server error. Please try again.', 'error', 'alert-box');
                 btnSubmit.disabled = false;
                 btnSubmit.textContent = 'Login';
+            }
+        }
+
+        async function verifyPhoneOnBlur() {
+            const phoneInput = document.getElementById('signup-phone');
+            const phone = (phoneInput.value || '').trim();
+            const statusEl = document.getElementById('phone-verify-status');
+
+            if (!phone) {
+                statusEl.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/verify-phone', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    statusEl.textContent = 'Phone number verified successfully.';
+                    statusEl.style.color = '#166534';
+                    statusEl.style.display = 'block';
+                    hideAlert('signup-alert-box');
+                } else {
+                    statusEl.textContent = data.message;
+                    statusEl.style.color = '#dc2626';
+                    statusEl.style.display = 'block';
+                    showAlert(data.message, 'error', 'signup-alert-box');
+                }
+            } catch (e) {
+                console.error(e);
             }
         }
 
