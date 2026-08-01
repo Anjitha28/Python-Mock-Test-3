@@ -557,35 +557,116 @@
         const params = new URLSearchParams(window.location.search);
         let modId = params.get('mod') || params.get('mock') || 'da_mock3';
 
-        // Load Dataset
-        let masterData = [];
-        if (typeof dataQuizData !== 'undefined' && dataQuizData[modId]) {
-            masterData = dataQuizData;
-        } else if (typeof quizData !== 'undefined' && quizData[modId]) {
-            masterData = quizData;
+        // Helper: Escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
-        let questions = (masterData && masterData[modId]) ? masterData[modId] : [];
 
         function shuffleArray(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
+                [a[i], a[j]] = [a[j], a[i]];
             }
-            return arr;
+            return a;
         }
 
-        if (questions.length > 0) {
-            shuffleArray(questions);
+        // Prepare questions for a new attempt preserving exact order from source of truth
+        function prepareShuffledQuiz(rawQuestions) {
+            if (!Array.isArray(rawQuestions) || rawQuestions.length === 0) return [];
+            return JSON.parse(JSON.stringify(rawQuestions));
         }
 
+        function saveActiveQuizState() {
+            try {
+                localStorage.setItem(`pm3_active_in_progress_${modId}`, 'true');
+                localStorage.setItem(`pm3_active_questions_${modId}`, JSON.stringify(questions));
+                localStorage.setItem(`pm3_user_answers_${modId}`, JSON.stringify(userAnswers));
+                localStorage.setItem(`pm3_review_marks_${modId}`, JSON.stringify(reviewMarks));
+                localStorage.setItem(`pm3_current_index_${modId}`, String(currentIndex));
+                localStorage.setItem(`pm3_time_left_${modId}`, String(timeLeft));
+            } catch (e) {
+                console.error("Error saving active quiz state:", e);
+            }
+        }
+
+        function clearActiveQuizState() {
+            localStorage.removeItem(`pm3_active_in_progress_${modId}`);
+            localStorage.removeItem(`pm3_active_questions_${modId}`);
+            localStorage.removeItem(`pm3_user_answers_${modId}`);
+            localStorage.removeItem(`pm3_review_marks_${modId}`);
+            localStorage.removeItem(`pm3_current_index_${modId}`);
+            localStorage.removeItem(`pm3_time_left_${modId}`);
+        }
+
+        // Load Dataset
+        let masterData = [];
+        if (typeof quizData !== 'undefined' && (quizData[modId] || quizData['mock3'])) {
+            masterData = quizData;
+        } else if (typeof dataQuizData !== 'undefined' && (dataQuizData[modId] || dataQuizData['mock3'])) {
+            masterData = dataQuizData;
+        }
+        
+        let questions = [];
+        let userAnswers = [];
+        let reviewMarks = [];
         let currentIndex = 0;
-        let userAnswers = new Array(questions.length).fill(null);
-        let reviewMarks = new Array(questions.length).fill(false);
         
         // Exact 50 Minutes (3000 Seconds) Timer
         let timeAllowed = 3000;
         let timeLeft = 3000;
         let timerInterval = null;
+
+        const activeInProgress = localStorage.getItem(`pm3_active_in_progress_${modId}`) === 'true';
+        const savedActiveQuestions = localStorage.getItem(`pm3_active_questions_${modId}`);
+
+        if (activeInProgress && savedActiveQuestions) {
+            try {
+                questions = JSON.parse(savedActiveQuestions);
+                const savedAnswers = localStorage.getItem(`pm3_user_answers_${modId}`);
+                if (savedAnswers) userAnswers = JSON.parse(savedAnswers);
+                else userAnswers = new Array(questions.length).fill(null);
+                
+                const savedReview = localStorage.getItem(`pm3_review_marks_${modId}`);
+                if (savedReview) reviewMarks = JSON.parse(savedReview);
+                else reviewMarks = new Array(questions.length).fill(false);
+                
+                const savedIndex = localStorage.getItem(`pm3_current_index_${modId}`);
+                if (savedIndex !== null) currentIndex = parseInt(savedIndex, 10) || 0;
+
+                const savedTime = localStorage.getItem(`pm3_time_left_${modId}`);
+                if (savedTime !== null) timeLeft = parseInt(savedTime, 10) || 3000;
+            } catch (e) {
+                console.error("Failed to restore active quiz session:", e);
+                const rawQs = (masterData && masterData[modId]) ? masterData[modId] : (masterData && masterData['mock3'] ? masterData['mock3'] : []);
+                questions = prepareShuffledQuiz(rawQs);
+                userAnswers = new Array(questions.length).fill(null);
+                reviewMarks = new Array(questions.length).fill(false);
+            }
+        } else {
+            const rawQs = (masterData && masterData[modId]) ? masterData[modId] : (masterData && masterData['mock3'] ? masterData['mock3'] : []);
+            questions = prepareShuffledQuiz(rawQs);
+            userAnswers = new Array(questions.length).fill(null);
+            reviewMarks = new Array(questions.length).fill(false);
+            saveActiveQuizState();
+        }
+
+        window.updateDropdownCodeAnswer = function(qIndex, blankIndex, value) {
+            if (!userAnswers[qIndex] || typeof userAnswers[qIndex] !== 'object') userAnswers[qIndex] = {};
+            if (value === "-1") {
+                delete userAnswers[qIndex][blankIndex];
+            } else {
+                userAnswers[qIndex][blankIndex] = parseInt(value, 10);
+            }
+            updateTileBar();
+            saveActiveQuizState();
+        };
 
         function beginQuiz() {
             document.getElementById('quiz-intro').style.display = 'none';
@@ -608,6 +689,7 @@
                     return;
                 }
                 timeLeft--;
+                saveActiveQuizState();
                 updateTimerDisplay();
             }, 1000);
         }
@@ -666,7 +748,28 @@
                     </div>
                 `;
             }
+
+            if (q.code) {
+                let codeHtml = q.code;
+                if (q.type === 'DROPDOWN' && q.options && Array.isArray(q.options) && codeHtml.includes('[b1]')) {
+                    q.options.forEach((opts, i) => {
+                        let selectHtml = `<select data-blank="${i}" class="dropdown-blank" onchange="updateDropdownCodeAnswer(${currentIndex}, ${i}, this.value)" style="padding:4px 8px; border-radius:6px; border:1.5px solid #cbd5e1; font-family:inherit; font-size:14px; background:white; color:#1e3a5f; font-weight:600;">`;
+                        selectHtml += `<option value="-1">-- Select --</option>`;
+                        opts.forEach((opt, optIdx) => {
+                            let isSelected = (userAnswers[currentIndex] && userAnswers[currentIndex][i] == optIdx) ? 'selected' : '';
+                            selectHtml += `<option value="${optIdx}" ${isSelected}>${escapeHtml(opt)}</option>`;
+                        });
+                        selectHtml += `</select>`;
+                        codeHtml = codeHtml.replace(`[b${i+1}]`, selectHtml);
+                    });
+                    qContent += `<div style="margin-top:15px;"><pre style="background:#0f172a; color:#f8fafc; padding:18px; border-radius:10px; font-family:'Consolas','Courier New',monospace; font-size:14px; line-height:1.6; overflow-x:auto; border:1px solid #1e293b; white-space:pre-wrap;"><code>${codeHtml}</code></pre></div>`;
+                } else {
+                    qContent += `<div style="margin-top:15px;"><pre style="background:#0f172a; color:#f8fafc; padding:18px; border-radius:10px; font-family:'Consolas','Courier New',monospace; font-size:14px; line-height:1.6; overflow-x:auto; border:1px solid #1e293b; white-space:pre-wrap;"><code>${escapeHtml(codeHtml)}</code></pre></div>`;
+                }
+            }
+
             document.getElementById('q-text-container').innerHTML = qContent;
+            saveActiveQuizState();
 
             const markBtn = document.getElementById('btn-mark-review');
             if (reviewMarks[currentIndex]) markBtn.classList.add('active');
@@ -757,7 +860,7 @@
                     ? userAnswers[currentIndex] 
                     : {};
 
-                let availableItems = q.dnd_items || [];
+                let availableItems = (Array.isArray(q.dnd_items) && q.dnd_items.length > 0) ? q.dnd_items : (Array.isArray(q.options) ? q.options : []);
                 if (!availableItems || availableItems.length === 0) {
                     availableItems = [...new Set(Object.values(q.a))];
                 }
@@ -808,7 +911,11 @@
                 targetsBox.style.flexDirection = 'column';
                 targetsBox.style.gap = '14px';
 
-                q.options.forEach(opt => {
+                const targetSlots = Array.isArray(q.a) 
+                    ? q.a.map((_, idx) => `Target ${idx + 1}`) 
+                    : (q.a && typeof q.a === 'object' ? Object.keys(q.a) : (q.options || []));
+
+                targetSlots.forEach((opt, slotIdx) => {
                     const row = document.createElement('div');
                     row.className = 'dnd-target-row';
                     row.style.display = 'flex';
@@ -820,8 +927,8 @@
                     row.style.borderRadius = '12px';
                     row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
 
-                    const placedVal = userValObj[opt];
-                    const safeKey = opt.replace(/'/g, "\\'");
+                    const placedVal = userValObj[opt] !== undefined ? userValObj[opt] : userValObj[slotIdx];
+                    const safeKey = (Array.isArray(q.a) ? slotIdx : opt).toString().replace(/'/g, "\\'");
 
                     row.innerHTML = `
                         <div style="font-weight:600; color:#1e293b; flex:1; padding-right:20px; font-size:14px; line-height:1.5;">${opt}</div>
@@ -850,7 +957,7 @@
                     ? userAnswers[currentIndex] 
                     : {};
 
-                let categories = q.categories;
+                let categories = q.labels || q.categories;
                 if (!categories && q.a && typeof q.a === 'object' && !Array.isArray(q.a)) {
                     categories = [...new Set(Object.values(q.a))];
                 }
@@ -983,6 +1090,7 @@
                 userAnswers[currentIndex][key] = val;
             }
             updateTileBar();
+            saveActiveQuizState();
         }
 
         function toggleReviewMark() {
@@ -1055,6 +1163,7 @@
         function finalSubmit(type = 'manual') {
             closeReviewModal();
             if (timerInterval) clearInterval(timerInterval);
+            clearActiveQuizState();
             calculateResults(type);
         }
 
@@ -1126,12 +1235,55 @@
                     correctDisp = Array.isArray(q.a) 
                         ? q.a.map((v, idx) => `Q${idx+1}: ${v.toString().toUpperCase()}`).join(", ")
                         : Object.entries(q.a).map(([k,v]) => `${k}: ${v.toString().toUpperCase()}`).join(", ");
-                } else if (q.type === "MTF" || q.type === "DROPDOWN" || q.type === "DND") {
+                } else if (q.type === "DROPDOWN") {
+                    const totalCount = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
+                    isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
+                    if (!isUnanswered) {
+                        let matchCount = 0;
+                        for (let k = 0; k < totalCount; k++) {
+                            let userValIdx = u[k];
+                            let userValText = (Array.isArray(q.options) && Array.isArray(q.options[k]) && typeof userValIdx === 'number')
+                                ? q.options[k][userValIdx]
+                                : userValIdx;
+                            let targetVal = Array.isArray(q.a) ? q.a[k] : q.a[k];
+                            if (userValText === targetVal) matchCount++;
+                        }
+                        isCorrect = (matchCount === totalCount) && (Object.keys(u).length === totalCount);
+                    }
+                    userDisp = (u && Object.keys(u).length > 0) ? Object.entries(u).map(([k,v]) => {
+                        let valText = (Array.isArray(q.options) && Array.isArray(q.options[k]) && typeof v === 'number')
+                            ? q.options[k][v]
+                            : v;
+                        return `[b${parseInt(k)+1}] &rarr; ${valText}`;
+                    }).join("<br>") : "Unanswered";
+                    correctDisp = Array.isArray(q.a)
+                        ? q.a.map((v, idx) => `[b${idx+1}] &rarr; ${v}`).join("<br>")
+                        : Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
+                } else if (q.type === "DND") {
+                    const totalCount = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
+                    isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
+                    if (!isUnanswered) {
+                        let matchCount = 0;
+                        for (let k = 0; k < totalCount; k++) {
+                            let targetVal = Array.isArray(q.a) ? q.a[k] : q.a[k];
+                            let userVal = u[k] !== undefined ? u[k] : u[`Target ${k+1}`];
+                            if (userVal === targetVal) matchCount++;
+                        }
+                        isCorrect = (matchCount === totalCount) && (Object.keys(u).length === totalCount);
+                    }
+                    userDisp = (u && Object.keys(u).length > 0) ? Object.entries(u).map(([k,v]) => {
+                        const targetLabel = (typeof k === 'number' || !isNaN(parseInt(k))) ? `Target ${parseInt(k)+1}` : k;
+                        return `${targetLabel} &rarr; ${v}`;
+                    }).join("<br>") : "Unanswered";
+                    correctDisp = Array.isArray(q.a)
+                        ? q.a.map((v, idx) => `Target ${idx+1} &rarr; ${v}`).join("<br>")
+                        : Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
+                } else if (q.type === "MTF") {
                     const totalKeys = Object.keys(q.a).length;
                     isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
                     isCorrect = !isUnanswered && typeof u === 'object' && u !== null && (Object.keys(u).length === totalKeys) && Object.keys(q.a).every(k => u[k] === q.a[k]);
-                    userDisp = u && Object.keys(u).length > 0 ? Object.entries(u).map(([k,v]) => `${k} \u2192 ${v}`).join("<br>") : "Unanswered";
-                    correctDisp = Object.entries(q.a).map(([k,v]) => `${k} \u2192 ${v}`).join("<br>");
+                    userDisp = u && Object.keys(u).length > 0 ? Object.entries(u).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>") : "Unanswered";
+                    correctDisp = Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
                 } else if (q.type === "SHORT") {
                     let uText = u?.toString().toLowerCase().trim() || "";
                     isUnanswered = (!uText);
@@ -1259,12 +1411,13 @@
                     }
                     return `<span style="font-weight:700;">${label}</span>`;
                 });
-                return itemsHtml.join(" ");
+                return itemsHtml.join(", ");
             }
 
             if (q.type === "TF") {
                 if (typeof ansVal === 'object' && ansVal !== null) {
-                    return Object.entries(ansVal).map(([k, v]) => {
+                    const entries = Array.isArray(ansVal) ? ansVal.map((v, i) => [i, v]) : Object.entries(ansVal);
+                    return entries.map(([k, v]) => {
                         const label = (q.options && q.options[k]) ? q.options[k] : `Statement ${parseInt(k) + 1}`;
                         return `<div style="margin-top:4px;"><strong>${label}:</strong> <span style="font-weight:700;">${v.toString().toUpperCase()}</span></div>`;
                     }).join("");
@@ -1272,7 +1425,39 @@
                 return `<span style="font-weight:700;">${ansVal}</span>`;
             }
 
-            if (q.type === "MTF" || q.type === "DROPDOWN" || q.type === "DND") {
+            if (q.type === "DROPDOWN") {
+                if (Array.isArray(ansVal)) {
+                    return ansVal.map((v, idx) => {
+                        return `<div style="margin-top:4px;"><strong>[b${idx+1}]</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
+                    }).join("");
+                }
+                if (typeof ansVal === 'object' && ansVal !== null) {
+                    return Object.entries(ansVal).map(([k, v]) => {
+                        let textVal = (Array.isArray(q.options) && Array.isArray(q.options[k]) && typeof v === 'number')
+                            ? q.options[k][v]
+                            : v;
+                        return `<div style="margin-top:4px;"><strong>[b${parseInt(k)+1}]</strong> &rarr; <span style="font-weight:700;">${textVal}</span></div>`;
+                    }).join("");
+                }
+                return `<span style="font-weight:700;">${ansVal}</span>`;
+            }
+
+            if (q.type === "DND") {
+                if (Array.isArray(ansVal)) {
+                    return ansVal.map((v, idx) => {
+                        return `<div style="margin-top:4px;"><strong>Target ${idx+1}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
+                    }).join("");
+                }
+                if (typeof ansVal === 'object' && ansVal !== null) {
+                    return Object.entries(ansVal).map(([k, v]) => {
+                        const label = (typeof k === 'number' || !isNaN(parseInt(k))) ? `Target ${parseInt(k)+1}` : k;
+                        return `<div style="margin-top:4px;"><strong>${label}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
+                    }).join("");
+                }
+                return `<span style="font-weight:700;">${ansVal}</span>`;
+            }
+
+            if (q.type === "MTF") {
                 if (typeof ansVal === 'object' && ansVal !== null) {
                     return Object.entries(ansVal).map(([k, v]) => {
                         return `<div style="margin-top:4px;"><strong>${k}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
@@ -1375,6 +1560,7 @@
                         </div>
                         <div style="font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px; line-height: 1.5;">${res.q}</div>
                         ${qImageHTML}
+                        ${qObj.code ? `<div style="margin-top:12px;"><pre style="background:#0f172a; color:#f8fafc; padding:16px; border-radius:8px; font-family:'Consolas','Courier New',monospace; font-size:14px; line-height:1.6; overflow-x:auto; border:1px solid #1e293b; white-space:pre-wrap;"><code>${escapeHtml(qObj.code)}</code></pre></div>` : ''}
                         <div style="font-size: 14px; margin: 16px 0 12px 0; padding:12px 16px; background:#f8fafc; border-radius:8px; border:1px solid #e2e8f0;">
                             <div style="font-weight:700; color:#475569; margin-bottom:4px;">Your Response:</div>
                             <div style="font-size:14px; color:#1e293b;">${userResponseHTML}</div>
