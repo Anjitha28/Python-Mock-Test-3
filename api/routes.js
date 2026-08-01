@@ -83,22 +83,27 @@ router.post('/auth/signup', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Email address is already registered.' });
         }
 
+        // Check Registered System Users status and ID
+        const regRes = await pool.query(
+            'SELECT id, status FROM mock_test_3_registered_system_users WHERE phone = $1 OR LOWER(email) = LOWER($2)',
+            [cleanPhone, cleanEmail]
+        );
+        let registeredSystemUserId = null;
+        if (regRes.rows.length > 0) {
+            if (regRes.rows[0].status === 'Inactive') {
+                return res.status(400).json({ success: false, message: 'Your account status is currently Inactive. Please contact Admin.' });
+            }
+            registeredSystemUserId = regRes.rows[0].id;
+        }
+
         // Hash password securely using existing PBKDF2 salt:hash mechanism
         const passwordHash = hashPassword(cleanPassword);
 
-        // Insert new user record with role 'user' and is_first_login = false
+        // Insert new user record with role 'user', is_first_login = false, and registered_system_user_id link
         await pool.query(
-            `INSERT INTO mock_test_3_users (username, name, phone, email, password_hash, role, is_first_login)
-             VALUES ($1, $2, $3, $4, $5, 'user', false)`,
-            [cleanUsername, cleanName, cleanPhone, cleanEmail, passwordHash]
-        );
-
-        // Update Registered System Users signup status
-        await pool.query(
-            `UPDATE mock_test_3_registered_system_users
-             SET signup_status = 'Signed Up', updated_at = NOW()
-             WHERE phone = $1 OR LOWER(email) = LOWER($2)`,
-            [cleanPhone, cleanEmail]
+            `INSERT INTO mock_test_3_users (username, name, phone, email, password_hash, role, is_first_login, registered_system_user_id)
+             VALUES ($1, $2, $3, $4, $5, 'user', false, $6)`,
+            [cleanUsername, cleanName, cleanPhone, cleanEmail, passwordHash, registeredSystemUserId]
         );
 
         return res.status(201).json({
@@ -375,7 +380,26 @@ router.get('/admin/registered-system-users', async (req, res) => {
         }
 
         const result = await pool.query(
-            'SELECT id, name, phone, email, college, status, signup_status, created_at, updated_at FROM mock_test_3_registered_system_users ORDER BY created_at DESC'
+            `SELECT 
+               r.id, 
+               r.name, 
+               r.phone, 
+               r.email, 
+               r.college, 
+               r.status, 
+               CASE 
+                 WHEN u.id IS NOT NULL THEN 'Signed Up' 
+                 ELSE 'Not Signed Up' 
+               END AS signup_status,
+               u.id AS application_user_id,
+               r.created_at, 
+               r.updated_at 
+             FROM mock_test_3_registered_system_users r
+             LEFT JOIN mock_test_3_users u 
+               ON u.registered_system_user_id = r.id 
+               OR (u.phone = r.phone AND u.phone IS NOT NULL AND u.phone != '')
+               OR (LOWER(u.email) = LOWER(r.email) AND u.email IS NOT NULL AND u.email != '')
+             ORDER BY r.created_at DESC`
         );
         return res.json({ success: true, users: result.rows });
     } catch (e) {

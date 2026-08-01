@@ -142,6 +142,7 @@ async function initTables(poolInstance) {
       ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS name TEXT;
       ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS phone TEXT;
       ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS email TEXT;
+      ALTER TABLE mock_test_3_users ADD COLUMN IF NOT EXISTS registered_system_user_id UUID;
       CREATE UNIQUE INDEX IF NOT EXISTS idx_mock_test_3_users_email ON mock_test_3_users (LOWER(email)) WHERE email IS NOT NULL;
     `);
 
