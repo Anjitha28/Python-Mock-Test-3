@@ -524,9 +524,13 @@
             }
         }
 
-        // Ensure login page is always shown first when accessing portal URL
+        // Clear persistent auto-redirect flags and session state on mounting login page
         localStorage.removeItem('auth_token');
         localStorage.removeItem('user_role');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('strategist_user');
+        sessionStorage.clear();
 
         // Background canvas animation
         const canvas = document.getElementById("bg-canvas");
