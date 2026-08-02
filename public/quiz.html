@@ -577,46 +577,10 @@
             return a;
         }
 
-        // Prepare questions and options freshly shuffled for every quiz attempt / page refresh
+        // Prepare questions directly from rawQuestions, preserving exact question order and properties
         function prepareShuffledQuiz(rawQuestions) {
             if (!Array.isArray(rawQuestions) || rawQuestions.length === 0) return [];
-            const cloned = JSON.parse(JSON.stringify(rawQuestions));
-            const shuffledQs = shuffleArray(cloned);
-
-            shuffledQs.forEach(q => {
-                if (q.type === "MCQ" && Array.isArray(q.options) && typeof q.a === 'number') {
-                    const originalCorrect = q.options[q.a];
-                    let pairs = q.options.map((opt, idx) => ({
-                        opt,
-                        img: (Array.isArray(q.option_images) ? q.option_images[idx] : null)
-                    }));
-                    pairs = shuffleArray(pairs);
-                    q.options = pairs.map(p => p.opt);
-                    if (Array.isArray(q.option_images)) {
-                        q.option_images = pairs.map(p => p.img);
-                    }
-                    q.a = q.options.indexOf(originalCorrect);
-                } else if ((q.type === "MCQ2" || q.type === "MCQ3") && Array.isArray(q.options) && Array.isArray(q.a)) {
-                    const correctTexts = q.a.map(idx => q.options[idx]);
-                    let pairs = q.options.map((opt, idx) => ({
-                        opt,
-                        img: (Array.isArray(q.option_images) ? q.option_images[idx] : null)
-                    }));
-                    pairs = shuffleArray(pairs);
-                    q.options = pairs.map(p => p.opt);
-                    if (Array.isArray(q.option_images)) {
-                        q.option_images = pairs.map(p => p.img);
-                    }
-                    q.a = correctTexts.map(txt => q.options.indexOf(txt));
-                } else if (q.type === "DND") {
-                    if (Array.isArray(q.dnd_items)) q.dnd_items = shuffleArray(q.dnd_items);
-                    if (Array.isArray(q.labels)) q.labels = shuffleArray(q.labels);
-                } else if (q.type === "MTF") {
-                    if (Array.isArray(q.labels)) q.labels = shuffleArray(q.labels);
-                }
-            });
-
-            return shuffledQs;
+            return JSON.parse(JSON.stringify(rawQuestions));
         }
 
         function saveActiveQuizState() {
