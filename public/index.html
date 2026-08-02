@@ -524,30 +524,9 @@
             }
         }
 
-        // On page load: check if already logged in
-        async function checkSession() {
-            const token = localStorage.getItem('auth_token');
-            if (!token) return;
-
-            try {
-                const res = await fetch('/api/auth/me', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    if (data.user.role === 'admin') {
-                        window.location.href = 'admin_dashboard.html';
-                    } else if (data.user.is_first_login) {
-                        window.location.href = 'change_password.html';
-                    } else {
-                        window.location.href = 'user_dashboard.html';
-                    }
-                }
-            } catch (e) {
-                // Session invalid or server unreachable
-            }
-        }
-        checkSession();
+        // Ensure login page is always shown first when accessing portal URL
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('user_role');
 
         // Background canvas animation
         const canvas = document.getElementById("bg-canvas");

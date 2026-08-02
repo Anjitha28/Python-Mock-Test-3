@@ -470,8 +470,8 @@ window.dataQuizData = {
         },
         {
             "id": 24,
-            "type": "MTF",
-            "q": "You need to identify the data types of various type operations.<br><br>Move the appropriate data types from the list on the left to the correct type operations on the right. You may use each data type once, more than once, or not at all.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct match.</span>",
+            "type": "DND",
+            "q": You need to identify the data types of various type operations.<br><br>Move the appropriate data types from the list on the left to the correct type operations on the right. You may use each data type once, more than once, or not at all.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct match.</span>",
             "labels": [
                 "int",
                 "float",
@@ -489,7 +489,14 @@ window.dataQuizData = {
                 "type(5.0)": "float",
                 "type(\"True\")": "str",
                 "type(False)": "bool"
-            }
+            },
+            "allow_reuse": true,
+            "dnd_items": [
+                "int",
+                "float",
+                "str",
+                "bool"
+            ]
         },
         {
             "id": 25,
@@ -587,13 +594,8 @@ window.dataQuizData = {
         },
         {
             "id": 31,
-            "type": "MTF",
-            "q": "You are writing a Python application that includes multiple operations on the same line of code. You need to determine the correct order of operations.<br><br>Move the type of operation from the list on the left to the correct locations on the right, with the type of operation that will be performed first at the top and the type of operation that will be performed last at the bottom.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct response.</span>",
-            "headers": [
-                "Operation Types",
-                "Operation Types in Order"
-            ],
-            "placeholder": "<span style='color: #64748b; font-size: 13px;'>Operation Type</span>",
+            "type": "DND",
+            "q": "You are writing a Python application that includes multiple operations on the same line of code. You need to determine the correct order of operations.<br><br>Move the type of operation from the list on the left to the correct locations on the right, with the type of operation that will be performed first at the top and the type of operation that will be performed last at the bottom.",
             "labels": [
                 "Addition and Subtraction",
                 "And",
@@ -603,21 +605,30 @@ window.dataQuizData = {
                 "Unary positive, negative, not"
             ],
             "options": [
-                "<span style='white-space:nowrap;'>Operation type performed first</span>",
-                "​",
-                "​​",
-                "​​​",
-                "​​​​",
-                "​​​​​"
+                "Operation type performed first",
+                "2nd operation",
+                "3rd operation",
+                "4th operation",
+                "5th operation",
+                "Operation type performed last"
             ],
             "a": {
-                "<span style='white-space:nowrap;'>Operation type performed first</span>": "Parentheses",
-                "​": "Exponents",
-                "​​": "Unary positive, negative, not",
-                "​​​": "Multiplication and Division",
-                "​​​​": "Addition and Subtraction",
-                "​​​​​": "And"
-            }
+                "Operation type performed first": "Parentheses",
+                "2nd operation": "Exponents",
+                "3rd operation": "Unary positive, negative, not",
+                "4th operation": "Multiplication and Division",
+                "5th operation": "Addition and Subtraction",
+                "Operation type performed last": "And"
+            },
+            "allow_reuse": false,
+            "dnd_items": [
+                "Addition and Subtraction",
+                "And",
+                "Exponents",
+                "Multiplication and Division",
+                "Parentheses",
+                "Unary positive, negative, not"
+            ]
         },
         {
             "id": 32,
@@ -638,7 +649,7 @@ window.dataQuizData = {
         {
             "id": 33,
             "type": "MTF",
-            "q": "You need to identify the results of performing various slicing operations on the following sequence structure:<br><br><code>alph = \"abcdefghijklmnopqrstuvwxyz\"</code>",
+            "q": "You need to identify the results of performing various slicing operations on the following sequence structure:<br><br><div style='margin-top: 8px;'><code style='font-family: Consolas, monospace; font-size: 14px; background: #f1f5f9; padding: 6px 12px; border-radius: 6px; display: inline-block;'>alph = \"abcdefghijklmnopqrstuvwxyz\"</code></div>",
             "options": [
                 "alph[3:6]",
                 "alph[:6]"
@@ -660,7 +671,7 @@ window.dataQuizData = {
             "id": 34,
             "type": "SHORT",
             "q": "Review the following code segment:<br><br>How many lines of output does the code print?<br><span style='font-size: 12px; font-style: italic;'>Enter the number as an integer.</span>",
-            "code": "product = 2<br>n = 5<br>while (n != 0):<br>    product *= n<br>    print(product)<br>    n -= 1<br>    if n == 3:<br>        break",
+            "code": "product = 2\nn = 5\nwhile (n != 0):\n    product *= n\n    print(product)\n    n -= 1\n    if n == 3:\n        break",
             "a": "2"
         },
         {
@@ -1230,8 +1241,8 @@ window.dataQuizData = {
         },
         {
             "id": 24,
-            "type": "MTF",
-            "q": "You need to identify the data types of various type operations.<br><br>Move the appropriate data types from the list on the left to the correct type operations on the right. You may use each data type once, more than once, or not at all.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct match.</span>",
+            "type": "DND",
+            "q": You need to identify the data types of various type operations.<br><br>Move the appropriate data types from the list on the left to the correct type operations on the right. You may use each data type once, more than once, or not at all.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct match.</span>",
             "labels": [
                 "int",
                 "float",
@@ -1249,7 +1260,14 @@ window.dataQuizData = {
                 "type(5.0)": "float",
                 "type(\"True\")": "str",
                 "type(False)": "bool"
-            }
+            },
+            "allow_reuse": true,
+            "dnd_items": [
+                "int",
+                "float",
+                "str",
+                "bool"
+            ]
         },
         {
             "id": 25,
@@ -1347,13 +1365,8 @@ window.dataQuizData = {
         },
         {
             "id": 31,
-            "type": "MTF",
-            "q": "You are writing a Python application that includes multiple operations on the same line of code. You need to determine the correct order of operations.<br><br>Move the type of operation from the list on the left to the correct locations on the right, with the type of operation that will be performed first at the top and the type of operation that will be performed last at the bottom.<br><br><span style='font-size: 15px; font-style: italic;'>Note: You will receive partial credit for each correct response.</span>",
-            "headers": [
-                "Operation Types",
-                "Operation Types in Order"
-            ],
-            "placeholder": "<span style='color: #64748b; font-size: 13px;'>Operation Type</span>",
+            "type": "DND",
+            "q": "You are writing a Python application that includes multiple operations on the same line of code. You need to determine the correct order of operations.<br><br>Move the type of operation from the list on the left to the correct locations on the right, with the type of operation that will be performed first at the top and the type of operation that will be performed last at the bottom.",
             "labels": [
                 "Addition and Subtraction",
                 "And",
@@ -1363,21 +1376,30 @@ window.dataQuizData = {
                 "Unary positive, negative, not"
             ],
             "options": [
-                "<span style='white-space:nowrap;'>Operation type performed first</span>",
-                "​",
-                "​​",
-                "​​​",
-                "​​​​",
-                "​​​​​"
+                "Operation type performed first",
+                "2nd operation",
+                "3rd operation",
+                "4th operation",
+                "5th operation",
+                "Operation type performed last"
             ],
             "a": {
-                "<span style='white-space:nowrap;'>Operation type performed first</span>": "Parentheses",
-                "​": "Exponents",
-                "​​": "Unary positive, negative, not",
-                "​​​": "Multiplication and Division",
-                "​​​​": "Addition and Subtraction",
-                "​​​​​": "And"
-            }
+                "Operation type performed first": "Parentheses",
+                "2nd operation": "Exponents",
+                "3rd operation": "Unary positive, negative, not",
+                "4th operation": "Multiplication and Division",
+                "5th operation": "Addition and Subtraction",
+                "Operation type performed last": "And"
+            },
+            "allow_reuse": false,
+            "dnd_items": [
+                "Addition and Subtraction",
+                "And",
+                "Exponents",
+                "Multiplication and Division",
+                "Parentheses",
+                "Unary positive, negative, not"
+            ]
         },
         {
             "id": 32,
@@ -1398,7 +1420,7 @@ window.dataQuizData = {
         {
             "id": 33,
             "type": "MTF",
-            "q": "You need to identify the results of performing various slicing operations on the following sequence structure:<br><br><code>alph = \"abcdefghijklmnopqrstuvwxyz\"</code>",
+            "q": "You need to identify the results of performing various slicing operations on the following sequence structure:<br><br><div style='margin-top: 8px;'><code style='font-family: Consolas, monospace; font-size: 14px; background: #f1f5f9; padding: 6px 12px; border-radius: 6px; display: inline-block;'>alph = \"abcdefghijklmnopqrstuvwxyz\"</code></div>",
             "options": [
                 "alph[3:6]",
                 "alph[:6]"
@@ -1420,7 +1442,7 @@ window.dataQuizData = {
             "id": 34,
             "type": "SHORT",
             "q": "Review the following code segment:<br><br>How many lines of output does the code print?<br><span style='font-size: 12px; font-style: italic;'>Enter the number as an integer.</span>",
-            "code": "product = 2<br>n = 5<br>while (n != 0):<br>    product *= n<br>    print(product)<br>    n -= 1<br>    if n == 3:<br>        break",
+            "code": "product = 2\nn = 5\nwhile (n != 0):\n    product *= n\n    print(product)\n    n -= 1\n    if n == 3:\n        break",
             "a": "2"
         },
         {

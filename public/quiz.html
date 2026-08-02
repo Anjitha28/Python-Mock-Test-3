@@ -383,15 +383,15 @@
         </div>
     </nav>
 
-    <div class="layout" style="max-width: 1000px; margin: 0 auto; justify-content: center;">
-        <!-- Sidebar Progress hidden visually per requirement, question navigation preserved -->
-        <aside class="sidebar" style="display: none !important;">
+    <div class="layout">
+        <!-- Sidebar Progress -->
+        <aside class="sidebar" id="sidebar" style="display: none;">
             <h4 class="sidebar-sec-title">Question Progress</h4>
             <div id="tile-bar"></div>
         </aside>
 
         <!-- Main Content -->
-        <main class="main-content" style="width: 100%; max-width: 1000px;">
+        <main class="main-content">
             <!-- Quiz Intro (Stage 1) -->
             <div id="quiz-intro" style="display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; background:white; border-radius:14px; box-shadow:var(--shadow); padding:40px; text-align:center; border: 1px solid var(--border-color);">
                 <h1 style="font-size:28px; font-weight:800; color:var(--primary-blue); margin-bottom:10px;">Python Mastery Mock Test 3</h1>
@@ -577,20 +577,56 @@
             return a;
         }
 
-        // Prepare questions for a new attempt preserving exact order from source of truth
+        // Prepare questions and options freshly shuffled for every quiz attempt / page refresh
         function prepareShuffledQuiz(rawQuestions) {
             if (!Array.isArray(rawQuestions) || rawQuestions.length === 0) return [];
-            return JSON.parse(JSON.stringify(rawQuestions));
+            const cloned = JSON.parse(JSON.stringify(rawQuestions));
+            const shuffledQs = shuffleArray(cloned);
+
+            shuffledQs.forEach(q => {
+                if (q.type === "MCQ" && Array.isArray(q.options) && typeof q.a === 'number') {
+                    const originalCorrect = q.options[q.a];
+                    let pairs = q.options.map((opt, idx) => ({
+                        opt,
+                        img: (Array.isArray(q.option_images) ? q.option_images[idx] : null)
+                    }));
+                    pairs = shuffleArray(pairs);
+                    q.options = pairs.map(p => p.opt);
+                    if (Array.isArray(q.option_images)) {
+                        q.option_images = pairs.map(p => p.img);
+                    }
+                    q.a = q.options.indexOf(originalCorrect);
+                } else if ((q.type === "MCQ2" || q.type === "MCQ3") && Array.isArray(q.options) && Array.isArray(q.a)) {
+                    const correctTexts = q.a.map(idx => q.options[idx]);
+                    let pairs = q.options.map((opt, idx) => ({
+                        opt,
+                        img: (Array.isArray(q.option_images) ? q.option_images[idx] : null)
+                    }));
+                    pairs = shuffleArray(pairs);
+                    q.options = pairs.map(p => p.opt);
+                    if (Array.isArray(q.option_images)) {
+                        q.option_images = pairs.map(p => p.img);
+                    }
+                    q.a = correctTexts.map(txt => q.options.indexOf(txt));
+                } else if (q.type === "DND") {
+                    if (Array.isArray(q.dnd_items)) q.dnd_items = shuffleArray(q.dnd_items);
+                    if (Array.isArray(q.labels)) q.labels = shuffleArray(q.labels);
+                } else if (q.type === "MTF") {
+                    if (Array.isArray(q.labels)) q.labels = shuffleArray(q.labels);
+                }
+            });
+
+            return shuffledQs;
         }
 
         function saveActiveQuizState() {
             try {
                 localStorage.setItem(`pm3_active_in_progress_${modId}`, 'true');
+                localStorage.setItem(`pm3_quiz_end_time_${modId}`, String(quizEndTime));
                 localStorage.setItem(`pm3_active_questions_${modId}`, JSON.stringify(questions));
                 localStorage.setItem(`pm3_user_answers_${modId}`, JSON.stringify(userAnswers));
                 localStorage.setItem(`pm3_review_marks_${modId}`, JSON.stringify(reviewMarks));
                 localStorage.setItem(`pm3_current_index_${modId}`, String(currentIndex));
-                localStorage.setItem(`pm3_time_left_${modId}`, String(timeLeft));
             } catch (e) {
                 console.error("Error saving active quiz state:", e);
             }
@@ -598,6 +634,7 @@
 
         function clearActiveQuizState() {
             localStorage.removeItem(`pm3_active_in_progress_${modId}`);
+            localStorage.removeItem(`pm3_quiz_end_time_${modId}`);
             localStorage.removeItem(`pm3_active_questions_${modId}`);
             localStorage.removeItem(`pm3_user_answers_${modId}`);
             localStorage.removeItem(`pm3_review_marks_${modId}`);
@@ -618,43 +655,44 @@
         let reviewMarks = [];
         let currentIndex = 0;
         
+        let touchDraggedItem = null;
+        let touchAvatarEl = null;
+        
         // Exact 50 Minutes (3000 Seconds) Timer
         let timeAllowed = 3000;
         let timeLeft = 3000;
+        let quizEndTime = 0;
         let timerInterval = null;
 
-        const activeInProgress = localStorage.getItem(`pm3_active_in_progress_${modId}`) === 'true';
-        const savedActiveQuestions = localStorage.getItem(`pm3_active_questions_${modId}`);
+        // Restore active in-progress quiz if present
+        const isSavedActive = localStorage.getItem(`pm3_active_in_progress_${modId}`) === 'true';
+        const savedEndTime = localStorage.getItem(`pm3_quiz_end_time_${modId}`);
+        const savedQuestions = localStorage.getItem(`pm3_active_questions_${modId}`);
 
-        if (activeInProgress && savedActiveQuestions) {
+        if (isSavedActive && savedEndTime && savedQuestions) {
             try {
-                questions = JSON.parse(savedActiveQuestions);
-                const savedAnswers = localStorage.getItem(`pm3_user_answers_${modId}`);
-                if (savedAnswers) userAnswers = JSON.parse(savedAnswers);
-                else userAnswers = new Array(questions.length).fill(null);
-                
-                const savedReview = localStorage.getItem(`pm3_review_marks_${modId}`);
-                if (savedReview) reviewMarks = JSON.parse(savedReview);
-                else reviewMarks = new Array(questions.length).fill(false);
-                
-                const savedIndex = localStorage.getItem(`pm3_current_index_${modId}`);
-                if (savedIndex !== null) currentIndex = parseInt(savedIndex, 10) || 0;
+                questions = JSON.parse(savedQuestions);
+                userAnswers = JSON.parse(localStorage.getItem(`pm3_user_answers_${modId}`) || '[]');
+                reviewMarks = JSON.parse(localStorage.getItem(`pm3_review_marks_${modId}`) || '[]');
+                currentIndex = parseInt(localStorage.getItem(`pm3_current_index_${modId}`) || '0', 10);
+                quizEndTime = parseInt(savedEndTime, 10);
 
-                const savedTime = localStorage.getItem(`pm3_time_left_${modId}`);
-                if (savedTime !== null) timeLeft = parseInt(savedTime, 10) || 3000;
+                const now = Date.now();
+                timeLeft = Math.max(0, Math.floor((quizEndTime - now) / 1000));
             } catch (e) {
-                console.error("Failed to restore active quiz session:", e);
-                const rawQs = (masterData && masterData[modId]) ? masterData[modId] : (masterData && masterData['mock3'] ? masterData['mock3'] : []);
-                questions = prepareShuffledQuiz(rawQs);
-                userAnswers = new Array(questions.length).fill(null);
-                reviewMarks = new Array(questions.length).fill(false);
+                console.error("Error restoring active quiz state:", e);
+                clearActiveQuizState();
             }
-        } else {
+        }
+
+        if (!questions || questions.length === 0) {
+            clearActiveQuizState();
             const rawQs = (masterData && masterData[modId]) ? masterData[modId] : (masterData && masterData['mock3'] ? masterData['mock3'] : []);
             questions = prepareShuffledQuiz(rawQs);
             userAnswers = new Array(questions.length).fill(null);
             reviewMarks = new Array(questions.length).fill(false);
-            saveActiveQuizState();
+            currentIndex = 0;
+            timeLeft = 3000;
         }
 
         window.updateDropdownCodeAnswer = function(qIndex, blankIndex, value) {
@@ -671,8 +709,13 @@
         function beginQuiz() {
             document.getElementById('quiz-intro').style.display = 'none';
             document.getElementById('quiz-ui').style.display = 'block';
-            document.querySelector('.sidebar').style.display = 'flex';
+            const sb = document.getElementById('sidebar');
+            if (sb) sb.style.display = 'flex';
             
+            quizEndTime = Date.now() + 3000 * 1000;
+            timeLeft = 3000;
+            saveActiveQuizState();
+
             loadQuestion();
             startTimer();
             updateTileBar();
@@ -680,35 +723,36 @@
 
         function startTimer() {
             updateTimerDisplay();
-            
             if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    finalSubmit('timeup');
-                    return;
-                }
-                timeLeft--;
-                saveActiveQuizState();
-                updateTimerDisplay();
-            }, 1000);
+            timerInterval = setInterval(updateTimerDisplay, 1000);
         }
 
         function updateTimerDisplay() {
+            if (quizEndTime <= 0) return;
+            const now = Date.now();
+            timeLeft = Math.max(0, Math.floor((quizEndTime - now) / 1000));
+
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
             const formatted = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
 
             const qTimerText = document.getElementById('q-timer-text');
             if (qTimerText) qTimerText.textContent = formatted;
+
+            if (timeLeft <= 0) {
+                if (timerInterval) clearInterval(timerInterval);
+                finalSubmit('timeup');
+            }
         }
 
         function updateTileBar() {
             const bar = document.getElementById('tile-bar');
+            if (!bar) return;
             bar.innerHTML = '';
 
             questions.forEach((_, i) => {
                 const btn = document.createElement('button');
+                btn.type = 'button';
                 btn.className = 'tile-btn';
                 btn.textContent = i + 1;
                 btn.onclick = () => { currentIndex = i; loadQuestion(); };
@@ -729,6 +773,17 @@
 
                 bar.appendChild(btn);
             });
+        }
+
+        // Resume active quiz immediately if already in progress and time remains
+        if (isSavedActive && timeLeft > 0) {
+            document.getElementById('quiz-intro').style.display = 'none';
+            document.getElementById('quiz-ui').style.display = 'block';
+            const sb = document.getElementById('sidebar');
+            if (sb) sb.style.display = 'flex';
+            loadQuestion();
+            startTimer();
+            updateTileBar();
         }
 
         function loadQuestion() {
@@ -855,49 +910,61 @@
                     `;
                     area.appendChild(row);
                 });
-            } else if (q.type === "DND") {
+            } else if (q.type === "DND" || q.type === "MTF" || q.type === "DROPDOWN") {
                 const userValObj = (userAnswers[currentIndex] && typeof userAnswers[currentIndex] === 'object') 
                     ? userAnswers[currentIndex] 
                     : {};
 
-                let availableItems = (Array.isArray(q.dnd_items) && q.dnd_items.length > 0) ? q.dnd_items : (Array.isArray(q.options) ? q.options : []);
-                if (!availableItems || availableItems.length === 0) {
-                    availableItems = [...new Set(Object.values(q.a))];
-                }
+                let availableItems = (Array.isArray(q.dnd_items) && q.dnd_items.length > 0) 
+                    ? q.dnd_items 
+                    : ((Array.isArray(q.labels) && q.labels.length > 0)
+                        ? q.labels
+                        : ((Array.isArray(q.categories) && q.categories.length > 0)
+                            ? q.categories
+                            : (q.a && typeof q.a === 'object' ? [...new Set(Object.values(q.a))] : (Array.isArray(q.options) ? q.options : []))));
 
                 const placedValues = Object.values(userValObj);
+                const allowReuse = !!q.allow_reuse || (q.q && (q.q.toLowerCase().includes('more than once') || q.q.toLowerCase().includes('once, more than once')));
 
                 const container = document.createElement('div');
                 container.className = 'dnd-container';
+                container.style.display = 'flex';
+                container.style.flexDirection = 'column';
+                container.style.gap = '20px';
+                container.style.marginTop = '15px';
 
-                // Draggable Options Pool
+                // Top Available Options Box
                 const poolBox = document.createElement('div');
-                poolBox.style.background = '#f1f5f9';
-                poolBox.style.border = '1.5px dashed #cbd5e1';
+                poolBox.style.background = '#f8fafc';
+                poolBox.style.border = '1.5px solid #cbd5e1';
                 poolBox.style.borderRadius = '12px';
                 poolBox.style.padding = '18px';
-                poolBox.style.marginBottom = '25px';
 
                 poolBox.innerHTML = `
-                    <div style="font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">
-                        Available Answer Options (Drag or Click to Select):
+                    <div style="font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; color:#1e3a5f; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; text-align:left;">
+                        AVAILABLE ANSWER OPTIONS (DRAG OR CLICK TO SELECT):
                     </div>
                     <div class="dnd-pool-items" style="display:flex; flex-wrap:wrap; gap:12px;">
                         ${availableItems.map(item => {
-                            const isPlaced = placedValues.includes(item);
+                            const isPlaced = !allowReuse && placedValues.includes(item);
                             const isSelectedForClick = (selectedDNDItem === item);
+                            const safeItem = item.replace(/'/g, "\\'");
                             return `
                                 <div class="dnd-chip ${isPlaced ? 'placed' : ''} ${isSelectedForClick ? 'selected-click' : ''}" 
                                      draggable="${!isPlaced}"
-                                     ondragstart="onDNDDragStart(event, '${item.replace(/'/g, "\\'")}')"
-                                     onclick="onDNDChipClick('${item.replace(/'/g, "\\'")}', ${isPlaced})"
-                                     style="background:${isPlaced ? '#e2e8f0' : (isSelectedForClick ? '#eff6ff' : 'white')};
-                                            color:${isPlaced ? '#94a3b8' : (isSelectedForClick ? 'var(--primary-blue)' : '#1e293b')};
-                                            border:${isSelectedForClick ? '2px solid var(--primary-blue)' : '1.5px solid #cbd5e1'};
-                                            padding:10px 18px; border-radius:20px; font-weight:700; font-size:13px;
+                                     ondragstart="onDNDDragStart(event, '${safeItem}')"
+                                     onclick="onDNDChipClick('${safeItem}', ${isPlaced})"
+                                     ontouchstart="onDNDTouchStart(event, '${safeItem}', ${isPlaced})"
+                                     ontouchmove="onDNDTouchMove(event)"
+                                     ontouchend="onDNDTouchEnd(event)"
+                                     style="background:${isPlaced ? '#e2e8f0' : (isSelectedForClick ? '#e0f2fe' : 'white')};
+                                            color:${isPlaced ? '#94a3b8' : (isSelectedForClick ? '#0369a1' : '#1e3a5f')};
+                                            border:${isSelectedForClick ? '2px solid #0284c7' : (isPlaced ? '1.5px solid #cbd5e1' : '1.5px solid #cbd5e1')};
+                                            padding:10px 22px; border-radius:24px; font-weight:700; font-size:14px;
                                             cursor:${isPlaced ? 'not-allowed' : 'grab'}; user-select:none; transition:all 0.2s;
-                                            box-shadow:${isSelectedForClick ? '0 0 0 3px rgba(30,58,95,0.2)' : '0 2px 4px rgba(0,0,0,0.03)'};">
-                                    ${item} ${isPlaced ? '✓' : ''}
+                                            box-shadow:${isSelectedForClick ? '0 0 0 3px rgba(2,132,199,0.2)' : '0 2px 4px rgba(0,0,0,0.03)'};
+                                            display:inline-flex; align-items:center; gap:8px;">
+                                    <span>${item}</span>
                                 </div>
                             `;
                         }).join('')}
@@ -905,90 +972,55 @@
                 `;
                 container.appendChild(poolBox);
 
-                // Target Rows / Drop Zones
+                // Target Rows Box
                 const targetsBox = document.createElement('div');
-                targetsBox.style.display = 'flex';
-                targetsBox.style.flexDirection = 'column';
-                targetsBox.style.gap = '14px';
+                targetsBox.style.background = '#ffffff';
+                targetsBox.style.border = '1.5px solid #cbd5e1';
+                targetsBox.style.borderRadius = '12px';
+                targetsBox.style.padding = '18px';
 
-                const targetSlots = Array.isArray(q.a) 
-                    ? q.a.map((_, idx) => `Target ${idx + 1}`) 
-                    : (q.a && typeof q.a === 'object' ? Object.keys(q.a) : (q.options || []));
+                const targetSlots = Array.isArray(q.options) && q.options.length > 0
+                    ? q.options
+                    : (q.a && typeof q.a === 'object' ? Object.keys(q.a) : (Array.isArray(q.a) ? q.a.map((_, idx) => `Target ${idx + 1}`) : []));
+
+                let rowsHtml = `
+                    <div style="font-family:'Montserrat',sans-serif; font-size:12px; font-weight:800; color:#1e3a5f; text-transform:uppercase; letter-spacing:1px; margin-bottom:14px; text-align:left;">
+                        TARGET BLOCKS:
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:14px;">
+                `;
 
                 targetSlots.forEach((opt, slotIdx) => {
-                    const row = document.createElement('div');
-                    row.className = 'dnd-target-row';
-                    row.style.display = 'flex';
-                    row.style.justifyContent = 'space-between';
-                    row.style.alignItems = 'center';
-                    row.style.padding = '16px 20px';
-                    row.style.background = 'white';
-                    row.style.border = '1.5px solid #e2e8f0';
-                    row.style.borderRadius = '12px';
-                    row.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
-
                     const placedVal = userValObj[opt] !== undefined ? userValObj[opt] : userValObj[slotIdx];
                     const safeKey = (Array.isArray(q.a) ? slotIdx : opt).toString().replace(/'/g, "\\'");
 
-                    row.innerHTML = `
-                        <div style="font-weight:600; color:#1e293b; flex:1; padding-right:20px; font-size:14px; line-height:1.5;">${opt}</div>
-                        <div class="dnd-slot ${placedVal ? 'filled' : 'empty'}"
-                             ondragover="onDNDDragOver(event)"
-                             ondrop="onDNDDrop(event, '${safeKey}')"
-                             onclick="onDNDSlotClick('${safeKey}')"
-                             style="min-width:240px; min-height:46px; border:2px dashed ${placedVal ? '#10b981' : '#cbd5e1'};
-                                    border-radius:10px; background:${placedVal ? '#f0fdf4' : '#fafafa'};
-                                    display:flex; align-items:center; justify-content:space-between; padding:8px 16px;
-                                    cursor:pointer; transition:all 0.2s;">
-                            ${placedVal 
-                                ? `<span style="font-weight:700; color:#166534; font-size:13px;">${placedVal}</span>
-                                   <span onclick="event.stopPropagation(); removeDNDVal('${safeKey}')" style="color:#ef4444; font-weight:800; font-size:14px; padding:2px 6px; border-radius:50%; background:#fee2e2;">✕</span>`
-                                : `<span style="color:#94a3b8; font-size:13px; font-weight:600; font-style:italic;">Drop / Click to place here</span>`
-                            }
+                    rowsHtml += `
+                        <div class="dnd-target-row" style="display:flex; justify-content:space-between; align-items:center; padding:14px 18px; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px; box-shadow:0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="font-weight:700; color:#1e293b; font-family:'Consolas','Courier New',monospace; font-size:14px; min-width:200px;">Target ${slotIdx + 1}: ${opt}</div>
+                            <span style="color:#64748b; font-weight:800; font-size:20px; margin:0 14px;">➔</span>
+                            <div class="dnd-slot ${placedVal ? 'filled' : 'empty'}"
+                                 data-target-key="${safeKey}"
+                                 ondragover="onDNDDragOver(event)"
+                                 ondrop="onDNDDrop(event, '${safeKey}')"
+                                 onclick="onDNDSlotClick('${safeKey}')"
+                                 style="flex:1; max-width:280px; min-height:46px; border:2px dashed ${placedVal ? '#0284c7' : '#94a3b8'};
+                                        border-radius:10px; background:${placedVal ? '#f0f9ff' : 'white'};
+                                        display:flex; align-items:center; justify-content:space-between; padding:8px 14px;
+                                        cursor:pointer; transition:all 0.2s;">
+                                ${placedVal 
+                                    ? `<span style="font-weight:700; color:#0369a1; font-size:14px; background:#e0f2fe; padding:5px 14px; border-radius:18px; border:1px solid #7dd3fc;">${placedVal}</span>
+                                       <span onclick="event.stopPropagation(); removeDNDVal('${safeKey}')" title="Remove answer" style="color:#ef4444; font-weight:800; font-size:14px; padding:2px 6px; border-radius:50%; background:#fee2e2; cursor:pointer; margin-left:8px;">✕</span>`
+                                    : `<span style="color:#64748b; font-size:13px; font-weight:600; font-style:italic;">Drop / Click to place</span>`
+                                }
+                            </div>
                         </div>
                     `;
-                    targetsBox.appendChild(row);
                 });
 
+                rowsHtml += `</div>`;
+                targetsBox.innerHTML = rowsHtml;
                 container.appendChild(targetsBox);
                 area.appendChild(container);
-            } else if (q.type === "MTF" || q.type === "DROPDOWN") {
-                const userValObj = (userAnswers[currentIndex] && typeof userAnswers[currentIndex] === 'object') 
-                    ? userAnswers[currentIndex] 
-                    : {};
-
-                let categories = q.labels || q.categories;
-                if (!categories && q.a && typeof q.a === 'object' && !Array.isArray(q.a)) {
-                    categories = [...new Set(Object.values(q.a))];
-                }
-                if (!categories) {
-                    categories = ["Option A", "Option B", "Option C", "Option D"];
-                }
-
-                q.options.forEach((opt) => {
-                    const row = document.createElement('div');
-                    row.className = "mtf-row";
-                    row.style.display = "flex";
-                    row.style.justifyContent = "space-between";
-                    row.style.alignItems = "center";
-                    row.style.padding = "14px 18px";
-                    row.style.background = "#f8fafc";
-                    row.style.border = "1px solid #e2e8f0";
-                    row.style.borderRadius = "8px";
-                    row.style.marginBottom = "12px";
-
-                    const currentSelectedVal = userValObj[opt] || "";
-                    const safeKey = opt.replace(/'/g, "\\'");
-
-                    row.innerHTML = `
-                        <div style="font-weight:600; color:#1e293b; flex:1; padding-right:20px;">${opt}</div>
-                        <select class="mtf-select" onchange="updateMTF('${safeKey}', this.value)" style="padding:10px 14px; border-radius:8px; border:1.5px solid #cbd5e1; font-weight:700; font-family:inherit; color:#1e3a5f; background:white; min-width:220px;">
-                            <option value="">-- Select Option --</option>
-                            ${categories.map(cat => `<option value="${cat.replace(/"/g, '&quot;')}" ${currentSelectedVal === cat ? 'selected' : ''}>${cat}</option>`).join('')}
-                        </select>
-                    `;
-                    area.appendChild(row);
-                });
             } else if (q.type === "SHORT") {
                 const input = document.createElement('input');
                 input.className = "short-input";
@@ -1006,7 +1038,9 @@
 
         function onDNDDragStart(e, item) {
             draggedDNDItem = item;
-            e.dataTransfer.setData('text/plain', item);
+            if (e.dataTransfer) {
+                e.dataTransfer.setData('text/plain', item);
+            }
         }
 
         function onDNDDragOver(e) {
@@ -1015,7 +1049,7 @@
 
         function onDNDDrop(e, targetKey) {
             e.preventDefault();
-            const item = e.dataTransfer.getData('text/plain') || draggedDNDItem;
+            const item = (e.dataTransfer ? e.dataTransfer.getData('text/plain') : null) || draggedDNDItem;
             if (item) {
                 setDNDVal(targetKey, item);
             }
@@ -1034,12 +1068,76 @@
             }
         }
 
+        function onDNDTouchStart(e, item, isPlaced) {
+            if (isPlaced) return;
+            touchDraggedItem = item;
+            const touch = e.touches[0];
+            if (touchAvatarEl) touchAvatarEl.remove();
+            touchAvatarEl = document.createElement('div');
+            touchAvatarEl.className = 'dnd-touch-avatar';
+            touchAvatarEl.textContent = item;
+            touchAvatarEl.style.position = 'fixed';
+            touchAvatarEl.style.left = (touch.clientX - 45) + 'px';
+            touchAvatarEl.style.top = (touch.clientY - 20) + 'px';
+            touchAvatarEl.style.padding = '8px 18px';
+            touchAvatarEl.style.background = '#1e3a5f';
+            touchAvatarEl.style.color = 'white';
+            touchAvatarEl.style.borderRadius = '8px';
+            touchAvatarEl.style.fontWeight = '700';
+            touchAvatarEl.style.fontSize = '14px';
+            touchAvatarEl.style.zIndex = '9999';
+            touchAvatarEl.style.pointerEvents = 'none';
+            touchAvatarEl.style.boxShadow = '0 10px 20px rgba(0,0,0,0.25)';
+            touchAvatarEl.style.opacity = '0.92';
+            document.body.appendChild(touchAvatarEl);
+        }
+
+        function onDNDTouchMove(e) {
+            if (!touchAvatarEl || !e.touches || e.touches.length === 0) return;
+            e.preventDefault();
+            const touch = e.touches[0];
+            touchAvatarEl.style.left = (touch.clientX - 45) + 'px';
+            touchAvatarEl.style.top = (touch.clientY - 20) + 'px';
+            const el = document.elementFromPoint(touch.clientX, touch.clientY);
+            const slot = el ? el.closest('.dnd-slot') : null;
+            document.querySelectorAll('.dnd-slot').forEach(s => {
+                const isFilled = s.classList.contains('filled');
+                s.style.borderColor = isFilled ? '#10b981' : '#cbd5e1';
+                s.style.background = isFilled ? '#f0fdf4' : '#fafafa';
+            });
+            if (slot) {
+                slot.style.borderColor = '#3b82f6';
+                slot.style.background = '#eff6ff';
+            }
+        }
+
+        function onDNDTouchEnd(e) {
+            if (!touchAvatarEl) return;
+            const touch = e.changedTouches ? e.changedTouches[0] : null;
+            if (touch) {
+                const el = document.elementFromPoint(touch.clientX, touch.clientY);
+                const slot = el ? el.closest('.dnd-slot') : null;
+                if (slot && touchDraggedItem) {
+                    const targetKey = slot.getAttribute('data-target-key');
+                    if (targetKey !== null && targetKey !== undefined) {
+                        setDNDVal(targetKey, touchDraggedItem);
+                    }
+                }
+            }
+            if (touchAvatarEl) {
+                touchAvatarEl.remove();
+                touchAvatarEl = null;
+            }
+            touchDraggedItem = null;
+        }
+
         function setDNDVal(targetKey, item) {
             if (!userAnswers[currentIndex] || typeof userAnswers[currentIndex] !== 'object') {
                 userAnswers[currentIndex] = {};
             }
             userAnswers[currentIndex][targetKey] = item;
             updateTileBar();
+            saveActiveQuizState();
             loadQuestion();
         }
 
@@ -1048,6 +1146,7 @@
                 delete userAnswers[currentIndex][targetKey];
             }
             updateTileBar();
+            saveActiveQuizState();
             loadQuestion();
         }
 
@@ -1204,6 +1303,9 @@
                 let correctDisp = "";
                 const maxMarks = qMarksList[i] || 2;
 
+                let matchCount = 0;
+                let totalSubItems = 0;
+
                 if (q.type === "MCQ") {
                     isUnanswered = (u === null || u === undefined);
                     isCorrect = !isUnanswered && (u === q.a);
@@ -1215,12 +1317,11 @@
                     userDisp = Array.isArray(u) && u.length > 0 ? u.map(idx => q.options[idx]).join(", ") : "Unanswered";
                     correctDisp = q.a.map(idx => q.options[idx]).join(", ");
                 } else if (q.type === "TF") {
-                    const totalCount = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
+                    totalSubItems = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
                     isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
                     
                     if (!isUnanswered) {
-                        let matchCount = 0;
-                        for (let j = 0; j < totalCount; j++) {
+                        for (let j = 0; j < totalSubItems; j++) {
                             const userVal = u[j];
                             let correctVal = Array.isArray(q.a) ? q.a[j] : q.a[q.options[j]];
                             if (correctVal && typeof correctVal === 'string') {
@@ -1229,18 +1330,17 @@
                             }
                             if (userVal === correctVal) matchCount++;
                         }
-                        isCorrect = (matchCount === totalCount) && (Object.keys(u).length === totalCount);
+                        isCorrect = (matchCount === totalSubItems) && (Object.keys(u).length === totalSubItems);
                     }
                     userDisp = u && Object.keys(u).length > 0 ? Object.entries(u).map(([k,v]) => `Q${parseInt(k)+1}: ${v.toString().toUpperCase()}`).join(", ") : "Unanswered";
                     correctDisp = Array.isArray(q.a) 
                         ? q.a.map((v, idx) => `Q${idx+1}: ${v.toString().toUpperCase()}`).join(", ")
                         : Object.entries(q.a).map(([k,v]) => `${k}: ${v.toString().toUpperCase()}`).join(", ");
                 } else if (q.type === "DROPDOWN") {
-                    const totalCount = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
+                    totalSubItems = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
                     isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
                     if (!isUnanswered) {
-                        let matchCount = 0;
-                        for (let k = 0; k < totalCount; k++) {
+                        for (let k = 0; k < totalSubItems; k++) {
                             let userValIdx = u[k];
                             let userValText = (Array.isArray(q.options) && Array.isArray(q.options[k]) && typeof userValIdx === 'number')
                                 ? q.options[k][userValIdx]
@@ -1248,7 +1348,7 @@
                             let targetVal = Array.isArray(q.a) ? q.a[k] : q.a[k];
                             if (userValText === targetVal) matchCount++;
                         }
-                        isCorrect = (matchCount === totalCount) && (Object.keys(u).length === totalCount);
+                        isCorrect = (matchCount === totalSubItems) && (Object.keys(u).length === totalSubItems);
                     }
                     userDisp = (u && Object.keys(u).length > 0) ? Object.entries(u).map(([k,v]) => {
                         let valText = (Array.isArray(q.options) && Array.isArray(q.options[k]) && typeof v === 'number')
@@ -1259,31 +1359,32 @@
                     correctDisp = Array.isArray(q.a)
                         ? q.a.map((v, idx) => `[b${idx+1}] &rarr; ${v}`).join("<br>")
                         : Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
-                } else if (q.type === "DND") {
-                    const totalCount = Array.isArray(q.a) ? q.a.length : Object.keys(q.a).length;
+                } else if (q.type === "DND" || q.type === "MTF") {
+                    const isObjectAns = (typeof q.a === 'object' && q.a !== null && !Array.isArray(q.a));
+                    totalSubItems = isObjectAns ? Object.keys(q.a).length : (Array.isArray(q.a) ? q.a.length : 0);
                     isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
                     if (!isUnanswered) {
-                        let matchCount = 0;
-                        for (let k = 0; k < totalCount; k++) {
-                            let targetVal = Array.isArray(q.a) ? q.a[k] : q.a[k];
-                            let userVal = u[k] !== undefined ? u[k] : u[`Target ${k+1}`];
-                            if (userVal === targetVal) matchCount++;
+                        if (isObjectAns) {
+                            const keys = Object.keys(q.a);
+                            keys.forEach(k => {
+                                if (u[k] === q.a[k]) matchCount++;
+                            });
+                            isCorrect = (matchCount === keys.length) && (Object.keys(u).length === keys.length);
+                        } else if (Array.isArray(q.a)) {
+                            q.a.forEach((targetVal, idx) => {
+                                let userVal = u[idx] !== undefined ? u[idx] : u[`Target ${idx+1}`];
+                                if (userVal === targetVal) matchCount++;
+                            });
+                            isCorrect = (matchCount === q.a.length) && (Object.keys(u).length === q.a.length);
                         }
-                        isCorrect = (matchCount === totalCount) && (Object.keys(u).length === totalCount);
                     }
                     userDisp = (u && Object.keys(u).length > 0) ? Object.entries(u).map(([k,v]) => {
                         const targetLabel = (typeof k === 'number' || !isNaN(parseInt(k))) ? `Target ${parseInt(k)+1}` : k;
                         return `${targetLabel} &rarr; ${v}`;
                     }).join("<br>") : "Unanswered";
-                    correctDisp = Array.isArray(q.a)
-                        ? q.a.map((v, idx) => `Target ${idx+1} &rarr; ${v}`).join("<br>")
-                        : Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
-                } else if (q.type === "MTF") {
-                    const totalKeys = Object.keys(q.a).length;
-                    isUnanswered = (typeof u !== 'object' || u === null || Object.keys(u).length === 0);
-                    isCorrect = !isUnanswered && typeof u === 'object' && u !== null && (Object.keys(u).length === totalKeys) && Object.keys(q.a).every(k => u[k] === q.a[k]);
-                    userDisp = u && Object.keys(u).length > 0 ? Object.entries(u).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>") : "Unanswered";
-                    correctDisp = Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>");
+                    correctDisp = isObjectAns
+                        ? Object.entries(q.a).map(([k,v]) => `${k} &rarr; ${v}`).join("<br>")
+                        : (Array.isArray(q.a) ? q.a.map((v, idx) => `Target ${idx+1} &rarr; ${v}`).join("<br>") : "");
                 } else if (q.type === "SHORT") {
                     let uText = u?.toString().toLowerCase().trim() || "";
                     isUnanswered = (!uText);
@@ -1301,7 +1402,19 @@
                     correctDisp = Array.isArray(q.a) ? q.a[0] : q.a;
                 }
 
-                const marksEarned = isCorrect ? maxMarks : 0;
+                let isPartial = false;
+                let marksEarned = 0;
+                if ((q.type === "DND" || q.type === "MTF" || q.type === "TF" || q.type === "DROPDOWN") && totalSubItems > 0) {
+                    if (isCorrect) {
+                        marksEarned = maxMarks;
+                    } else if (!isUnanswered && matchCount > 0) {
+                        marksEarned = (matchCount / totalSubItems) * maxMarks;
+                        isPartial = true;
+                    }
+                } else {
+                    marksEarned = isCorrect ? maxMarks : 0;
+                }
+
                 if (isCorrect) correctCountAll++;
                 else if (isUnanswered) unattemptedCountAll++;
                 else incorrectCountAll++;
@@ -1312,7 +1425,10 @@
                     q: q.q,
                     type: q.type,
                     isCorrect,
+                    isPartial,
                     isUnanswered,
+                    marksEarned,
+                    maxMarks,
                     userRaw: u,
                     correctRaw: q.a,
                     userDisp: userDisp,
@@ -1442,7 +1558,7 @@
                 return `<span style="font-weight:700;">${ansVal}</span>`;
             }
 
-            if (q.type === "DND") {
+            if (q.type === "DND" || q.type === "MTF") {
                 if (Array.isArray(ansVal)) {
                     return ansVal.map((v, idx) => {
                         return `<div style="margin-top:4px;"><strong>Target ${idx+1}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
@@ -1452,15 +1568,6 @@
                     return Object.entries(ansVal).map(([k, v]) => {
                         const label = (typeof k === 'number' || !isNaN(parseInt(k))) ? `Target ${parseInt(k)+1}` : k;
                         return `<div style="margin-top:4px;"><strong>${label}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
-                    }).join("");
-                }
-                return `<span style="font-weight:700;">${ansVal}</span>`;
-            }
-
-            if (q.type === "MTF") {
-                if (typeof ansVal === 'object' && ansVal !== null) {
-                    return Object.entries(ansVal).map(([k, v]) => {
-                        return `<div style="margin-top:4px;"><strong>${k}</strong> &rarr; <span style="font-weight:700;">${v}</span></div>`;
                     }).join("");
                 }
                 return `<span style="font-weight:700;">${ansVal}</span>`;
@@ -1536,10 +1643,10 @@
                     
                     const qObj = res.qObj || {};
                     let isUnanswered = res.isUnanswered || res.userRaw === null || res.userRaw === undefined;
-                    let statusText = isUnanswered ? "Not Answered" : (res.isCorrect ? "Correct" : "Incorrect");
-                    let statusBg = isUnanswered ? "#fef2f2" : (res.isCorrect ? "#f0fdf4" : "#fef2f2");
-                    let statusColor = isUnanswered ? "#b91c1c" : (res.isCorrect ? "#15803d" : "#b91c1c");
-                    let statusBorder = isUnanswered ? "#fecaca" : (res.isCorrect ? "#bbf7d0" : "#fecaca");
+                    let statusText = isUnanswered ? "Not Answered" : (res.isCorrect ? "Correct" : (res.isPartial ? `Partial Credit (${Math.round((res.marksEarned || 0) * 10) / 10} / ${res.maxMarks || 2} Marks)` : "Incorrect"));
+                    let statusBg = isUnanswered ? "#fef2f2" : (res.isCorrect ? "#f0fdf4" : (res.isPartial ? "#fffbeb" : "#fef2f2"));
+                    let statusColor = isUnanswered ? "#b91c1c" : (res.isCorrect ? "#15803d" : (res.isPartial ? "#b45309" : "#b91c1c"));
+                    let statusBorder = isUnanswered ? "#fecaca" : (res.isCorrect ? "#bbf7d0" : (res.isPartial ? "#fde68a" : "#fecaca"));
 
                     let qImageHTML = "";
                     if (qObj.img && qObj.img !== 'none') {
