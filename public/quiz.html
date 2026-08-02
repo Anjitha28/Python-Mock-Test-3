@@ -874,7 +874,60 @@
                     `;
                     area.appendChild(row);
                 });
-            } else if (q.type === "DND" || q.type === "MTF" || q.type === "DROPDOWN") {
+            } else if (q.type === "DROPDOWN") {
+                // Render ONLY Dropdown controls
+                if (!q.code || !q.code.includes('[b1]')) {
+                    const dropContainer = document.createElement('div');
+                    dropContainer.className = 'dropdown-container';
+                    dropContainer.style.display = 'flex';
+                    dropContainer.style.flexDirection = 'column';
+                    dropContainer.style.gap = '14px';
+                    dropContainer.style.marginTop = '15px';
+
+                    const optsArray = Array.isArray(q.options) ? q.options : [];
+                    optsArray.forEach((opts, blankIdx) => {
+                        const row = document.createElement('div');
+                        row.style.display = 'flex';
+                        row.style.alignItems = 'center';
+                        row.style.gap = '15px';
+                        row.style.padding = '12px 18px';
+                        row.style.background = '#f8fafc';
+                        row.style.border = '1.5px solid #e2e8f0';
+                        row.style.borderRadius = '10px';
+
+                        const label = document.createElement('div');
+                        label.style.fontWeight = '700';
+                        label.style.color = '#1e293b';
+                        label.style.minWidth = '140px';
+                        label.textContent = `Blank ${blankIdx + 1}:`;
+
+                        const select = document.createElement('select');
+                        select.className = 'dropdown-select-control';
+                        select.style.padding = '8px 14px';
+                        select.style.borderRadius = '8px';
+                        select.style.border = '1.5px solid #cbd5e1';
+                        select.style.fontSize = '14px';
+                        select.style.fontWeight = '600';
+                        select.style.background = 'white';
+                        select.style.color = '#1e3a5f';
+                        select.style.flex = '1';
+                        select.style.maxWidth = '300px';
+
+                        select.onchange = (e) => updateDropdownCodeAnswer(currentIndex, blankIdx, e.target.value);
+
+                        let optList = Array.isArray(opts) ? opts : [opts];
+                        select.innerHTML = `<option value="-1">-- Select Option --</option>` + optList.map((opt, optIdx) => {
+                            const isSel = (userAnswers[currentIndex] && userAnswers[currentIndex][blankIdx] == optIdx) ? 'selected' : '';
+                            return `<option value="${optIdx}" ${isSel}>${escapeHtml(opt)}</option>`;
+                        }).join('');
+
+                        row.appendChild(label);
+                        row.appendChild(select);
+                        dropContainer.appendChild(row);
+                    });
+                    area.appendChild(dropContainer);
+                }
+            } else if (q.type === "DND" || q.type === "MTF") {
                 const userValObj = (userAnswers[currentIndex] && typeof userAnswers[currentIndex] === 'object') 
                     ? userAnswers[currentIndex] 
                     : {};
